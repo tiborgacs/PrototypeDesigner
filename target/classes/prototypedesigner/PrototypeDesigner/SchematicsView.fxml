@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.canvas.Canvas?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.control.TreeTableColumn?>
+<?import javafx.scene.control.TreeTableView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="prototypedesigner.PrototypeDesigner.controller.SchematicsController">
+    <center>
+        <ScrollPane fx:id="scrollPane" hbarPolicy="ALWAYS" vbarPolicy="ALWAYS" BorderPane.alignment="CENTER">
+            <content>
+                <AnchorPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
+                    <children>
+                        <Canvas fx:id="schematicsCanvas" height="200.0" onMouseClicked="#onClick" width="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                    </children>
+                </AnchorPane>
+            </content>
+        </ScrollPane>
+    </center>
+    <left>
+        <VBox BorderPane.alignment="CENTER">
+            <children>
+                <ToggleButton fx:id="wireToggle" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Wire">
+                    <toggleGroup>
+                        <ToggleGroup fx:id="buttonMode" />
+                    </toggleGroup>
+                </ToggleButton>
+                <ToggleButton fx:id="labelToggle" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Label" toggleGroup="$buttonMode" />
+                <Label text="Orientation:" />
+                <HBox>
+                    <children>
+                        <ToggleButton fx:id="leftToggle" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="←" HBox.hgrow="ALWAYS">
+                            <toggleGroup>
+                                <ToggleGroup fx:id="orientationGroup" />
+                            </toggleGroup>
+                        </ToggleButton>
+                        <ToggleButton fx:id="upToggle" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="↑" toggleGroup="$orientationGroup" HBox.hgrow="ALWAYS" />
+                        <ToggleButton fx:id="downToggle" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="↓" toggleGroup="$orientationGroup" HBox.hgrow="ALWAYS" />
+                        <ToggleButton fx:id="rightToggle" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="→" toggleGroup="$orientationGroup" HBox.hgrow="ALWAYS" />
+                    </children>
+                </HBox>
+                <Label text="Components:" />
+                <ScrollPane hbarPolicy="NEVER" VBox.vgrow="ALWAYS">
+                    <content>
+                        <VBox>
+                            <children>
+                                <ToggleButton fx:id="resistorToggle" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Resistor" toggleGroup="$buttonMode" />
+                                <ToggleButton fx:id="capacitorToggle" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Capacitor" toggleGroup="$buttonMode" />
+                                <ToggleButton fx:id="elcoToggle" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Electrolytic" toggleGroup="$buttonMode" />
+                                <ToggleButton fx:id="diodeToggle" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Diode" toggleGroup="$buttonMode" />
+                                <ToggleButton fx:id="npnToggle" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="NPN Transistor" toggleGroup="$buttonMode" />
+                                <ToggleButton fx:id="pnpToggle" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="PNP Transistor" toggleGroup="$buttonMode" />
+                                <ToggleButton fx:id="njfetToggle" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="N-JFET" toggleGroup="$buttonMode" />
+                                <ToggleButton fx:id="pjfetToggle" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="P-JFET" toggleGroup="$buttonMode" />
+                                <ToggleButton fx:id="nmosToggle" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="N-MOSFET" toggleGroup="$buttonMode" />
+                                <ToggleButton fx:id="pmosToggle" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="P-MOSFET" toggleGroup="$buttonMode" />
+                                <ToggleButton fx:id="singleAmpToggle" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Single OpAmp" toggleGroup="$buttonMode" />
+                                <ToggleButton fx:id="dualAmpToggle" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Dual OpAmp" toggleGroup="$buttonMode" />
+                                <ToggleButton fx:id="quadAmpToggle" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Quad OpAmp" toggleGroup="$buttonMode" />
+                                <ToggleButton fx:id="genericIcToggle" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Generic IC:" toggleGroup="$buttonMode" />
+                                <ChoiceBox fx:id="genericIcPinsBox" prefWidth="150.0" />
+                            </children>
+                        </VBox>
+                    </content>
+                </ScrollPane>
+            </children>
+        </VBox>
+    </left>
+    <right>
+        <VBox BorderPane.alignment="CENTER">
+            <children>
+                <Label text="Bill of Materials:" />
+                <TableView fx:id="componentTable" editable="true" VBox.vgrow="ALWAYS">
+                    <columns>
+                        <TableColumn fx:id="componentIdColumn" maxWidth="-1.0" minWidth="80.0" prefWidth="-1.0" text="ID" />
+                        <TableColumn fx:id="componentTypeColumn" maxWidth="-1.0" minWidth="80.0" prefWidth="-1.0" text="Type" />
+                        <TableColumn fx:id="componentValueColumn" maxWidth="-1.0" minWidth="80.0" prefWidth="-1.0" text="Value" />
+                  <TableColumn fx:id="deleteComponentColumn" maxWidth="-1.0" minWidth="32.0" prefWidth="-1.0" resizable="false" text="🗑" />
+                    </columns>
+                    <columnResizePolicy>
+                        <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                    </columnResizePolicy>
+                </TableView>
+                <Label text="Wiring:" />
+                <TreeTableView fx:id="wireTable" editable="true" showRoot="false" VBox.vgrow="ALWAYS">
+                    <columns>
+                        <TreeTableColumn fx:id="wiringTypeColumn" editable="false" maxWidth="1.7976931348623157E308" minWidth="-Infinity" prefWidth="-1.0" sortable="false" text="Wires" />
+                        <TreeTableColumn fx:id="wireXColumn" maxWidth="1.7976931348623157E308" minWidth="48.0" prefWidth="-1.0" sortable="false" text="X" />
+                        <TreeTableColumn fx:id="wireYColumn" maxWidth="1.7976931348623157E308" minWidth="48.0" prefWidth="-1.0" sortable="false" text="Y" />
+                        <TreeTableColumn fx:id="deleteWireColumn" maxWidth="-1.0" minWidth="32.0" prefWidth="-1.0" resizable="false" text="🗑" />
+                    </columns>
+                    <columnResizePolicy>
+                        <TreeTableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                    </columnResizePolicy>
+                </TreeTableView>
+                <Label text="Properties:" />
+                <TableView VBox.vgrow="ALWAYS">
+                    <columns>
+                        <TableColumn maxWidth="-1.0" minWidth="-1.0" prefWidth="-1.0" text="C1" />
+                        <TableColumn maxWidth="-1.0" minWidth="-1.0" prefWidth="-1.0" text="C2" />
+                    </columns>
+                </TableView>
+            </children>
+        </VBox>
+    </right>
+</BorderPane>

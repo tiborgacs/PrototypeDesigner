@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.canvas.Canvas?>
+<?import javafx.scene.control.ButtonBar?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Slider?>
+<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="prototypedesigner.PrototypeDesigner.controller.ProtoboardController">
+   <center>
+      <ScrollPane fx:id="scrollPane" hbarPolicy="ALWAYS" vbarPolicy="ALWAYS" BorderPane.alignment="CENTER">
+         <content>
+            <AnchorPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
+               <children>
+                  <Canvas fx:id="protoboardCanvas" height="200.0" onMouseClicked="#onClick" width="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+               </children>
+            </AnchorPane>
+         </content>
+      </ScrollPane>
+   </center>
+   <left>
+      <VBox prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER">
+         <children>
+            <ToggleButton fx:id="linkToggle" mnemonicParsing="false" text="🖉 Link Dots">
+               <toggleGroup>
+                  <ToggleGroup fx:id="buttonMode" />
+               </toggleGroup>
+            </ToggleButton>
+            <ToggleButton fx:id="cutToggle" mnemonicParsing="false" text="✂ Cut Link" toggleGroup="$buttonMode" />
+            <ToggleButton fx:id="microchipToggle" mnemonicParsing="false" text="💻 Microchip" toggleGroup="$buttonMode" />
+            <ToggleButton fx:id="viaToggle" mnemonicParsing="false" text="Via (Link)" toggleGroup="$buttonMode" />
+            <Label text="Orientation:" />
+            <HBox>
+               <children>
+                  <ToggleButton fx:id="leftToggle" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="←" HBox.hgrow="ALWAYS">
+                     <toggleGroup>
+                        <ToggleGroup fx:id="orientationGroup" />
+                     </toggleGroup>
+                  </ToggleButton>
+                  <ToggleButton fx:id="upToggle" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="↑" toggleGroup="$orientationGroup" HBox.hgrow="ALWAYS" />
+                  <ToggleButton fx:id="downToggle" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="↓" toggleGroup="$orientationGroup" HBox.hgrow="ALWAYS" />
+                  <ToggleButton fx:id="rightToggle" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="→" toggleGroup="$orientationGroup" HBox.hgrow="ALWAYS" />
+               </children>
+            </HBox>
+            <Label text="Components:" />
+            <ScrollPane hbarPolicy="NEVER">
+               <content>
+                  <VBox>
+                     <children>
+                        <ToggleButton fx:id="resistorToggle" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Resistor">
+                           <toggleGroup>
+                              <ToggleGroup fx:id="buttonMode" />
+                           </toggleGroup>
+                        </ToggleButton>
+                        <ToggleButton fx:id="ceramicCapToggle" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Ceramic Cap." toggleGroup="$buttonMode" />
+                        <ToggleButton fx:id="filmCapToggle" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Film Capacitor" toggleGroup="$buttonMode" />
+                        <ToggleButton fx:id="elcoToggle" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Electrolytic" toggleGroup="$buttonMode" />
+                        <ToggleButton fx:id="diodeToggle" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Diode" toggleGroup="$buttonMode" />
+                        <ToggleButton fx:id="npnToggle" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="NPN Transistor" toggleGroup="$buttonMode" />
+                        <ToggleButton fx:id="pnpToggle" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="PNP Transistor" toggleGroup="$buttonMode" />
+                        <ToggleButton fx:id="njfetToggle" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="N-JFET" toggleGroup="$buttonMode" />
+                        <ToggleButton fx:id="pjfetToggle" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="P-JFET" toggleGroup="$buttonMode" />
+                        <ToggleButton fx:id="nmosToggle" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="N-MOSFET" toggleGroup="$buttonMode" />
+                        <ToggleButton fx:id="pmosToggle" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="P-MOSFET" toggleGroup="$buttonMode" />
+                        <ToggleButton fx:id="singleAmpToggle" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Single OpAmp" toggleGroup="$buttonMode" />
+                        <ToggleButton fx:id="dualAmpToggle" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Dual OpAmp" toggleGroup="$buttonMode" />
+                        <ToggleButton fx:id="quadAmpToggle" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Quad OpAmp" toggleGroup="$buttonMode" />
+                        <ToggleButton fx:id="genericIcToggle" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Generic IC:" toggleGroup="$buttonMode" />
+                        <ChoiceBox fx:id="genericIcPinsBox" prefWidth="150.0" />
+                     </children>
+                  </VBox>
+               </content>
+            </ScrollPane>
+            <Label text="Component Layer" />
+            <Slider fx:id="layerSlider" />
+         </children></VBox>
+   </left>
+   <bottom>
+      <ButtonBar BorderPane.alignment="CENTER" />
+   </bottom>
+</BorderPane>
