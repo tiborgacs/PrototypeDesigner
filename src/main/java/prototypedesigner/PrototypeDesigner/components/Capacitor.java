@@ -68,6 +68,7 @@ public class Capacitor extends Component implements ComponentValue {
 			context.strokeLine(x, y+12, x+10, y+12);
 			context.strokeLine(x+14, y+12, x+24, y+12);
 		}
+		context.strokeText(identifier, schX, schY);
 	}
 
 	

@@ -3,7 +3,7 @@ package prototypedesigner.PrototypeDesigner.components;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
-public class PolarizedCapacitor extends Component implements ComponentValue, DrawableOnStripboard, DrawableOnProtoboard {
+public class PolarizedCapacitor extends Capacitor implements ComponentValue, DrawableOnStripboard, DrawableOnProtoboard {
 	
 	private Terminal positiveLeg = new Terminal(this);
 	private Terminal negativeLeg = new Terminal(this);

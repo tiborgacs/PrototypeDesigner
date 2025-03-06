@@ -44,12 +44,12 @@ public class JunctionFieldEffectTransistor extends Transistor {
 		context.setLineWidth(1.0);
 		context.strokeArc(x+6, y+6, 36, 36, 0, 360, ArcType.CHORD);
 		context.strokeLine(x+18, y+15, x+18, y+33);
-		context.strokeLine(x+0, y+24, x+18, y+24); // G
+		context.strokeLine(x+0, y+24, x+18, y+30); // G
 		context.setFill(Color.DARKBLUE);
 		if (channel == "P")
-			context.fillPolygon(new double[] {x+6, x+15, x+15}, new double[] {y+24, y+21, y+27}, 3);
+			context.fillPolygon(new double[] {x+6, x+16, x+14}, new double[] {y+26, y+26, y+32}, 3);
 		else if (channel == "N")
-			context.fillPolygon(new double[] {x+18, x+9, x+9}, new double[] {y+24, y+21, y+27}, 3);
+			context.fillPolygon(new double[] {x+18, x+10, x+8}, new double[] {y+30, y+24, y+30}, 3);
 		context.strokeLine(x+18, y+18, x+36, y+18); // D
 		context.strokeLine(x+36, y+18, x+36, y);
 		context.strokeLine(x+18, y+30, x+36, y+30); // S

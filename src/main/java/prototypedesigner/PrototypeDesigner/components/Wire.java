@@ -69,18 +69,7 @@ public class Wire implements DrawableOnSchematics {
 		}
 	}
 
-	public static boolean intersects(Coordinate a, Coordinate b, Coordinate c, Coordinate d) {
-		double a1 = b.getY() - a.getY();
-		double b1 = a.getX() - b.getX();
-		double a2 = d.getY() - c.getY();
-		double b2 = c.getX() - d.getX();
-
-		double determinant = a1*b2 - a2*b1;
-		System.out.println(determinant);
-		return determinant != 0;
-	}
-
-	public static Coordinate intersects2(Coordinate a, Coordinate b, Coordinate c, Coordinate d) {
+	public static Coordinate intersects(Coordinate a, Coordinate b, Coordinate c, Coordinate d) {
 		double a1 = b.getY() - a.getY();
 		double b1 = a.getX() - b.getX();
 		double c1 = a1*a.getX() + b1*a.getY();
@@ -88,18 +77,25 @@ public class Wire implements DrawableOnSchematics {
 		double b2 = c.getX() - d.getX();
 		double c2 = a2*c.getX()+ b2*c.getY();
 		double determinant = a1*b2 - a2*b1;
-		if (determinant != 0) {
-			if (a.getX() == b.getX() && (c.getY() > Math.max(a.getY(), b.getY()) || c.getY() < Math.min(a.getY(), b.getY()))) {
-				return null;
-			}
-			if (a.getY() == b.getY() && (c.getX() > Math.max(a.getX(), b.getX()) || c.getX() < Math.min(a.getX(), b.getX()))) {
-				return null;
-			}
-			return new Coordinate(
-					(int) ((b2*c1 - b1*c2)/determinant),
-					(int) ((a1*c2 - a2*c1)/determinant)
-			);
-		} else return null;
+		if (a.getX() == b.getX() && c.getY() == d.getY()) {
+			if (between(c.getY(), a.getY(), b.getY()) && between(a.getX(), c.getX(), d.getX()))
+				return new Coordinate(
+						(int) ((b2*c1 - b1*c2)/determinant),
+						(int) ((a1*c2 - a2*c1)/determinant));
+		}
+		if (a.getY() == b.getY() && c.getX() == d.getX()) {
+			if (between(c.getX(), a.getX(), b.getX()) && between(a.getY(), c.getY(), d.getY()))
+				return new Coordinate(
+						(int) ((b2*c1 - b1*c2)/determinant),
+						(int) ((a1*c2 - a2*c1)/determinant));
+		}
+		return null;
+	}
+
+	private static boolean between(int value, int start, int end) {
+		if (start >= end) return value <= start && value >= end;
+		else if (start <= end) return value >= start && value <= end;
+		else return false;
 	}
 
     public boolean isHighlighted() {

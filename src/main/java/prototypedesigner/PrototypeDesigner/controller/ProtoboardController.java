@@ -148,7 +148,7 @@ public class ProtoboardController {
 		int w = (int) (protoboardCanvas.getWidth() / 24);
 		GraphicsContext context = protoboardCanvas.getGraphicsContext2D();
 		context.setGlobalAlpha(1.0);
-		context.setFill(Color.GOLDENROD);
+		context.setFill(Color.rgb( 	204, 153, 51));
 		context.fillRect(0, 0, w*24, h*24);
 		if (dots.isEmpty()) {
 			for (int y = 0; y < h; y++) {

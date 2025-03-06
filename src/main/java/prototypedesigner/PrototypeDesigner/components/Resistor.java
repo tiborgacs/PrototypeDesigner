@@ -73,6 +73,7 @@ public class Resistor extends Component implements ComponentValue, DrawableOnStr
 			context.strokeRect(x + 6, y + 6, 36, 12);
 			context.strokeLine(x, y + 12, x + 6, y + 12);
 			context.strokeLine(x + 42, y + 12, x + 48, y + 12);
+			context.strokeText(identifier, x+8, y+17);
 		}
 	}
 

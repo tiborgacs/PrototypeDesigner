@@ -1,8 +1,6 @@
 package prototypedesigner.PrototypeDesigner.controller;
 
-import javafx.beans.property.ReadOnlyStringWrapper;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -14,11 +12,17 @@ import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.control.cell.TextFieldTreeTableCell;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.ArcType;
+import javafx.util.Pair;
 import prototypedesigner.PrototypeDesigner.converter.IntegerStringConverter;
 import prototypedesigner.PrototypeDesigner.SchematicsWiringItem;
 import prototypedesigner.PrototypeDesigner.components.Component;
 import prototypedesigner.PrototypeDesigner.components.*;
 import prototypedesigner.PrototypeDesigner.converter.NoOpStringConverter;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 import static prototypedesigner.PrototypeDesigner.Utility.getRowParentItem;
 
@@ -27,7 +31,7 @@ public class SchematicsController {
 	@FXML private ScrollPane scrollPane;
 	@FXML private Canvas schematicsCanvas;
 	@FXML private ToggleGroup buttonMode;
-	@FXML private ToggleGroup orientationGroup;
+	@SuppressWarnings("unused") @FXML private ToggleGroup orientationGroup;
 	@FXML private ToggleButton singleAmpToggle;
 	@FXML private ToggleButton dualAmpToggle;
 	@FXML private ToggleButton quadAmpToggle;
@@ -52,7 +56,8 @@ public class SchematicsController {
 	
 	private ObservableList<Component> components = FXCollections.observableArrayList();
 	private ObservableList<Wire> wires = FXCollections.observableArrayList();
-	private Wire lastWire = null;
+	private WireBuilder wireBuilder;
+	@FXML private Label coordinateLabel;
 	
 	@FXML private TreeTableView<SchematicsWiringItem> wireTable;
 	@FXML private TreeTableColumn<SchematicsWiringItem, String> wiringTypeColumn;
@@ -130,6 +135,7 @@ public class SchematicsController {
                 super.commitEdit(newValue);
                 getTreeTableRow().getItem().getCoordinate().setX(newValue * 12);
                 drawGrid();
+				setText(newValue.toString());
             }
         });
 		wireYColumn.setCellValueFactory(value -> {
@@ -144,6 +150,7 @@ public class SchematicsController {
 						super.commitEdit(newValue);
 						getTreeTableRow().getItem().getCoordinate().setY(newValue * 12);
 						drawGrid();
+						setText(newValue.toString());
 					}
 				});
 		deleteWireColumn.setCellValueFactory(value -> value.getValue().valueProperty());
@@ -156,7 +163,7 @@ public class SchematicsController {
 					deleteButton.setOnAction(event -> {
 						if (item.getCoordinate() != null) {
 							getRowParentItem(getTreeTableRow()).getValue().getWire().getSchPoints().remove(item.getCoordinate());
-							getRowParentItem(getTreeTableRow()).getParent().getChildren().remove(this.getTreeTableRow().getTreeItem());
+							getRowParentItem(getTreeTableRow()).getChildren().remove(this.getTreeTableRow().getTreeItem());
 						}
 						if (item.getWire() != null) {
 							wires.remove(item.getWire());
@@ -195,14 +202,26 @@ public class SchematicsController {
 						if (oldValue.getValue().getWire() != null)
 							oldValue.getValue().getWire().setHighlighted(false);
 					}
-					if (newValue != null && newValue.getValue() != null) {
-						if (newValue.getValue().getWire() != null)
-							newValue.getValue().getWire().setHighlighted(true);
-						if (newValue.getValue().getCoordinate() != null)
-							newValue.getParent().getValue().getWire().setHighlighted(true);
-					}
 					drawGrid();
+					if (newValue != null && newValue.getValue() != null) {
+						if (newValue.getValue().getWire() != null) {
+							newValue.getValue().getWire().setHighlighted(true);
+							drawGrid();
+						}
+						if (newValue.getValue().getCoordinate() != null) {
+							newValue.getParent().getValue().getWire().setHighlighted(true);
+							Coordinate c = newValue.getValue().getCoordinate();
+							drawGrid();
+							GraphicsContext ctx = schematicsCanvas.getGraphicsContext2D();
+							ctx.setStroke(Color.RED);
+							ctx.strokeArc(c.getX() - 2, c.getY() - 2,4, 4, 0, 360, ArcType.CHORD);
+						}
+					}
+					//drawGrid();
 				});
+		schematicsCanvas.setOnMouseMoved(event -> {
+			coordinateLabel.setText(String.format("X: %d, Y: %d", snap((int) event.getX())/12, snap((int) event.getY())/12));
+		});
 	}
 	
 	private void drawGrid() {
@@ -214,27 +233,30 @@ public class SchematicsController {
 		context.fillRect(0, 0, w*24, h*24);
 		context.setStroke(Color.LIGHTBLUE);
 		for (int x = 0; x < w; x++) {
+			if (x > 0) context.strokeText((x * 2) % 100 + "", x * 24 + 1, 12);
 			for (int y = 0; y < h; y++) {
+				if (x == 0)context.strokeText((y * 2) % 100 + "", 0, y * 24 - 1);
 				context.strokeRect(x*24, y*24, 24, 24);
 			}
 		}
         components.forEach(c -> c.drawOnSchematics(context));
         wires.forEach(wire -> wire.drawOnSchematics(context));
-        if (lastWire != null) lastWire.drawOnSchematics(context);
+        if (wireBuilder != null) wireBuilder.getWire().drawOnSchematics(context);
 	}
 	
 	@FXML
 	private void onClick(MouseEvent e) {
 		int x = (int) e.getX();
-		x = x - (x % 12);
+		x = snap(x);
+		System.out.println(x);
 		int y = (int) e.getY();
-		y = y - (y % 12);
+		y = snap(y);
 		ComponentOrientation orientation = null;
 		if (upToggle.isSelected()) orientation = ComponentOrientation.UP;
 		else if (downToggle.isSelected()) orientation = ComponentOrientation.DOWN;
 		else if (leftToggle.isSelected()) orientation = ComponentOrientation.LEFT;
 		else if (rightToggle.isSelected()) orientation = ComponentOrientation.RIGHT;
-		else return;
+		else if (buttonMode.getSelectedToggle() == null) return;
 		if (singleAmpToggle.isSelected()) {
 			Component c = new SingleOpAmp();
 			c.setSchX(x);
@@ -332,59 +354,37 @@ public class SchematicsController {
 			// TODO: add labels or tags
 		}
 		if (wireToggle.isSelected()) {
-			if (lastWire == null) lastWire = new Wire();
-			lastWire.drawSch(x, y);
-			if (lastWire.getSchPoints().size() > 1) {
-				for (Wire wire : wires) {
-					for (int i = 0; i < wire.getSchPoints().size() - 1; i++) {
-						for (int j = 0; j < lastWire.getSchPoints().size() - 1; j++) {
-							Coordinate intersection = Wire.intersects2(
-									lastWire.getSchPoints().get(j),
-									lastWire.getSchPoints().get(j+1),
-									wire.getSchPoints().get(i),
-									wire.getSchPoints().get(i+1));
-							if (intersection != null) {
-								Tooltip tp = new Tooltip();
-								Button bt = new Button("hallo");
-								// FIXME replace with state machine, finish drawing -> prompt intersection, connections etc
-								bt.setOnAction(be -> {
-									wire.connectToWire(lastWire, intersection);
-									tp.hide();
-									scrollPane.setTooltip(null);
-								});
-								tp.setGraphic(bt);
-								scrollPane.setTooltip(tp);
-								tp.show(
-										MainController.getStage(), e.getSceneX(), e.getSceneY()
-										// FIXME: state machine, finish drawing -> show dialog, list all possible connections, select what to apply
-								);
-							}
-						}
-					}
-				}
-			}
-			for (Component component: components) {
-				for (Terminal terminal: component.getTerminals()) {
-					if (terminal.getSchX() == x && terminal.getSchY() == y) {
-						terminal.connectToWire(lastWire);
-						System.out.println("connected " + terminal + " of " + terminal.getComponent() + " with " + lastWire);
-					}
-				}
-			}
+			if (wireBuilder == null) wireBuilder = new WireBuilder(new Coordinate(x, y));
+			else wireBuilder.addCoordinates(x, y);
 		} else {
-			if (lastWire != null) {
-				wires.add(lastWire);
-				TreeItem<SchematicsWiringItem> treeItem = new TreeItem<>(new SchematicsWiringItem(lastWire));
-				for (Coordinate coordinate: lastWire.getSchPoints()) {
+			if (wireBuilder != null) {
+				WireBuilder.ConnectionContainer container = wireBuilder.checkForConnections(wires, components);
+				if (container != null && !container.isEmpty()) {
+					List<Pair<Wire, Coordinate>> selectedIntersections = new ArrayList<>();
+					Alert confirmConnectionsDialog = SchematicWiringConfirmation.createDialog(container, selectedIntersections);
+					Optional<ButtonType> result = confirmConnectionsDialog.showAndWait();
+					if (result.get() == ButtonType.OK) {
+						for (Pair<Wire, Coordinate> pair: selectedIntersections)
+							wireBuilder.getWire().connectToWire(pair.getKey(), pair.getValue());
+						wires.add(wireBuilder.getWire());
+					}
+				}
+				else wires.add(wireBuilder.getWire());
+				TreeItem<SchematicsWiringItem> treeItem = new TreeItem<>(new SchematicsWiringItem(wireBuilder.getWire()));
+				for (Coordinate coordinate: wireBuilder.getWire().getSchPoints()) {
 					TreeItem<SchematicsWiringItem> pointItem = new TreeItem<>(new SchematicsWiringItem(coordinate));
 					treeItem.getChildren().add(pointItem);
 				}
 				wireTable.getRoot().getChildren().add(treeItem);
 			}
-			lastWire = null;
-			scrollPane.setTooltip(null);
+			wireBuilder = null;
 		}
 		drawGrid();
 	}
 
+	private int snap(int coordinate) {
+		int hard = coordinate - (coordinate % 12);
+		int soft = coordinate - (coordinate % 6);
+		return hard == soft ? hard : (soft + 6);
+	}
 }
