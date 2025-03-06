@@ -45,6 +45,7 @@ public class SchematicWiringConfirmation {
                 intersectionXColumn,
                 intersectionYColumn
         );
+        // TODO: row select -> redraw callback/handle
         confirmConnectionsDialog.getDialogPane().setContent(intersectionCandidateTable);
         return confirmConnectionsDialog;
     }

@@ -11,6 +11,7 @@ public class WireBuilder {
 
     public WireBuilder(Coordinate start) {
         wire.getSchPoints().add(start);
+        wire.setHighlighted(true);
     }
 
     public Wire addCoordinates(int x, int y) {

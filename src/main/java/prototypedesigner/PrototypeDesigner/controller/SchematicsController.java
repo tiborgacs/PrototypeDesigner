@@ -355,9 +355,8 @@ public class SchematicsController {
 		}
 		if (wireToggle.isSelected()) {
 			if (wireBuilder == null) wireBuilder = new WireBuilder(new Coordinate(x, y));
-			else wireBuilder.addCoordinates(x, y);
-		} else {
-			if (wireBuilder != null) {
+			else if (e.getClickCount() == 1) wireBuilder.addCoordinates(x, y);
+			if (e.getClickCount() == 2) {
 				WireBuilder.ConnectionContainer container = wireBuilder.checkForConnections(wires, components);
 				if (container != null && !container.isEmpty()) {
 					List<Pair<Wire, Coordinate>> selectedIntersections = new ArrayList<>();
@@ -366,18 +365,23 @@ public class SchematicsController {
 					if (result.get() == ButtonType.OK) {
 						for (Pair<Wire, Coordinate> pair: selectedIntersections)
 							wireBuilder.getWire().connectToWire(pair.getKey(), pair.getValue());
-						wires.add(wireBuilder.getWire());
+						wireBuilder.getWire().setHighlighted(false);
+					} else {
+						// TODO: cancel connections if any
+						drawGrid();
+						return;
 					}
 				}
-				else wires.add(wireBuilder.getWire());
+				wires.add(wireBuilder.getWire());
 				TreeItem<SchematicsWiringItem> treeItem = new TreeItem<>(new SchematicsWiringItem(wireBuilder.getWire()));
 				for (Coordinate coordinate: wireBuilder.getWire().getSchPoints()) {
 					TreeItem<SchematicsWiringItem> pointItem = new TreeItem<>(new SchematicsWiringItem(coordinate));
 					treeItem.getChildren().add(pointItem);
 				}
 				wireTable.getRoot().getChildren().add(treeItem);
+				wireTable.getSelectionModel().select(treeItem);
+				wireBuilder = null;
 			}
-			wireBuilder = null;
 		}
 		drawGrid();
 	}
