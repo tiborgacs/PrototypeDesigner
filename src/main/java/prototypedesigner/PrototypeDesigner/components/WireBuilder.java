@@ -1,12 +1,14 @@
 package prototypedesigner.PrototypeDesigner.components;
 
 import javafx.util.Pair;
+import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class WireBuilder {
 
+    @Getter
     private Wire wire = new Wire();
 
     public WireBuilder(Coordinate start) {
@@ -14,12 +16,13 @@ public class WireBuilder {
         wire.setHighlighted(true);
     }
 
-    public Wire addCoordinates(int x, int y) {
+    public  WireBuilder(int x, int y) {
         wire.drawSch(x, y);
-        return wire;
+        wire.setHighlighted(true);
     }
 
-    public Wire getWire() {
+    public Wire addCoordinates(int x, int y) {
+        wire.drawSch(x, y);
         return wire;
     }
 
@@ -55,6 +58,7 @@ public class WireBuilder {
 
     // TODO: check component legs, wire crossing - offer connections
 
+    @Getter
     public class ConnectionContainer {
         private Wire wire;
         private List<Pair<Wire, Coordinate>> intersectionCandidates;
@@ -64,14 +68,6 @@ public class WireBuilder {
             this.wire = wire;
             intersectionCandidates = new ArrayList<>();
             componentTerminals = new ArrayList<>();
-        }
-
-        public List<Pair<Wire, Coordinate>> getIntersectionCandidates() {
-            return intersectionCandidates;
-        }
-
-        public List<Terminal> getComponentTerminals() {
-            return componentTerminals;
         }
 
         public boolean isEmpty() {

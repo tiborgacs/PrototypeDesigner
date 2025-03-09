@@ -3,6 +3,8 @@ module prototypedesigner.PrototypeDesigner {
     requires javafx.fxml;
 	requires javafx.base;
 	requires javafx.graphics;
+    requires com.fasterxml.jackson.annotation;
+    requires static lombok;
 
     opens prototypedesigner.PrototypeDesigner to javafx.fxml;
     exports prototypedesigner.PrototypeDesigner;
@@ -10,4 +12,5 @@ module prototypedesigner.PrototypeDesigner {
     opens prototypedesigner.PrototypeDesigner.controller to javafx.fxml;
     exports prototypedesigner.PrototypeDesigner.converter;
     opens prototypedesigner.PrototypeDesigner.converter to javafx.fxml;
+    exports prototypedesigner.PrototypeDesigner.components;
 }

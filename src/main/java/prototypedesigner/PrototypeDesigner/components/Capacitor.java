@@ -15,6 +15,8 @@ public class Capacitor extends Component implements ComponentValue {
 	{
 		schematicsOrientation = ComponentOrientation.LEFT;
 		identifier = "C" + ++idCounter;
+		leg1.setIdentifier(identifier + "A");
+		leg2.setIdentifier(identifier + "B");
 	}
 
 	public void setSchematicsOrientation(ComponentOrientation orientation) {

@@ -4,22 +4,22 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.ArcType;
+import lombok.Getter;
+import lombok.Setter;
 
+@JsonInclude
 public class Wire implements DrawableOnSchematics {
 	
-	private List<Terminal> connectedComponents = new ArrayList<>();
+	@Getter @Setter private List<Terminal> connectedComponents = new ArrayList<>();
 	private List<Wire> connectedWires = new ArrayList<>();
-	private LinkedList<Coordinate> schPoints = new LinkedList<>();
+	@Getter @Setter private LinkedList<Coordinate> schPoints = new LinkedList<>();
 	private List<Coordinate> intersections = new ArrayList<>();
-	private boolean highlighted;
-	
-	public List<Terminal> getConnectedComponents() {
-		return connectedComponents;
-	}
-	
+	@Setter @Getter private boolean highlighted;
+
 	public void connectToWire(Wire other) {
 		this.connectedWires.add(other);
 		other.connectedWires.add(this);
@@ -36,10 +36,6 @@ public class Wire implements DrawableOnSchematics {
 		other.connectedWires.remove(this);
 	}
 
-	public List<Coordinate> getSchPoints() {
-		return schPoints;
-	}
-	
 	public void drawSch(int x, int y) {
 		if (schPoints.isEmpty()) schPoints.add(new Coordinate(x, y));
 		else {
@@ -98,12 +94,4 @@ public class Wire implements DrawableOnSchematics {
 		else return false;
 	}
 
-    public boolean isHighlighted() {
-        return highlighted;
-    }
-
-	@Override
-	public void setHighlighted(boolean highlighted) {
-        this.highlighted = highlighted;
-    }
 }

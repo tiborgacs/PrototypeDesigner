@@ -1,5 +1,8 @@
 package prototypedesigner.PrototypeDesigner.components;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
+@JsonInclude
 public class Coordinate {
 
 	private int x;

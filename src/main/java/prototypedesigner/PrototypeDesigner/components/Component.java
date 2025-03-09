@@ -1,12 +1,18 @@
 package prototypedesigner.PrototypeDesigner.components;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.util.ArrayList;
 import java.util.List;
 
+@JsonIdentityInfo(property = "identifier", generator = ObjectIdGenerators.PropertyGenerator.class)
 public abstract class Component implements DrawableOnSchematics {
 
-	protected String identifier;
-	protected String type;
+	@Getter @Setter	protected String identifier;
+	@Getter @Setter protected String type;
 	protected ComponentOrientation schematicsOrientation;
 	protected int schX;
 	protected int schY;
@@ -17,24 +23,8 @@ public abstract class Component implements DrawableOnSchematics {
 	protected int proX;
 	protected int proY;
 	protected Packaging packaging;
-	protected List<Terminal> terminals = new ArrayList<>();
-	protected boolean highlighted;
-	
-	public String getIdentifier() {
-		return identifier;
-	}
-	
-	public void setIdentifier(String identifier) {
-		this.identifier = identifier;
-	}
-	
-	public String getType() {
-		return type;
-	}
-	
-	public void setType(String type) {
-		this.type = type;
-	}
+	@Getter @Setter protected List<Terminal> terminals = new ArrayList<>();
+	@Setter protected boolean highlighted;
 	
 	public void setSchX(int x) {
 		this.schX = x;
@@ -60,12 +50,4 @@ public abstract class Component implements DrawableOnSchematics {
 		this.proY = y;
 	}
 
-	public List<Terminal> getTerminals() {
-		return terminals;
-	}
-
-	@Override
-	public void setHighlighted(boolean highlighted) {
-		this.highlighted = highlighted;
-	}
 }

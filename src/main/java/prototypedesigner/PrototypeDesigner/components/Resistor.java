@@ -2,14 +2,17 @@ package prototypedesigner.PrototypeDesigner.components;
 
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
-
+import lombok.Getter;
+import lombok.Setter;
+@Getter
+@Setter
 public class Resistor extends Component implements ComponentValue, DrawableOnStripboard, DrawableOnProtoboard, Spanning {
 
 	private static int idCounter = 0;
 
 	private Terminal leg1 = new Terminal(this);
 	private Terminal leg2 = new Terminal(this);
-	private String value;
+	@Getter @Setter	private String value;
 	private boolean spanning;
 	private Coordinate spanStart;
 	private Coordinate spanEnd;
@@ -19,7 +22,9 @@ public class Resistor extends Component implements ComponentValue, DrawableOnStr
 		stripboardOrientation = ComponentOrientation.UP;
 		protoboardOrientation = ComponentOrientation.UP;
 		identifier = "R" + ++idCounter;
-	}	
+		leg1.setIdentifier(identifier + "A");
+		leg2.setIdentifier(identifier + "B");
+	}
 
 	public void setSchematicsOrientation(ComponentOrientation orientation) {
 		schematicsOrientation = orientation;
@@ -51,11 +56,6 @@ public class Resistor extends Component implements ComponentValue, DrawableOnStr
 			leg1.setSchY(y+12);
 			leg2.setSchY(y+12);
 		}
-	}
-	
-	@Override
-	public String getValue() {
-		return value;
 	}
 
 	@Override
