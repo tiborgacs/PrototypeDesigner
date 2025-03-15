@@ -7,6 +7,7 @@ import prototypedesigner.PrototypeDesigner.components.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -58,6 +59,20 @@ public class SerializationTest {
             String xml = mapper.writeValueAsString(r1);
             Component c = mapper.readValue(xml, Resistor.class);
             assertTrue(c instanceof Resistor);
+            Resistor _r1 = (Resistor) c;
+            Optional<Component> optC = _r1.getTerminals().get(0)
+                    .getConnectedWires().get(0)
+                    .getConnectedComponents().stream()
+                    .filter(t -> !t.getComponent().getIdentifier().equals(_r1.getIdentifier()))
+                    .map(Terminal::getComponent).findFirst();
+            assertTrue(optC.isPresent());
+            assertTrue(optC.get() instanceof Resistor);
+            Resistor _r2 = (Resistor) optC.get();
+            assertTrue(_r2.getTerminals().get(0).getConnectedWires().get(0).getConnectedComponents().contains(_r1.getTerminals().get(0)));
+            assertTrue(_r2.getTerminals().get(1).getConnectedWires().get(0).getConnectedComponents().contains(_r1.getTerminals().get(1)));
+            assertFalse(_r2.getTerminals().get(0).getConnectedWires().get(0).getConnectedComponents().contains(_r1.getTerminals().get(1)));
+            assertFalse(_r2.getTerminals().get(1).getConnectedWires().get(0).getConnectedComponents().contains(_r1.getTerminals().get(0)));
+            System.out.println(xml);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }

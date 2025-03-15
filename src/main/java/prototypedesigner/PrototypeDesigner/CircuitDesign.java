@@ -2,9 +2,13 @@ package prototypedesigner.PrototypeDesigner;
 
 import java.util.List;
 
+import lombok.Getter;
+import lombok.Setter;
 import prototypedesigner.PrototypeDesigner.components.Component;
 import prototypedesigner.PrototypeDesigner.components.Wire;
 
+@Getter
+@Setter
 public class CircuitDesign {
 
 	private String projectName;

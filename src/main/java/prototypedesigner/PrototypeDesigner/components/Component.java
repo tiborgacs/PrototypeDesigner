@@ -1,6 +1,8 @@
 package prototypedesigner.PrototypeDesigner.components;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.Getter;
 import lombok.Setter;
@@ -9,6 +11,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 @JsonIdentityInfo(property = "identifier", generator = ObjectIdGenerators.PropertyGenerator.class)
+@JsonTypeInfo(
+		use = JsonTypeInfo.Id.NAME,
+		include = JsonTypeInfo.As.PROPERTY,
+		property = "type")
+@JsonSubTypes({
+		@JsonSubTypes.Type(name="resistor", value=Resistor.class),
+		@JsonSubTypes.Type(name="capacitor", value=Capacitor.class),
+		@JsonSubTypes.Type(name="polarized-capacitor", value=PolarizedCapacitor.class),
+})
 public abstract class Component implements DrawableOnSchematics {
 
 	@Getter @Setter	protected String identifier;
