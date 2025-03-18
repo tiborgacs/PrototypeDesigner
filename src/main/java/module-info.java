@@ -1,12 +1,12 @@
 module prototypedesigner.PrototypeDesigner {
     requires javafx.controls;
     requires javafx.fxml;
-	requires javafx.base;
-	requires javafx.graphics;
     requires static lombok;
     requires com.fasterxml.jackson.annotation;
     requires com.fasterxml.jackson.dataformat.xml;
     requires com.fasterxml.jackson.core;
+    requires com.google.common;
+    requires javafx.swing;
 
     opens prototypedesigner.PrototypeDesigner to javafx.fxml;
     exports prototypedesigner.PrototypeDesigner;

@@ -9,7 +9,7 @@
    <children>
       <BorderPane layoutX="117.0" layoutY="50.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <top>
-            <fx:include source="MenuView.fxml" />
+            <fx:include source="MenuView.fxml" fx:id="menuBar" />
          </top>
          <center>
             <TabPane tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER">
@@ -18,7 +18,7 @@
                      <content>
                         <AnchorPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
                         	<children>
-                        		<fx:include maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" source="SchematicsView.fxml" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                        		<fx:include maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" source="SchematicsView.fxml" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" fx:id="schematicsView" />
                         	</children>
                         </AnchorPane>
                      </content>
@@ -27,7 +27,7 @@
                   <content>
                         <AnchorPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
                         	<children>
-                        		<fx:include maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" source="StripboardView.fxml" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                        		<fx:include maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" source="StripboardView.fxml" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" fx:id="stripboardView" />
                         	</children>
                         </AnchorPane>
                      </content>
@@ -36,7 +36,7 @@
                      <content>
                         <AnchorPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
                         	<children>
-                        		<fx:include maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" source="ProtoboardView.fxml" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                        		<fx:include maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" source="ProtoboardView.fxml" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" fx:id="protoboardView" />
                         	</children>
                         </AnchorPane>
                      </content>

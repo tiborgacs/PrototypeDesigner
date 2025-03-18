@@ -13,7 +13,7 @@ public class Resistor extends Component implements ComponentValue, DrawableOnStr
 	private Terminal leg1 = new Terminal(this);
 	private Terminal leg2 = new Terminal(this);
 	@Getter @Setter	private String value;
-	private boolean spanning;
+	@Getter @Setter private boolean spanning;
 	private Coordinate spanStart;
 	private Coordinate spanEnd;
 
@@ -26,17 +26,14 @@ public class Resistor extends Component implements ComponentValue, DrawableOnStr
 		leg2.setIdentifier(identifier + "B");
 	}
 
-	public void setSchematicsOrientation(ComponentOrientation orientation) {
-		schematicsOrientation = orientation;
-	}
-	
 	public void setProtoboardOrientation(ComponentOrientation orientation) {
 		protoboardOrientation = orientation;
 	}
 	
-	@Override
+	//@Override
 	public void setSchX(int x) {
-		super.setSchX(x);
+		//super.setSchX(x);
+		schX = x;
 		if (schematicsOrientation == ComponentOrientation.UP || schematicsOrientation == ComponentOrientation.DOWN) {
 			leg1.setSchX(x+12);
 			leg2.setSchX(x+12);
@@ -46,9 +43,10 @@ public class Resistor extends Component implements ComponentValue, DrawableOnStr
 		}
 	}
 	
-	@Override
+	//@Override
 	public void setSchY(int y) {
-		super.setSchY(y);
+		//super.setSchY(y);
+		schY = y;
 		if (schematicsOrientation == ComponentOrientation.UP || schematicsOrientation == ComponentOrientation.DOWN) {
 			leg1.setSchY(y);
 			leg2.setSchY(y+48);
@@ -104,16 +102,6 @@ public class Resistor extends Component implements ComponentValue, DrawableOnStr
 				context.fillRoundRect(x + 16, y + 3, 64, 18, 12, 12);
 			}
 		}
-	}
-
-	@Override
-	public boolean isSpanning() {
-		return spanning;
-	}
-
-	@Override
-	public void setSpanning(boolean spanning) {
-		this.spanning = spanning;
 	}
 
 	@Override

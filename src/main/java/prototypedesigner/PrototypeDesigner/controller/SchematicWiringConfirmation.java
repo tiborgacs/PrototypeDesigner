@@ -3,14 +3,12 @@ package prototypedesigner.PrototypeDesigner.controller;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.scene.control.Alert;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.CheckBoxTableCell;
+import javafx.scene.layout.VBox;
 import javafx.util.Pair;
-import prototypedesigner.PrototypeDesigner.components.Coordinate;
-import prototypedesigner.PrototypeDesigner.components.Wire;
-import prototypedesigner.PrototypeDesigner.components.WireBuilder;
+import javafx.util.StringConverter;
+import prototypedesigner.PrototypeDesigner.components.*;
 
 import java.util.List;
 
@@ -45,8 +43,20 @@ public class SchematicWiringConfirmation {
                 intersectionXColumn,
                 intersectionYColumn
         );
+        ListView<Terminal> components = new ListView<>();
+        components.getItems().addAll(container.getComponentTerminals());
+        components.setCellFactory(value -> new ListCell<>() {
+            @Override
+            protected void updateItem(Terminal item, boolean empty) {
+                super.updateItem(item, empty);
+                if (!empty || item != null) setText(item.getIdentifier() + " of " + item.getComponent().getIdentifier());
+                else setText("");
+            }
+        });
+        VBox tableBox = new VBox();
+        tableBox.getChildren().addAll(intersectionCandidateTable, components);
         // TODO: row select -> redraw callback/handle
-        confirmConnectionsDialog.getDialogPane().setContent(intersectionCandidateTable);
+        confirmConnectionsDialog.getDialogPane().setContent(tableBox);
         return confirmConnectionsDialog;
     }
 }

@@ -10,14 +10,20 @@ import java.io.IOException;
 
 public class PrototypeDesignerApp extends Application {
 
+    private static MainController mainController;
+
+    public static MainController getMainController() {
+        return mainController;
+    }
+
     @Override
     public void start(@SuppressWarnings("exports") Stage stage) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(PrototypeDesignerApp.class.getResource("MainView" + ".fxml"));
         Scene scene = new Scene(fxmlLoader.load(), 640, 480);
         stage.setMaximized(true);
         stage.setScene(scene);
-        MainController mc = (MainController) fxmlLoader.getController();
-        mc.setStage(stage);
+        mainController = fxmlLoader.getController();
+        mainController.setStage(stage);
         stage.show();
     }
 

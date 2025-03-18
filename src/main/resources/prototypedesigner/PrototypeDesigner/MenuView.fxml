@@ -8,16 +8,17 @@
   <menus>
     <Menu mnemonicParsing="false" text="File">
       <items>
-            <MenuItem mnemonicParsing="false" text="New Project" onAction="#newProject" />
-            <MenuItem mnemonicParsing="false" text="Open Project" onAction="#open" />
-        <MenuItem mnemonicParsing="false" text="Save Project" onAction="#save" />
-            <MenuItem mnemonicParsing="false" text="Save As..." onAction="#saveAs" />
+            <MenuItem mnemonicParsing="false" onAction="#newProject" text="New Project" />
+            <MenuItem mnemonicParsing="false" onAction="#open" text="Open Project" />
+        <MenuItem mnemonicParsing="false" onAction="#save" text="Save Project" />
+            <MenuItem mnemonicParsing="false" onAction="#saveAs" text="Save As..." />
             <Menu mnemonicParsing="false" text="Export">
               <items>
-                <MenuItem mnemonicParsing="false" text="BOM as Text" onAction="#exportBom" />
+                <MenuItem mnemonicParsing="false" onAction="#exportBom" text="BOM as Text" />
+                <MenuItem mnemonicParsing="false" onAction="#exportSchematics" text="Schematics as PNG" />
               </items>
             </Menu>
-            <MenuItem mnemonicParsing="false" text="Close" onAction="#exit" />
+            <MenuItem mnemonicParsing="false" onAction="#exit" text="Close" />
       </items>
     </Menu>
     <Menu mnemonicParsing="false" text="Edit">
@@ -27,7 +28,7 @@
     </Menu>
     <Menu mnemonicParsing="false" text="Help">
       <items>
-        <MenuItem mnemonicParsing="false" text="About" onAction="#about" />
+        <MenuItem mnemonicParsing="false" onAction="#about" text="About" />
       </items>
     </Menu>
   </menus>

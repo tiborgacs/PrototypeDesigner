@@ -2,6 +2,7 @@ package prototypedesigner.PrototypeDesigner.controller;
 
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.CacheHint;
@@ -14,6 +15,8 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.ArcType;
 import javafx.util.Pair;
+import lombok.Getter;
+import prototypedesigner.PrototypeDesigner.CircuitDesign;
 import prototypedesigner.PrototypeDesigner.converter.IntegerStringConverter;
 import prototypedesigner.PrototypeDesigner.SchematicsWiringItem;
 import prototypedesigner.PrototypeDesigner.components.Component;
@@ -29,7 +32,7 @@ import static prototypedesigner.PrototypeDesigner.Utility.getRowParentItem;
 public class SchematicsController {
 
 	@FXML private ScrollPane scrollPane;
-	@FXML private Canvas schematicsCanvas;
+	@Getter @FXML private Canvas schematicsCanvas;
 	@FXML private ToggleGroup buttonMode;
 	@SuppressWarnings("unused") @FXML private ToggleGroup orientationGroup;
 	@FXML private ToggleButton singleAmpToggle;
@@ -69,6 +72,7 @@ public class SchematicsController {
 	@FXML private TableColumn<Component, String> componentTypeColumn;
 	@FXML private TableColumn<Component, String> componentValueColumn;
 	@FXML private TableColumn<Component, Component> deleteComponentColumn;
+	private CircuitDesign design;
 
 	@FXML
 	private void initialize() {
@@ -120,7 +124,7 @@ public class SchematicsController {
 		wireTable.setShowRoot(false);
 		wiringTypeColumn.setCellValueFactory(value -> {
 			SchematicsWiringItem item = value.getValue().getValue();
-			if (item.getWire() != null) return new ReadOnlyStringWrapper("Wire");
+			if (item.getWire() != null) return new ReadOnlyStringWrapper("Wire " + item.getWire().getIdentifier());
 			if (item.getCoordinate() != null) return new ReadOnlyStringWrapper("Point");
 			return null;
 		});
@@ -222,9 +226,41 @@ public class SchematicsController {
 		schematicsCanvas.setOnMouseMoved(event -> {
 			coordinateLabel.setText(String.format("X: %d, Y: %d", snap((int) event.getX())/12, snap((int) event.getY())/12));
 		});
+		wires.addListener((ListChangeListener<? super Wire>) lc -> {
+			// FIXME: list change listener, elements must be distinct
+			lc.next();
+			lc.getAddedSubList().stream().distinct().forEach(wire ->
+				design.getConnectionsOnSchematics().stream().filter(w -> w.getIdentifier().equals(wire.getIdentifier()))
+						.findFirst().ifPresentOrElse(
+								w -> {
+									int idx = design.getConnectionsOnSchematics().indexOf(w);
+									design.getConnectionsOnSchematics().set(idx, wire);
+								}, () -> design.getConnectionsOnSchematics().add(wire))
+			);
+			design.getConnectionsOnSchematics().removeAll(lc.getRemoved());
+		});
+		components.addListener((ListChangeListener<? super Component>) lc -> {
+			lc.next();
+			lc.getAddedSubList().stream().distinct().forEach(component ->
+				design.getSchematicsComponents().stream().filter(c -> c.getIdentifier().equals(component.getIdentifier()))
+						.findFirst().ifPresentOrElse(
+								c -> {
+									int idx = design.getSchematicsComponents().indexOf(c);
+									design.getSchematicsComponents().set(idx, component);
+								}, () -> design.getSchematicsComponents().add(component))
+			);
+			design.getSchematicsComponents().removeAll(lc.getRemoved());
+		});
 	}
 	
 	private void drawGrid() {
+		GraphicsContext context = getGraphicsContextWithGrids();
+		components.forEach(c -> c.drawOnSchematics(context));
+        wires.forEach(wire -> wire.drawOnSchematics(context));
+        if (wireBuilder != null) wireBuilder.getWire().drawOnSchematics(context);
+	}
+
+	private GraphicsContext getGraphicsContextWithGrids() {
 		int h = (int) (schematicsCanvas.getHeight() / 24);
 		int w = (int) (schematicsCanvas.getWidth() / 24);
 		GraphicsContext context = schematicsCanvas.getGraphicsContext2D();
@@ -239,11 +275,9 @@ public class SchematicsController {
 				context.strokeRect(x*24, y*24, 24, 24);
 			}
 		}
-        components.forEach(c -> c.drawOnSchematics(context));
-        wires.forEach(wire -> wire.drawOnSchematics(context));
-        if (wireBuilder != null) wireBuilder.getWire().drawOnSchematics(context);
+		return context;
 	}
-	
+
 	@FXML
 	private void onClick(MouseEvent e) {
 		int x = (int) e.getX();
@@ -365,6 +399,9 @@ public class SchematicsController {
 					if (result.get() == ButtonType.OK) {
 						for (Pair<Wire, Coordinate> pair: selectedIntersections)
 							wireBuilder.getWire().connectToWire(pair.getKey(), pair.getValue());
+						//container.getComponentTerminals().forEach(t -> t.connectToWire(wireBuilder.getWire()));
+						container.getComponentTerminals().
+								forEach(t -> wireBuilder.getWire().getConnectedComponents().add(t));
 						wireBuilder.getWire().setHighlighted(false);
 					} else {
 						// TODO: cancel connections if any
@@ -390,5 +427,20 @@ public class SchematicsController {
 		int hard = coordinate - (coordinate % 12);
 		int soft = coordinate - (coordinate % 6);
 		return hard == soft ? hard : (soft + 6);
+	}
+
+	public void setDesign(CircuitDesign design) {
+		this.design = design;
+		components.setAll(design.getSchematicsComponents());
+		wires.setAll(design.getConnectionsOnSchematics());
+		wires.forEach(wire -> {
+			TreeItem<SchematicsWiringItem> treeItem = new TreeItem<>(new SchematicsWiringItem(wire));
+			for (Coordinate coordinate: wire.getSchPoints()) {
+				TreeItem<SchematicsWiringItem> pointItem = new TreeItem<>(new SchematicsWiringItem(coordinate));
+				treeItem.getChildren().add(pointItem);
+			}
+			wireTable.getRoot().getChildren().add(treeItem);
+		});
+		drawGrid();
 	}
 }

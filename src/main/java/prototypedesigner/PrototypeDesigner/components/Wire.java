@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.ArcType;
@@ -12,28 +14,45 @@ import lombok.Getter;
 import lombok.Setter;
 
 @JsonInclude
+@JsonIdentityInfo(property = "identifier", generator = ObjectIdGenerators.PropertyGenerator.class)
 public class Wire implements DrawableOnSchematics {
-	
-	@Getter @Setter private List<Terminal> connectedComponents = new ArrayList<>();
-	private List<Wire> connectedWires = new ArrayList<>();
-	@Getter @Setter private LinkedList<Coordinate> schPoints = new LinkedList<>();
-	private List<Coordinate> intersections = new ArrayList<>();
-	@Setter @Getter private boolean highlighted;
 
-	public void connectToWire(Wire other) {
-		this.connectedWires.add(other);
-		other.connectedWires.add(this);
+	private static int counter = 0;
+	@Getter @Setter private String identifier;
+	{
+		identifier = "#" + ++counter;
 	}
+
+	@Getter @Setter private List<Terminal> connectedComponents = new ArrayList<>();
+	@Getter @Setter private List<Wire> connectedWires = new ArrayList<>();
+	@Getter @Setter private LinkedList<Coordinate> schPoints = new LinkedList<>();
+	@Getter @Setter private List<Coordinate> intersections = new ArrayList<>();
+	@Setter @Getter private boolean highlighted;
 
 	public void connectToWire(Wire other, Coordinate intersection) {
 		this.connectedWires.add(other);
 		other.connectedWires.add(this);
 		intersections.add(intersection);
+		other.intersections.add(intersection);
 	}
 	
 	public void cutConnection(Wire other) {
 		this.connectedWires.remove(other);
 		other.connectedWires.remove(this);
+		List<Coordinate> intersectionsToBreak = new ArrayList<>();
+		for (Coordinate intersection: intersections) {
+			for (Coordinate otherIntersection: other.intersections) {
+				if (intersection.getX() == otherIntersection.getX() && intersection.getY() == otherIntersection.getY()) {
+					intersectionsToBreak.add(intersection);
+				}
+			}
+		}
+		for (Coordinate intersectionToBreak: intersectionsToBreak) {
+			intersections.removeIf(intersection ->
+					intersection.getX() == intersectionToBreak.getX() && intersection.getY() == intersectionToBreak.getY());
+			other.intersections.removeIf(
+					intersection -> intersection.getX() == intersectionToBreak.getX() && intersection.getY() == intersectionToBreak.getY());
+		}
 	}
 
 	public void drawSch(int x, int y) {

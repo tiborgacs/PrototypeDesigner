@@ -2,6 +2,8 @@ package prototypedesigner.PrototypeDesigner.components;
 
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
+import lombok.Getter;
+import lombok.Setter;
 
 public class Capacitor extends Component implements ComponentValue {
 
@@ -10,7 +12,7 @@ public class Capacitor extends Component implements ComponentValue {
 	private Terminal leg1 = new Terminal(this);
 	private Terminal leg2 = new Terminal(this);
 	// TODO can be flipped
-	private String value;
+	@Getter @Setter	private String value;
 	
 	{
 		schematicsOrientation = ComponentOrientation.LEFT;
