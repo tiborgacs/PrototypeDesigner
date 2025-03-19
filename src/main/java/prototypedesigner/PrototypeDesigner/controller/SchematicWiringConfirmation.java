@@ -53,10 +53,16 @@ public class SchematicWiringConfirmation {
                 else setText("");
             }
         });
-        VBox tableBox = new VBox();
-        tableBox.getChildren().addAll(intersectionCandidateTable, components);
+        if (container.getComponentTerminals().size() > 0 && container.getIntersectionCandidates().size() > 0) {
+            VBox tableBox = new VBox();
+            tableBox.getChildren().addAll(intersectionCandidateTable, components);
+            confirmConnectionsDialog.getDialogPane().setContent(tableBox);
+        } else if (container.getIntersectionCandidates().size() > 0) {
+            confirmConnectionsDialog.getDialogPane().setContent(intersectionCandidateTable);
+        } else {
+            confirmConnectionsDialog.getDialogPane().setContent(components);
+        }
         // TODO: row select -> redraw callback/handle
-        confirmConnectionsDialog.getDialogPane().setContent(tableBox);
         return confirmConnectionsDialog;
     }
 }

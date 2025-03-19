@@ -6,6 +6,8 @@ import lombok.Getter;
 import java.util.ArrayList;
 import java.util.List;
 
+import static prototypedesigner.PrototypeDesigner.Utility.tail;
+
 public class WireBuilder {
 
     @Getter
@@ -22,7 +24,9 @@ public class WireBuilder {
     }
 
     public Wire addCoordinates(int x, int y) {
-        wire.drawSch(x, y);
+        Coordinate last = tail(wire.getSchPoints());
+        if (last.getX() != x || last.getY() != y)
+            wire.drawSch(x, y);
         return wire;
     }
 
@@ -55,8 +59,6 @@ public class WireBuilder {
         }
         return container;
     }
-
-    // TODO: check component legs, wire crossing - offer connections
 
     @Getter
     public class ConnectionContainer {

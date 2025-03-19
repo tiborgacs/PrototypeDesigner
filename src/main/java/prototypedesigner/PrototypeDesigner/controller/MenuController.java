@@ -3,12 +3,17 @@ package prototypedesigner.PrototypeDesigner.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import javafx.application.Platform;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.fxml.FXML;
+import javafx.geometry.Insets;
 import javafx.scene.canvas.Canvas;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
+import javafx.scene.control.*;
 import javafx.scene.image.WritableImage;
+import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import prototypedesigner.PrototypeDesigner.CircuitDesign;
@@ -21,6 +26,7 @@ import java.awt.image.RenderedImage;
 import java.io.*;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class MenuController {
@@ -132,8 +138,11 @@ public class MenuController {
         fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("PNG images", "*.png"));
         File file = fc.showSaveDialog(PrototypeDesignerApp.getMainController().getStage());
         if (file != null) {
+            // TODO crop to actual size, maybe clear grid
             Canvas canvas = PrototypeDesignerApp.getMainController().getSchematicsViewController().getSchematicsCanvas();
-            WritableImage writableImage = new WritableImage((int) canvas.getWidth(), (int) canvas.getHeight());
+            WritableImage writableImage = new WritableImage(
+                    PrototypeDesignerApp.getMainController().getSchematicsViewController().getCropWidth() + 24,
+                    PrototypeDesignerApp.getMainController().getSchematicsViewController().getCropHeight() + 24);
             canvas.snapshot(null, writableImage);
             RenderedImage renderedImage = SwingFXUtils.fromFXImage(writableImage, null);
             try {
@@ -151,12 +160,60 @@ public class MenuController {
     }
 
     @FXML
+    private void projectInfo() {
+        CircuitDesign design = PrototypeDesignerApp.getMainController().getDesign();
+        StringProperty designNameProperty = new SimpleStringProperty(design.getProjectName());
+        StringProperty designAuthorProperty = new SimpleStringProperty(design.getAuthor());
+        BooleanProperty hasSchematicProperty = new SimpleBooleanProperty(design.isSchematics());
+        BooleanProperty hasStripboardProperty = new SimpleBooleanProperty(design.isStripboard());
+        BooleanProperty hasProtoboardProperty = new SimpleBooleanProperty(design.isProtoboard());
+        Alert alert = new Alert(Alert.AlertType.NONE);
+        alert.setTitle("Project info");
+        alert.setHeaderText(current == null ? "Unsaved project" : current.getName());
+        VBox container = new VBox();
+        container.getChildren().add(new Label("Project name:"));
+        TextField  nameField = new TextField(design.getProjectName());
+        designNameProperty.bind(nameField.textProperty());
+        container.getChildren().add(nameField);
+        container.getChildren().add(new Label("Project author:"));
+        TextField  authorField = new TextField(design.getAuthor());
+        designAuthorProperty.bind(authorField.textProperty());
+        container.getChildren().add(authorField);
+        CheckBox schematicsCheckbox = new CheckBox("Based on schematics");
+        schematicsCheckbox.setSelected(design.isSchematics());
+        hasSchematicProperty.bind(schematicsCheckbox.selectedProperty());
+        container.getChildren().add(schematicsCheckbox);
+        CheckBox stripboardCheckbox = new CheckBox("Stripboard design");
+        stripboardCheckbox.setSelected(design.isStripboard());
+        hasStripboardProperty.bind(stripboardCheckbox.selectedProperty());
+        container.getChildren().add(stripboardCheckbox);
+        CheckBox protoboardCheckbox = new CheckBox("Protoboard design");
+        protoboardCheckbox.setSelected(design.isProtoboard());
+        hasProtoboardProperty.bind(protoboardCheckbox.selectedProperty());
+        container.getChildren().add(protoboardCheckbox);
+        container.setPadding(new Insets(6.0));
+        container.setSpacing(6.0);
+        alert.getDialogPane().setContent(container);
+        alert.getButtonTypes().setAll(ButtonType.OK, ButtonType.CANCEL);
+        alert.initModality(Modality.APPLICATION_MODAL);
+        alert.initOwner(PrototypeDesignerApp.getMainController().getStage());
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.isPresent() && result.get() == ButtonType.OK) {
+            design.setProjectName(designNameProperty.get());
+            design.setAuthor(designAuthorProperty.get());
+            design.setSchematics(hasSchematicProperty.get());
+            design.setStripboard(hasStripboardProperty.get());
+            design.setProtoboard(hasProtoboardProperty.get());
+        }
+    }
+
+    @FXML
     private void about() {
         Alert alert = new Alert(Alert.AlertType.NONE);
         alert.setTitle("About");
         alert.setHeaderText("Prototype Designer");
         alert.setContentText("Dissertation of Tibor Gacs\n" +
-                        "Consultant: Tibor Gregorics\n" +
+                        "Consultant: Tibor Gregorics Dr.\n" +
                 "Used technologies: Java 11 (OpenJDK),\n" +
                 "OpenJFX,Project Lombok, FasterXML Jackson,\n" +
                 "JUnit, Apache Maven");

@@ -26,6 +26,7 @@ import prototypedesigner.PrototypeDesigner.converter.NoOpStringConverter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.OptionalInt;
 
 import static prototypedesigner.PrototypeDesigner.Utility.getRowParentItem;
 
@@ -73,6 +74,8 @@ public class SchematicsController {
 	@FXML private TableColumn<Component, String> componentValueColumn;
 	@FXML private TableColumn<Component, Component> deleteComponentColumn;
 	private CircuitDesign design;
+	@Getter private int cropWidth;
+	@Getter private int cropHeight;
 
 	@FXML
 	private void initialize() {
@@ -255,8 +258,26 @@ public class SchematicsController {
 	
 	private void drawGrid() {
 		GraphicsContext context = getGraphicsContextWithGrids();
-		components.forEach(c -> c.drawOnSchematics(context));
-        wires.forEach(wire -> wire.drawOnSchematics(context));
+		int maxX = 0;
+		int maxY = 0;
+		for (Component c: components) {
+			c.drawOnSchematics(context);
+			OptionalInt optX = c.getTerminals().stream().mapToInt(t -> t.getSchX()).max();
+			OptionalInt optY = c.getTerminals().stream().mapToInt(t -> t.getSchY()).max();
+			if (optX.isPresent() && optX.getAsInt() > maxX) maxX = optX.getAsInt();
+			if (optY.isPresent() && optY.getAsInt() > maxY) maxY = optY.getAsInt();
+		}
+		for (Wire w: wires) {
+			w.drawOnSchematics(context);
+			for (Coordinate c: w.getSchPoints()) {
+				if (c.getX() > maxX) maxX = c.getX();
+				if (c.getY() > maxY) maxY = c.getY();
+			}
+		}
+		if (maxX == 0) maxX = (int) schematicsCanvas.getWidth();
+		if (maxY == 0) maxY = (int) schematicsCanvas.getHeight();
+		cropWidth = maxX;
+		cropHeight = maxY;
         if (wireBuilder != null) wireBuilder.getWire().drawOnSchematics(context);
 	}
 
