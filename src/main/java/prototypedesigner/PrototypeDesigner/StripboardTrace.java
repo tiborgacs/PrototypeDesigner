@@ -2,13 +2,22 @@ package prototypedesigner.PrototypeDesigner;
 
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
+import lombok.Getter;
+import lombok.Setter;
 import prototypedesigner.PrototypeDesigner.components.DrawableOnStripboard;
 
+@Getter @Setter
 public class StripboardTrace implements DrawableOnStripboard {
 	
 	private int x;
 	private int y;
 	private int w;
+
+	private static int counter;
+	private String identifier;
+	{
+		identifier = "str#" + ++counter;
+	}
 	
 	public StripboardTrace(int x, int y, int length) {
 		this.x = x;
@@ -47,18 +56,6 @@ public class StripboardTrace implements DrawableOnStripboard {
 			context.setFill(Color.WHITE);
 			context.fillOval((this.x+x)*24+9, y*24+9, 6, 6);
 		}
-	}
-
-	public int getX() {
-		return x;
-	}
-
-	public int getY() {
-		return y;
-	}
-
-	public int getW() {
-		return w;
 	}
 
 }

@@ -138,7 +138,7 @@ public class MenuController {
         fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("PNG images", "*.png"));
         File file = fc.showSaveDialog(PrototypeDesignerApp.getMainController().getStage());
         if (file != null) {
-            // TODO crop to actual size, maybe clear grid
+            // TODO maybe clear grid
             Canvas canvas = PrototypeDesignerApp.getMainController().getSchematicsViewController().getSchematicsCanvas();
             WritableImage writableImage = new WritableImage(
                     PrototypeDesignerApp.getMainController().getSchematicsViewController().getCropWidth() + 24,

@@ -1,26 +1,32 @@
 package prototypedesigner.PrototypeDesigner.controller;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import javafx.fxml.FXML;
 import javafx.scene.CacheHint;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.Slider;
-import javafx.scene.control.ToggleButton;
-import javafx.scene.control.ToggleGroup;
+import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import prototypedesigner.PrototypeDesigner.StripboardLink;
 import prototypedesigner.PrototypeDesigner.StripboardTrace;
 import prototypedesigner.PrototypeDesigner.components.*;
 
+import static prototypedesigner.PrototypeDesigner.Utility.tail;
+
 public class StripboardController {
 
 	@FXML
 	private ScrollPane scrollPane;
+
+	@FXML private TextField rowCountField;
+	private int boardHeight;
+
+	@FXML private TextField colCountField;
+	private int boardWidth;
 	
 	@FXML
 	private Canvas stripboardCanvas;
@@ -53,13 +59,55 @@ public class StripboardController {
 		layerSlider.setValue(80.0);
 		stripboardCanvas.heightProperty().bind(scrollPane.heightProperty());
 		stripboardCanvas.widthProperty().bind(scrollPane.widthProperty());
-		stripboardCanvas.widthProperty().addListener((ov, nv, ob) -> draw());
-		stripboardCanvas.heightProperty().addListener((ov, nv, ob) -> draw());
 		layerSlider.valueProperty().addListener((obs, ov, nv) -> draw());
 		stripboardCanvas.setCache(true);
 		stripboardCanvas.setCacheHint(CacheHint.SPEED);
+		rowCountField.setText(boardHeight + "");
+		rowCountField.textProperty().addListener((observable, oldValue, newValue) -> {
+			if (newValue != null && newValue.strip().matches("^\\d+$")) boardHeight = Integer.parseInt(newValue.strip());
+		});
+		colCountField.setText(boardWidth + "");
+		colCountField.textProperty().addListener((observable, oldValue, newValue) -> {
+			if (newValue != null && newValue.strip().matches("^\\d+$")) boardWidth = Integer.parseInt(newValue.strip());
+		});
+		draw();
 	}
-	
+
+	@FXML
+	private void resizeBoard() {
+		recalculateStrips(); // FIXME rename instead of calling
+	}
+
+	private void recalculateStrips() {
+		// FIXME limit by outmost component or link if shrinking
+		if (stripes.isEmpty()) {
+			for (int y = 0; y < boardHeight; y++) {
+				stripes.add(new StripboardTrace(0, y, boardWidth));
+			}
+		} else {
+			int lastRow = stripes.stream().max(Comparator.comparingInt(StripboardTrace::getY))
+					.map(StripboardTrace::getY).orElse(0);
+			for (int i = (lastRow + 1); i < boardHeight; i++) {
+				stripes.add(new StripboardTrace(0, i, boardWidth));
+			}
+			for (int i = 0; i < stripes.size() - 1; i++) {
+				StripboardTrace strip = stripes.get(i);
+				StripboardTrace next = stripes.get(i+1);
+				if (strip.getY() < next.getY()) {
+					if (strip.getX() + strip.getW() != boardWidth) {
+						int increaseWith = boardWidth - strip.getX() - strip.getW();
+						strip.setW(strip.getW() + increaseWith);
+					}
+				}
+			}
+			StripboardTrace last = tail(stripes);
+			int increaseWith = boardWidth - last.getX() - last.getW();
+			last.setW(last.getW() + increaseWith);
+			stripes.removeIf(s -> s.getW() == 0);
+		}
+		draw();
+	}
+
 	private void draw() {
 		int h = (int) (stripboardCanvas.getHeight() / 24);
 		int w = (int) (stripboardCanvas.getWidth() / 24);
@@ -67,11 +115,6 @@ public class StripboardController {
 		context.setGlobalAlpha(1.0);
 		context.setFill(Color.WHITE);
 		context.fillRect(0, 0, w*24, h*24);
-		if (stripes.isEmpty()) {
-			for (int y = 0; y < h; y++) {
-				stripes.add(new StripboardTrace(0, y, w));
-			}
-		}
 		for (DrawableOnStripboard drawable: stripes) drawable.drawOnStripboard(context);
 		context.setGlobalAlpha(layerSlider.getValue() / 100.0);
 		for (DrawableOnStripboard drawable: links) drawable.drawOnStripboard(context);
