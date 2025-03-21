@@ -8,11 +8,7 @@ import javafx.fxml.FXML;
 import javafx.scene.CacheHint;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.Slider;
-import javafx.scene.control.ToggleButton;
-import javafx.scene.control.ToggleGroup;
+import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import prototypedesigner.PrototypeDesigner.MicroChip;
@@ -119,6 +115,12 @@ public class ProtoboardController {
 	
 	@FXML
 	private ChoiceBox<Integer> genericIcPinsBox;
+
+	@FXML private TextField rowCountField;
+	private int boardHeight;
+
+	@FXML private TextField colCountField;
+	private int boardWidth;
 	
 	@FXML
 	private Slider layerSlider;
@@ -141,22 +143,35 @@ public class ProtoboardController {
 		genericIcPinsBox.getItems().setAll(4, 6, 8, 10, 12, 14, 16, 18, 20);
 		protoboardCanvas.setCache(true);
 		protoboardCanvas.setCacheHint(CacheHint.SPEED);
+		rowCountField.setText(boardHeight + "");
+		colCountField.setText(boardWidth + "");
+		draw();
+	}
+
+	@FXML
+	private void resizeBoard() {
+		if (rowCountField.getText().strip().matches("^\\d+$"))
+			boardHeight = Integer.parseInt(rowCountField.getText().strip());
+		if (colCountField.getText().strip().matches("^\\d+$"))
+			boardWidth = Integer.parseInt(colCountField.getText().strip());
+		for (int y = 0; y < boardHeight; y++) {
+			for (int x = 0; x < boardWidth; x++) {
+				int finalX = x;
+				int finalY = y;
+				if (!dots.stream().anyMatch(d -> d.getX() == finalX && d.getY() == finalY))
+					dots.add(new ProtoboardDot(x, y));
+			}
+		}
+		dots.removeIf(d -> d.getX() >= boardWidth || d.getY() >= boardHeight);
+		draw();
 	}
 	
 	private void draw() {
-		int h = (int) (protoboardCanvas.getHeight() / 24);
-		int w = (int) (protoboardCanvas.getWidth() / 24);
 		GraphicsContext context = protoboardCanvas.getGraphicsContext2D();
+		context.clearRect(0, 0, protoboardCanvas.getWidth(), protoboardCanvas.getHeight());
 		context.setGlobalAlpha(1.0);
 		context.setFill(Color.rgb( 	204, 153, 51));
-		context.fillRect(0, 0, w*24, h*24);
-		if (dots.isEmpty()) {
-			for (int y = 0; y < h; y++) {
-				for (int x = 0; x < w; x++) {
-					dots.add(new ProtoboardDot(x, y));
-				}
-			}
-		}
+		context.fillRect(0, 0, boardWidth*24, boardHeight*24);
 		for(ProtoboardDot dot: dots) dot.drawOnProtoboard(context);
 		for(ProtoboardVia link: links) link.drawOnProtoboard(context);
 		context.setGlobalAlpha(layerSlider.getValue() / 100);

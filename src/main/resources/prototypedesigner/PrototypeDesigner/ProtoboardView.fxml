@@ -112,9 +112,9 @@
                      </GridPane.margin>
                   </Label>
                   <Label text="Columns:" GridPane.halignment="RIGHT" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS" />
-                  <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Resize" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="2" GridPane.vgrow="ALWAYS" />
-                  <TextField maxWidth="1.7976931348623157E308" GridPane.columnIndex="1" />
-                  <TextField maxWidth="1.7976931348623157E308" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                  <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#resizeBoard" text="Resize" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="2" GridPane.vgrow="ALWAYS" />
+                  <TextField fx:id="rowCountField" maxWidth="1.7976931348623157E308" GridPane.columnIndex="1" />
+                  <TextField fx:id="colCountField" maxWidth="1.7976931348623157E308" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                </children>
             </GridPane>
             <Separator />

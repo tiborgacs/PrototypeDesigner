@@ -63,13 +63,7 @@ public class StripboardController {
 		stripboardCanvas.setCache(true);
 		stripboardCanvas.setCacheHint(CacheHint.SPEED);
 		rowCountField.setText(boardHeight + "");
-		rowCountField.textProperty().addListener((observable, oldValue, newValue) -> {
-			if (newValue != null && newValue.strip().matches("^\\d+$")) boardHeight = Integer.parseInt(newValue.strip());
-		});
 		colCountField.setText(boardWidth + "");
-		colCountField.textProperty().addListener((observable, oldValue, newValue) -> {
-			if (newValue != null && newValue.strip().matches("^\\d+$")) boardWidth = Integer.parseInt(newValue.strip());
-		});
 		draw();
 	}
 
@@ -80,6 +74,10 @@ public class StripboardController {
 
 	private void recalculateStrips() {
 		// FIXME limit by outmost component or link if shrinking
+		if (rowCountField.getText().strip().matches("^\\d+$"))
+			boardHeight = Integer.parseInt(rowCountField.getText().strip());
+		if (colCountField.getText().strip().matches("^\\d+$"))
+			boardWidth = Integer.parseInt(colCountField.getText().strip());
 		if (stripes.isEmpty()) {
 			for (int y = 0; y < boardHeight; y++) {
 				stripes.add(new StripboardTrace(0, y, boardWidth));
@@ -104,6 +102,7 @@ public class StripboardController {
 			int increaseWith = boardWidth - last.getX() - last.getW();
 			last.setW(last.getW() + increaseWith);
 			stripes.removeIf(s -> s.getW() == 0);
+			stripes.removeIf(s -> s.getY() >= boardHeight);
 		}
 		draw();
 	}
