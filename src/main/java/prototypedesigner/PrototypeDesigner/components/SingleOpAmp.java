@@ -6,27 +6,37 @@ import javafx.scene.shape.ArcType;
 
 public class SingleOpAmp extends IntegratedCircuit implements DrawableOnStripboard, DrawableOnProtoboard {
 
+	private Terminal offset1;
+	private Terminal invertingInput;
+	private Terminal nonInvertingInput;
+	private Terminal negativeSupply;
+	private Terminal offset2;
+	private Terminal output;
+	private Terminal positiveSupply;
+	private Terminal notConnected;
+
 	// LM741, TL071, LM386
 	{
-		packaging = Packaging.DIL08;
 		schematicsOrientation = ComponentOrientation.UP; // this one can be constant
-		stripboardOrientation = ComponentOrientation.RIGHT;
-		protoboardOrientation = ComponentOrientation.UP;
+		pinout = "OS1_INV_NON_VDD_OS2_OUT_VCC_NC";
+		offset1 = new Terminal(this);
+		offset1.setIdentifier(identifier + "_OS1");
+		invertingInput = new Terminal(this);
+		invertingInput.setIdentifier(identifier + "_INV");
+		nonInvertingInput = new Terminal(this);
+		nonInvertingInput.setIdentifier(identifier + "_NON");
+		negativeSupply = new Terminal(this);
+		negativeSupply.setIdentifier(identifier + "_VDD");
+		offset2 = new Terminal(this);
+		offset2.setIdentifier(identifier + "_OS2");
+		output = new Terminal(this);
+		output.setIdentifier(identifier + "_OUT");
+		positiveSupply = new Terminal(this);
+		positiveSupply.setIdentifier(identifier + "_VCC");
+		notConnected = new Terminal(this);
+		notConnected.setIdentifier(identifier + "_NC");
+		type = "SingleOpAmp";
 	}
-	
-	public void setProtoboardOrientation(ComponentOrientation orientation) {
-		protoboardOrientation = orientation;
-	}
-	
-	private Terminal offset1 = new Terminal(this);
-	private Terminal invertingInput = new Terminal(this);
-	private Terminal nonInvertingInput = new Terminal(this);
-	private Terminal negativeSupply = new Terminal(this);
-	private Terminal offset2 = new Terminal(this);
-	private Terminal output = new Terminal(this);
-	private Terminal positiveSupply = new Terminal(this);
-	private Terminal notConnected = new Terminal(this);
-	
 	
 	@Override
 	public void setSchX(int x) {

@@ -6,53 +6,50 @@ import lombok.Getter;
 import lombok.Setter;
 @Getter
 @Setter
-public class Resistor extends Component implements ComponentValue, DrawableOnStripboard, DrawableOnProtoboard, Spanning {
+public class Resistor extends Component implements DrawableOnStripboard, DrawableOnProtoboard, Spanning {
 
 	private static int idCounter = 0;
 
-	private Terminal leg1 = new Terminal(this);
-	private Terminal leg2 = new Terminal(this);
-	@Getter @Setter	private String value;
 	@Getter @Setter private boolean spanning;
 	private Coordinate spanStart;
 	private Coordinate spanEnd;
 
 	{
-		schematicsOrientation = ComponentOrientation.LEFT;
-		stripboardOrientation = ComponentOrientation.UP;
-		protoboardOrientation = ComponentOrientation.UP;
 		identifier = "R" + ++idCounter;
-		leg1.setIdentifier(identifier + "A");
-		leg2.setIdentifier(identifier + "B");
+		type = "Resistor";
+		Terminal leg1 = new Terminal(this);
+		leg1.setIdentifier(identifier + "_1");
+		Terminal leg2 = new Terminal(this);
+		leg2.setIdentifier(identifier + "_2");
 	}
 
-	public void setProtoboardOrientation(ComponentOrientation orientation) {
+    public static void setCounter(int i) {
+		idCounter = i;
+    }
+
+    public void setProtoboardOrientation(ComponentOrientation orientation) {
 		protoboardOrientation = orientation;
 	}
-	
-	//@Override
+
 	public void setSchX(int x) {
-		//super.setSchX(x);
 		schX = x;
 		if (schematicsOrientation == ComponentOrientation.UP || schematicsOrientation == ComponentOrientation.DOWN) {
-			leg1.setSchX(x+12);
-			leg2.setSchX(x+12);
+			terminals.get(0).setSchX(x+12);
+			terminals.get(1).setSchX(x+12);
 		} else {
-			leg1.setSchX(x);
-			leg2.setSchY(x+48);
+			terminals.get(0).setSchX(x);
+			terminals.get(1).setSchX(x+48);
 		}
 	}
-	
-	//@Override
+
 	public void setSchY(int y) {
-		//super.setSchY(y);
 		schY = y;
 		if (schematicsOrientation == ComponentOrientation.UP || schematicsOrientation == ComponentOrientation.DOWN) {
-			leg1.setSchY(y);
-			leg2.setSchY(y+48);
+			terminals.get(0).setSchY(y);
+			terminals.get(1).setSchY(y+48);
 		} else {
-			leg1.setSchY(y+12);
-			leg2.setSchY(y+12);
+			terminals.get(0).setSchY(y+12);
+			terminals.get(1).setSchY(y+12);
 		}
 	}
 

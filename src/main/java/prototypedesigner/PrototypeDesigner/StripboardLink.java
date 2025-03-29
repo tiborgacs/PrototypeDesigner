@@ -2,8 +2,12 @@ package prototypedesigner.PrototypeDesigner;
 
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
+import lombok.Getter;
+import lombok.Setter;
 import prototypedesigner.PrototypeDesigner.components.DrawableOnStripboard;
 
+@Getter
+@Setter
 public class StripboardLink implements DrawableOnStripboard {
 
     private int x;

@@ -96,18 +96,14 @@ public class SchematicsController {
             }
         });
 		componentTypeColumn.setCellValueFactory(value -> new SimpleStringProperty(value.getValue().getType()));
-		componentTypeColumn.setCellFactory(TextFieldTableCell.forTableColumn());
-		componentValueColumn.setCellValueFactory(value -> new SimpleStringProperty(
-				value.getValue() instanceof ComponentValue ? ((ComponentValue) value.getValue()).getValue() : ""
-		));
-		componentValueColumn.setEditable(false); /*.setCellFactory(value -> new TextFieldTableCell<>() {
+		componentTypeColumn.setCellFactory(TextFieldTableCell.forTableColumn()); // TODO: probably doesn't need editing
+		componentValueColumn.setCellValueFactory(value -> new SimpleStringProperty(value.getValue().getValue()));
+		componentValueColumn.setCellFactory(value -> new TextFieldTableCell<>(new NoOpStringConverter()) {
 			@Override public void commitEdit(String newValue) {
 				super.commitEdit(newValue);
-				Component item = getTableRow().getItem();
-				if (item != null && item instanceof ComponentValue) ; // FIXME edit value
+				getTableRow().getItem().setValue(newValue);
 			}
-		});*/
-		// TODO: value in separate interface, merge with component superclass
+		});
 		deleteComponentColumn.setCellValueFactory(value -> new SimpleObjectProperty<>(value.getValue()));
 		deleteComponentColumn.setCellFactory(value -> new TableCell<>() {
 			@Override protected void updateItem(Component item, boolean empty) {
@@ -360,7 +356,7 @@ public class SchematicsController {
 		}
 		if (pnpToggle.isSelected()) {
 			BipolarJunctionTransistor c = new BipolarJunctionTransistor();
-			c.setPolarity("PNP");
+			c.setPolarity(Polarity.P);
 			c.setSchematicsOrientation(orientation);
 			c.setSchX(x);
 			c.setSchY(y);
@@ -368,7 +364,7 @@ public class SchematicsController {
 		}
 		if (npnToggle.isSelected()) {
 			BipolarJunctionTransistor c = new BipolarJunctionTransistor();
-			c.setPolarity("NPN");
+			c.setPolarity(Polarity.N);
 			c.setSchematicsOrientation(orientation);
 			c.setSchX(x);
 			c.setSchY(y);
@@ -376,28 +372,28 @@ public class SchematicsController {
 		}
 		if (pjfetToggle.isSelected()) {
 			JunctionFieldEffectTransistor c = new JunctionFieldEffectTransistor();
-			c.setChannel("P");
+			c.setPolarity(Polarity.P);
 			c.setSchX(x);
 			c.setSchY(y);
 			components.add(c);
 		}
 		if (njfetToggle.isSelected()) {
 			JunctionFieldEffectTransistor c = new JunctionFieldEffectTransistor();
-			c.setChannel("N");
+			c.setPolarity(Polarity.N);
 			c.setSchX(x);
 			c.setSchY(y);
 			components.add(c);
 		}
 		if (pmosToggle.isSelected()) {
 			MetalOxideSemiconductorFET c = new MetalOxideSemiconductorFET();
-			c.setChannel("P");
+			c.setPolarity(Polarity.N);
 			c.setSchX(x);
 			c.setSchY(y);
 			components.add(c);
 		}
 		if (nmosToggle.isSelected()) {
 			MetalOxideSemiconductorFET c = new MetalOxideSemiconductorFET();
-			c.setChannel("N");
+			c.setPolarity(Polarity.N);
 			c.setSchX(x);
 			c.setSchY(y);
 			components.add(c);
@@ -410,18 +406,18 @@ public class SchematicsController {
 		}
 		if (wireToggle.isSelected()) {
 			if (wireBuilder == null) wireBuilder = new WireBuilder(new Coordinate(x, y));
-			else if (e.getClickCount() == 1) wireBuilder.addCoordinates(x, y);
+			wireBuilder.addCoordinates(x, y);
 			if (e.getClickCount() == 2) {
 				WireBuilder.ConnectionContainer container = wireBuilder.checkForConnections(wires, components);
 				if (container != null && !container.isEmpty()) {
 					List<Pair<Wire, Coordinate>> selectedIntersections = new ArrayList<>();
 					Alert confirmConnectionsDialog = SchematicWiringConfirmation.createDialog(container, selectedIntersections);
 					Optional<ButtonType> result = confirmConnectionsDialog.showAndWait();
-					if (result.get() == ButtonType.OK) {
+					if (result.isPresent() && result.get() == ButtonType.OK) {
 						for (Pair<Wire, Coordinate> pair: selectedIntersections)
 							wireBuilder.getWire().connectToWire(pair.getKey(), pair.getValue());
 						//container.getComponentTerminals().forEach(t -> t.connectToWire(wireBuilder.getWire()));
-						container.getComponentTerminals().
+						container.getComponentTerminals().stream().distinct().
 								forEach(t -> wireBuilder.getWire().getConnectedComponents().add(t));
 						wireBuilder.getWire().setHighlighted(false);
 					} else {
@@ -454,6 +450,7 @@ public class SchematicsController {
 		this.design = design;
 		components.setAll(design.getSchematicsComponents());
 		wires.setAll(design.getConnectionsOnSchematics());
+		wireTable.getRoot().getChildren().clear();
 		wires.forEach(wire -> {
 			TreeItem<SchematicsWiringItem> treeItem = new TreeItem<>(new SchematicsWiringItem(wire));
 			for (Coordinate coordinate: wire.getSchPoints()) {

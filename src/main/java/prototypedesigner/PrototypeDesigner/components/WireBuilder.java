@@ -51,8 +51,10 @@ public class WireBuilder {
             for (Component component : components) {
                 for (Terminal terminal : component.getTerminals()) {
                     if (terminal.getSchX() == c.getX() && terminal.getSchY() == c.getY()) {
-                        if (container == null) container = new ConnectionContainer(this.wire);
-                        container.componentTerminals.add(terminal);
+                        if (container == null)
+                            container = new ConnectionContainer(this.wire);
+                        if (!container.componentTerminals.contains(terminal))
+                            container.componentTerminals.add(terminal);
                     }
                 }
             }

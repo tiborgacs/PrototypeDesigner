@@ -6,19 +6,19 @@ import javafx.scene.shape.ArcType;
 
 public class JunctionFieldEffectTransistor extends Transistor {
 
-	private Terminal drainLeg = new Terminal(this);
-	private Terminal gateLeg = new Terminal(this);
-	private Terminal sourceLeg = new Terminal(this);
-	private String channel;
-	
+	private Terminal drainLeg;
+	private Terminal gateLeg;
+	private Terminal sourceLeg;
+
 	{
-		channel = "N";
+		drainLeg = new Terminal(this);
+		drainLeg.setIdentifier(identifier + "_D");
+		gateLeg = new Terminal(this);
+		gateLeg.setIdentifier(identifier + "_G");
+		sourceLeg = new Terminal(this);
+		sourceLeg.setIdentifier(identifier + "_S");
 	}
-	
-	public void setChannel(String channel) {
-		this.channel = channel;
-	}
-	
+
 	@Override
 	public void setSchX(int x) {
 		super.setSchX(x);
@@ -45,10 +45,10 @@ public class JunctionFieldEffectTransistor extends Transistor {
 		context.strokeArc(x+6, y+6, 36, 36, 0, 360, ArcType.CHORD);
 		context.strokeLine(x+18, y+15, x+18, y+33);
 		context.strokeLine(x+0, y+24, x+18, y+30); // G
-		context.setFill(Color.DARKBLUE);
-		if (channel == "P")
+		context.setFill(highlighted ? Color.PURPLE : Color.DARKBLUE);
+		if (polarity == Polarity.P)
 			context.fillPolygon(new double[] {x+6, x+16, x+14}, new double[] {y+26, y+26, y+32}, 3);
-		else if (channel == "N")
+		else if (polarity == Polarity.N)
 			context.fillPolygon(new double[] {x+18, x+10, x+8}, new double[] {y+30, y+24, y+30}, 3);
 		context.strokeLine(x+18, y+18, x+36, y+18); // D
 		context.strokeLine(x+36, y+18, x+36, y);

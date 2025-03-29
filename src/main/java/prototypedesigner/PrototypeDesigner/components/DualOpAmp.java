@@ -8,25 +8,37 @@ public class DualOpAmp extends IntegratedCircuit implements DrawableOnStripboard
 	
 	// TL072, RC4558, NE5532, LM358
 
-	private Terminal output1 = new Terminal(this);
-	private Terminal invertingInput1 = new Terminal(this);
-	private Terminal nonInvertingInput1 = new Terminal(this);
-	private Terminal negativeSupply = new Terminal(this);
-	private Terminal nonInvertingInput2 = new Terminal(this);
-	private Terminal invertingInput2 = new Terminal(this);
-	private Terminal output2 = new Terminal(this);
-	private Terminal positiveSupply = new Terminal(this);
+	private Terminal output1;
+	private Terminal invertingInput1;
+	private Terminal nonInvertingInput1;
+	private Terminal negativeSupply;
+	private Terminal nonInvertingInput2;
+	private Terminal invertingInput2;
+	private Terminal output2;
+	private Terminal positiveSupply;
 	
 	{
-		schematicsOrientation = ComponentOrientation.UP;
-		stripboardOrientation = ComponentOrientation.UP;
-		protoboardOrientation = ComponentOrientation.UP;
+		schematicsOrientation = ComponentOrientation.UP; // can be constant
+		type = "DualOpAmp";
+		pinout = "OUT1_INV1_NON1_VDD_NON2_INV2_OUT2_VCC";
+		output1 = new Terminal(this);
+		output1.setIdentifier(identifier + "_OUT1");
+		invertingInput1 = new Terminal(this);
+		invertingInput1.setIdentifier(identifier + "_INV1");
+		nonInvertingInput1 = new Terminal(this);
+		nonInvertingInput1.setIdentifier(identifier + "_NON1");
+		negativeSupply = new Terminal(this);
+		negativeSupply.setIdentifier(identifier + "_VDD");
+		nonInvertingInput2 = new Terminal(this);
+		nonInvertingInput2.setIdentifier(identifier + "_NON2");
+		invertingInput2 = new Terminal(this);
+		invertingInput2.setIdentifier(identifier + "_INV2");
+		output2 = new Terminal(this);
+		output2.setIdentifier(identifier + "_OUT2");
+		positiveSupply = new Terminal(this);
+		positiveSupply.setIdentifier(identifier + "_VCC");
 	}
-	
-	public void setProtoboardOrientation(ComponentOrientation orientation) {
-		protoboardOrientation = orientation;
-	}
-	
+
 	@Override
 	public void setSchX(int x) {
 		super.setSchX(x);

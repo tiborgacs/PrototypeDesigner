@@ -49,7 +49,8 @@ public class SchematicWiringConfirmation {
             @Override
             protected void updateItem(Terminal item, boolean empty) {
                 super.updateItem(item, empty);
-                if (!empty || item != null) setText(item.getIdentifier() + " of " + item.getComponent().getIdentifier());
+                if (!empty || item != null) setText(item.getIdentifier() + " of " + item.getComponent().getIdentifier()
+                        + " at [x=" + item.getSchX()/12 + ",y=" + item.getSchY()/12 + "]"); // TODO: table display?
                 else setText("");
             }
         });

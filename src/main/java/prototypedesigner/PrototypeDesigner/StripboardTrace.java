@@ -48,7 +48,7 @@ public class StripboardTrace implements DrawableOnStripboard {
 	@Override
 	public void drawOnStripboard(@SuppressWarnings("exports") GraphicsContext context) {
 		context.setGlobalAlpha(1.0);
-		context.setFill(Color.CHOCOLATE);
+		context.setFill(Color.CHOCOLATE); // TODO: highlighting
 		context.fillRect(x*24+1, y*24+1, w*24-2, 22);
 		context.setFill(Color.BROWN);
 		context.fillRect(x*24+1, y*24+2, w*24-2, 20);

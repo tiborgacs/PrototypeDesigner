@@ -1,9 +1,9 @@
 package prototypedesigner.PrototypeDesigner.controller;
 
-import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.List;
 
+import javafx.beans.property.ReadOnlyStringWrapper;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
 import javafx.scene.CacheHint;
 import javafx.scene.canvas.Canvas;
@@ -11,16 +11,14 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
-import prototypedesigner.PrototypeDesigner.StripboardLink;
-import prototypedesigner.PrototypeDesigner.StripboardTrace;
+import prototypedesigner.PrototypeDesigner.*;
 import prototypedesigner.PrototypeDesigner.components.*;
 
 import static prototypedesigner.PrototypeDesigner.Utility.tail;
 
 public class StripboardController {
 
-	@FXML
-	private ScrollPane scrollPane;
+	@FXML private ScrollPane scrollPane;
 
 	@FXML private TextField rowCountField;
 	private int boardHeight;
@@ -28,29 +26,50 @@ public class StripboardController {
 	@FXML private TextField colCountField;
 	private int boardWidth;
 	
-	@FXML
-	private Canvas stripboardCanvas;
+	@FXML private Canvas stripboardCanvas;
 	
-	@FXML
-	private ToggleGroup buttonMode;
+	@FXML private ToggleGroup buttonMode;
 	
-	@FXML
-	private ToggleButton cutToggle;
-	
-	@FXML
-	private ToggleButton chipToggle;
+	@FXML private ToggleButton cutToggle;
 
-	@FXML
-	private ToggleButton linkToggle;
+	@FXML private ToggleButton linkToggle;
 
-	@FXML
-	private Slider layerSlider;
+	@FXML private Slider layerSlider;
+
+	@FXML TableView<Component> schComponentTable;
+	@FXML TableColumn<Component, String> schCompIdColumn;
+	@FXML TableColumn<Component, String> schCompTypeColumn;
+	@FXML TableColumn<Component, String> schCompValueColumn;
+	@FXML TableColumn<Component, Component> schCompAddColumn;
+	private ToggleGroup schCompAddToggle = new ToggleGroup();
+
+	@SuppressWarnings("unused") @FXML private ToggleGroup orientationToggle;
+	@FXML private ToggleButton upToggle;
+	@FXML private ToggleButton downToggle;
+	@FXML private ToggleButton leftToggle;
+	@FXML private ToggleButton rightToggle;
+
+	@FXML private ComboBox<String> pinoutBox;
+
+	@FXML private TableView<Component> stripComponentTable;
+	@FXML private TableColumn<Component, String> stripCompIdColumn;
+	@FXML private TableColumn<Component, String> stripCompTypeColumn;
+	@FXML private TableColumn<Component, String> stripCompValueColumn;
+	@FXML private TableColumn<Component, Component> stripCompRemoveColumn;
+
+	@FXML private TableView<StripboardTrace> stripTable;
+	@FXML private TableColumn<StripboardTrace, Integer> stripRowColumn;
+	@FXML private TableColumn<StripboardTrace, Integer> stripColColumn;
+	@FXML private TableColumn<StripboardTrace, Integer> stripWidthColumn;
+
+	@FXML private TableView<StripboardLink> linksTable;
+	@FXML private TableColumn<StripboardLink, Integer> linkRowColumn;
+	@FXML private TableColumn<StripboardLink, Integer> linkColColumn;
+	@FXML private TableColumn<StripboardLink, Integer> linkSpanColumn;
+
+	private CircuitDesign design;
 
 	private Coordinate linkStarted = null;
-	
-	List<StripboardTrace> stripes = new ArrayList<>();
-	List<DrawableOnStripboard> drawQueue = new ArrayList<>();
-	List<StripboardLink> links = new ArrayList<>();
 
 	private Coordinate spanStarted = null;
 	
@@ -64,6 +83,77 @@ public class StripboardController {
 		stripboardCanvas.setCacheHint(CacheHint.SPEED);
 		rowCountField.setText(boardHeight + "");
 		colCountField.setText(boardWidth + "");
+		schCompIdColumn.setCellValueFactory(value -> new ReadOnlyStringWrapper(value.getValue().getIdentifier()));
+		stripCompIdColumn.setCellValueFactory(value -> new ReadOnlyStringWrapper(value.getValue().getIdentifier()));
+		schCompTypeColumn.setCellValueFactory(value -> new ReadOnlyStringWrapper(value.getValue().getType()));
+		stripCompTypeColumn.setCellValueFactory(value -> new ReadOnlyStringWrapper(value.getValue().getType()));
+		schCompValueColumn.setCellValueFactory(value -> new ReadOnlyStringWrapper(value.getValue().getValue()));
+		stripCompValueColumn.setCellValueFactory(value -> new ReadOnlyStringWrapper(value.getValue().getValue()));
+		schCompAddColumn.setCellValueFactory(value -> new SimpleObjectProperty<>(value.getValue()));
+		stripCompRemoveColumn.setCellValueFactory(value -> new SimpleObjectProperty<>(value.getValue()));
+		schCompAddColumn.setCellFactory(value -> new TableCell<>() {
+			@Override protected void updateItem(Component item, boolean empty) {
+				super.updateItem(item, empty);
+				if (!empty && item != null) {
+					ToggleButton componentAddToggle = new ToggleButton("+");
+					componentAddToggle.setToggleGroup(schCompAddToggle);
+					componentAddToggle.setUserData(item);
+					setGraphic(componentAddToggle);
+				} else setGraphic(null);
+			}
+		});
+		stripCompRemoveColumn.setCellFactory(value -> new TableCell<>() {
+			@Override protected void updateItem(Component item, boolean empty) {
+				super.updateItem(item, empty);
+				if (!empty && item != null) {
+					Button button = new Button("-");
+					button.setOnAction(e -> stripComponentTable.getItems().remove(item));
+					setGraphic(button);
+				} else setGraphic(null);
+			}
+		});
+		schComponentTable.setRowFactory(value -> new TableRow<>() {
+			@Override protected void updateItem(Component item, boolean empty) {
+				super.updateItem(item, empty);
+				if (!empty && item != null && stripComponentTable.getItems().contains(item)) setDisable(true);
+				else setDisable(false);
+			}
+		});
+		schCompAddToggle.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
+			if (newValue != null && newValue.isSelected()) {
+				if (buttonMode.getSelectedToggle() != null)
+					buttonMode.getSelectedToggle().setSelected(false);
+				if (newValue.getUserData() instanceof BipolarJunctionTransistor
+						|| newValue.getUserData() instanceof JunctionFieldEffectTransistor
+						|| newValue.getUserData() instanceof MetalOxideSemiconductorFET) {
+					pinoutBox.setDisable(false);
+					pinoutBox.getItems().setAll(TransistorPinouts.getBjtPinouts());
+					Component transistor = (Component) newValue.getUserData();
+					if (transistor.getPinout() != null && !transistor.getPinout().isEmpty()) {
+						if (!pinoutBox.getItems().contains(transistor.getPinout()))
+							pinoutBox.getItems().add(transistor.getPinout());
+						pinoutBox.getSelectionModel().select(transistor.getPinout());
+					}
+					pinoutBox.valueProperty().addListener((_observable, _oldValue, _newValue) -> {
+						if (_newValue != null && !_newValue.isEmpty()) transistor.setPinout(_newValue); // TODO: remove listener?
+					});
+				} else {
+					pinoutBox.setDisable(true);
+					pinoutBox.getSelectionModel().clearSelection();
+					pinoutBox.getItems().clear();
+				}
+			}
+ 		});
+		buttonMode.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
+			if (newValue != null && newValue.isSelected() && schCompAddToggle.getSelectedToggle() != null)
+				schCompAddToggle.getSelectedToggle().setSelected(false);
+		});
+		stripRowColumn.setCellValueFactory(value -> new SimpleObjectProperty<>(value.getValue().getY()));
+		stripColColumn.setCellValueFactory(value -> new SimpleObjectProperty<>(value.getValue().getX()));
+		stripWidthColumn.setCellValueFactory(value -> new SimpleObjectProperty<>(value.getValue().getW()));
+		linkRowColumn.setCellValueFactory(value -> new SimpleObjectProperty<>(value.getValue().getY()));
+		linkColColumn.setCellValueFactory(value -> new SimpleObjectProperty<>(value.getValue().getX()));
+		linkSpanColumn.setCellValueFactory(value -> new SimpleObjectProperty<>(value.getValue().getSpan()));
 		draw();
 	}
 
@@ -78,19 +168,19 @@ public class StripboardController {
 			boardHeight = Integer.parseInt(rowCountField.getText().strip());
 		if (colCountField.getText().strip().matches("^\\d+$"))
 			boardWidth = Integer.parseInt(colCountField.getText().strip());
-		if (stripes.isEmpty()) {
+		if (stripTable.getItems().isEmpty()) {
 			for (int y = 0; y < boardHeight; y++) {
-				stripes.add(new StripboardTrace(0, y, boardWidth));
+				stripTable.getItems().add(new StripboardTrace(0, y, boardWidth));
 			}
 		} else {
-			int lastRow = stripes.stream().max(Comparator.comparingInt(StripboardTrace::getY))
+			int lastRow = stripTable.getItems().stream().max(Comparator.comparingInt(StripboardTrace::getY))
 					.map(StripboardTrace::getY).orElse(0);
 			for (int i = (lastRow + 1); i < boardHeight; i++) {
-				stripes.add(new StripboardTrace(0, i, boardWidth));
+				stripTable.getItems().add(new StripboardTrace(0, i, boardWidth));
 			}
-			for (int i = 0; i < stripes.size() - 1; i++) {
-				StripboardTrace strip = stripes.get(i);
-				StripboardTrace next = stripes.get(i+1);
+			for (int i = 0; i < stripTable.getItems().size() - 1; i++) {
+				StripboardTrace strip = stripTable.getItems().get(i);
+				StripboardTrace next = stripTable.getItems().get(i+1);
 				if (strip.getY() < next.getY()) {
 					if (strip.getX() + strip.getW() != boardWidth) {
 						int increaseWith = boardWidth - strip.getX() - strip.getW();
@@ -98,12 +188,19 @@ public class StripboardController {
 					}
 				}
 			}
-			StripboardTrace last = tail(stripes);
+			StripboardTrace last = tail(stripTable.getItems());
 			int increaseWith = boardWidth - last.getX() - last.getW();
 			last.setW(last.getW() + increaseWith);
-			stripes.removeIf(s -> s.getW() == 0);
-			stripes.removeIf(s -> s.getY() >= boardHeight);
+			stripTable.getItems().removeIf(s -> s.getW() == 0);
+			stripTable.getItems().removeIf(s -> s.getY() >= boardHeight);
 		}
+		draw();
+	}
+
+	public void setDesign(CircuitDesign design) {
+		this.design = design;
+		// TODO: fill lists and tables
+		schComponentTable.getItems().addAll(design.getSchematicsComponents());
 		draw();
 	}
 
@@ -114,10 +211,13 @@ public class StripboardController {
 		context.setGlobalAlpha(1.0);
 		context.setFill(Color.WHITE);
 		context.fillRect(0, 0, w*24, h*24);
-		for (DrawableOnStripboard drawable: stripes) drawable.drawOnStripboard(context);
+		for (DrawableOnStripboard drawable: stripTable.getItems()) drawable.drawOnStripboard(context);
 		context.setGlobalAlpha(layerSlider.getValue() / 100.0);
-		for (DrawableOnStripboard drawable: links) drawable.drawOnStripboard(context);
-		for (DrawableOnStripboard drawable: drawQueue) drawable.drawOnStripboard(context);
+		for (DrawableOnStripboard drawable: linksTable.getItems()) drawable.drawOnStripboard(context);
+		for (Component drawable: stripComponentTable.getItems()) {
+			if (drawable instanceof DrawableOnStripboard)
+				((DrawableOnStripboard) drawable).drawOnStripboard(context);
+		}
 	}
 	
 	@FXML
@@ -126,70 +226,87 @@ public class StripboardController {
 		x = x - (x % 24);
 		double y = e.getY();
 		y = y - (y % 24);
-		if (chipToggle.isSelected()) {
-			/*
-			BipolarJunctionTransistor bjt = new BipolarJunctionTransistor();
-			bjt.setStrX((int) x);
-			bjt.setStrY((int) y);
-			drawQueue.add(bjt);
-			*/
-			if (spanStarted == null) {
-				spanStarted = new Coordinate((int) x, (int) y);
-			} else {
-				Resistor r = new Resistor();
-				r.setSpanning(true);
-				r.setStart(spanStarted);
-				r.setStrX(spanStarted.getX());
-				r.setStrY(spanStarted.getY());
-				r.setEnd(new Coordinate((int) x, (int) y));
-				spanStarted = null;
-				/*
-				r.setStrX((int) x);
-				r.setStrY((int) y);
-				*/
-				drawQueue.add(r);
-			}
-		}
+//		if (chipToggle.isSelected()) {
+//			/*
+//			BipolarJunctionTransistor bjt = new BipolarJunctionTransistor();
+//			bjt.setStrX((int) x);
+//			bjt.setStrY((int) y);
+//			drawQueue.add(bjt);
+//			*/
+//			if (spanStarted == null) {
+//				spanStarted = new Coordinate((int) x, (int) y);
+//			} else {
+//				Resistor r = new Resistor();
+//				r.setSpanning(true);
+//				r.setStart(spanStarted);
+//				r.setStrX(spanStarted.getX());
+//				r.setStrY(spanStarted.getY());
+//				r.setEnd(new Coordinate((int) x, (int) y));
+//				spanStarted = null;
+//				/*
+//				r.setStrX((int) x);
+//				r.setStrY((int) y);
+//				*/
+//				drawQueue.add(r);
+//			}
+//		}
 		if (cutToggle.isSelected()) drawStripeCut(x/24, y/24);
 		if (linkToggle.isSelected()) {
 			if (linkStarted == null) {
 				linkStarted = new Coordinate((int) x/24, (int) y/24);
-			} else { // TODO limit column x
+			} else {
 				int linkY = Math.min((int) y/24, linkStarted.getY());
 				int span = Math.abs(linkY - Math.max((int) y/24, linkStarted.getY()));
 				StripboardLink link = new StripboardLink(linkStarted.getX(), linkY, span);
-				links.add(link);
+				linksTable.getItems().add(link);
 				linkStarted = null;
 			}
 		}
-		e.consume();
-		for (DrawableOnStripboard drawable: drawQueue) {
-			if (drawable instanceof Component) {
-				Component component = (Component) drawable;
-				for (Terminal terminal: component.getTerminals()) {
-					for (StripboardTrace trace: stripes) {
-						if (terminal.getStrY()/24 == trace.getY() && terminal.getStrX()/24 >= trace.getX() && terminal.getStrX()/24 < (trace.getX() + trace.getW())) {
-							// TODO: connect
-						}
-					}
-				}
-				System.out.println();
-			}
+		if (schCompAddToggle.getSelectedToggle() != null) {
+			Component c = (Component) schCompAddToggle.getSelectedToggle().getUserData();
+			// TODO: spanning for R, D, C
+			c.setStripboardOrientation(getOrientation());
+			c.setStrX((int) x);
+			c.setStrY((int) y);
+			if (!stripComponentTable.getItems().contains(c))
+				stripComponentTable.getItems().add(c);
 		}
+		e.consume();
+//		for (DrawableOnStripboard drawable: drawQueue) {
+//			if (drawable instanceof Component) {
+//				Component component = (Component) drawable;
+//				for (Terminal terminal: component.getTerminals()) {
+//					for (StripboardTrace trace: stripes) {
+//						if (terminal.getStrY()/24 == trace.getY() && terminal.getStrX()/24 >= trace.getX() && terminal.getStrX()/24 < (trace.getX() + trace.getW())) {
+//							// TODO: connect
+//						}
+//					}
+//				}
+//				System.out.println();
+//			}
+//		}
 		draw();
 	}
-	
+
+	private ComponentOrientation getOrientation() {
+		if (upToggle.isSelected()) return ComponentOrientation.UP;
+		if (downToggle.isSelected()) return ComponentOrientation.DOWN;
+		if (rightToggle.isSelected()) return ComponentOrientation.RIGHT;
+		if (leftToggle.isSelected()) return ComponentOrientation.LEFT;
+		return null;
+	}
+
 	private void drawStripeCut(double x, double y) {
 		StripboardTrace remainder = null;
 		int index = -1;
-		for (int i = 0; i < stripes.size(); i++) {
-			remainder = stripes.get(i).cutAt((int) x, (int) y);
+		for (int i = 0; i < stripTable.getItems().size(); i++) {
+			remainder = stripTable.getItems().get(i).cutAt((int) x, (int) y);
 			if (remainder != null) {
 				index = i;
 				break;
 			}
 		}
-		if (remainder != null) stripes.add(index, remainder);
+		if (remainder != null) stripTable.getItems().add(index, remainder);
 		// TODO recheck connections
 	}
 }

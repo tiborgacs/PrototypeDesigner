@@ -1,9 +1,10 @@
 package prototypedesigner.PrototypeDesigner;
 
-import javafx.scene.control.TreeItem;
+import lombok.Getter;
 import prototypedesigner.PrototypeDesigner.components.Coordinate;
 import prototypedesigner.PrototypeDesigner.components.Wire;
 
+@Getter
 public class SchematicsWiringItem {
 
     private Wire wire;
@@ -21,11 +22,4 @@ public class SchematicsWiringItem {
         this.coordinate = coordinate;
     }
 
-    public Wire getWire() {
-        return wire;
-    }
-
-    public Coordinate getCoordinate() {
-        return coordinate;
-    }
 }

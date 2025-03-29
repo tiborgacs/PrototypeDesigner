@@ -3,17 +3,23 @@ package prototypedesigner.PrototypeDesigner.components;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.ArcType;
+import lombok.Getter;
+import lombok.Setter;
 
 public abstract class Transistor extends Component implements DrawableOnStripboard, DrawableOnProtoboard {
 
 	private static int idCounter = 0;
-
+	@Getter @Setter protected Polarity polarity;
 	{
 		stripboardOrientation = ComponentOrientation.UP;
 		protoboardOrientation = ComponentOrientation.UP;
 		identifier = "Q" + ++idCounter;
 	}
-	
+
+	public static void setCounter(int i) {
+		idCounter = i;
+	}
+
 	public void setProtoboardOrientation(ComponentOrientation orientation) {
 		protoboardOrientation = orientation;
 	}

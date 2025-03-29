@@ -3,6 +3,7 @@
 <?import javafx.scene.canvas.Canvas?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ButtonBar?>
+<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.Separator?>
@@ -16,6 +17,7 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
@@ -34,27 +36,53 @@
    <left>
       <VBox maxHeight="1.7976931348623157E308" BorderPane.alignment="CENTER">
          <children>
-            <ToggleButton fx:id="cutToggle" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="✂ Cut Strip">
-               <toggleGroup>
-                  <ToggleGroup fx:id="buttonMode" />
-               </toggleGroup>
-            </ToggleButton>
-            <ToggleButton fx:id="chipToggle" mnemonicParsing="false" text="💻 Microchip" toggleGroup="$buttonMode" />
-            <ToggleButton fx:id="linkToggle" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="✎ Wire link" toggleGroup="$buttonMode" />
+            <HBox>
+               <children>
+                  <ToggleButton fx:id="cutToggle" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="✂ Cut Strip" HBox.hgrow="ALWAYS">
+                     <toggleGroup>
+                        <ToggleGroup fx:id="buttonMode" />
+                     </toggleGroup>
+                  </ToggleButton>
+                  <ToggleButton fx:id="linkToggle" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="✎ Wire link" toggleGroup="$buttonMode" HBox.hgrow="ALWAYS" />
+               </children>
+            </HBox>
             <Separator />
             <Label text="Components from schematic:" />
-            <TableView>
+            <TableView fx:id="schComponentTable">
               <columns>
-                <TableColumn prefWidth="75.0" text="C1" />
-                <TableColumn prefWidth="75.0" text="C2" />
+                <TableColumn fx:id="schCompIdColumn" prefWidth="75.0" text="ID" />
+                <TableColumn fx:id="schCompTypeColumn" prefWidth="75.0" text="Type" />
+                  <TableColumn fx:id="schCompValueColumn" prefWidth="75.0" text="Value" />
+                  <TableColumn fx:id="schCompAddColumn" maxWidth="36.0" prefWidth="36.0" text="Add" />
               </columns>
             </TableView>
+            <HBox>
+               <children>
+                  <Label maxHeight="1.7976931348623157E308" text="Orientation:" />
+                  <ToggleButton fx:id="leftToggle" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="←" HBox.hgrow="ALWAYS">
+                     <toggleGroup>
+                        <ToggleGroup fx:id="orientationGroup" />
+                     </toggleGroup>
+                  </ToggleButton>
+                  <ToggleButton fx:id="upToggle" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="↑" toggleGroup="$orientationGroup" HBox.hgrow="ALWAYS" />
+                  <ToggleButton fx:id="downToggle" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="↓" toggleGroup="$orientationGroup" HBox.hgrow="ALWAYS" />
+                  <ToggleButton fx:id="rightToggle" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="→" toggleGroup="$orientationGroup" HBox.hgrow="ALWAYS" />
+               </children>
+            </HBox>
+            <HBox>
+               <children>
+                  <Label maxHeight="1.7976931348623157E308" text="Pinout:" />
+                  <ComboBox fx:id="pinoutBox" editable="true" maxWidth="1.7976931348623157E308" HBox.hgrow="ALWAYS" />
+               </children>
+            </HBox>
             <Label text="Placed on stripboard:" />
-            <TableView>
-              <columns>
-                <TableColumn prefWidth="75.0" text="C1" />
-                <TableColumn prefWidth="75.0" text="C2" />
-              </columns>
+            <TableView fx:id="stripComponentTable">
+               <columns>
+                  <TableColumn fx:id="stripCompIdColumn" prefWidth="75.0" text="ID" />
+                  <TableColumn fx:id="stripCompTypeColumn" prefWidth="75.0" text="Type" />
+                  <TableColumn fx:id="stripCompValueColumn" prefWidth="75.0" text="Value" />
+                  <TableColumn fx:id="stripCompRemoveColumn" prefWidth="75.0" text="Remove" />
+               </columns>
             </TableView>
          </children>
       </VBox>
@@ -90,17 +118,19 @@
             </GridPane>
             <Separator maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" />
             <Label text="Strips:" />
-            <TableView prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
+            <TableView fx:id="stripTable" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
               <columns>
-                <TableColumn prefWidth="75.0" text="C1" />
-                <TableColumn prefWidth="75.0" text="C2" />
+                <TableColumn fx:id="stripRowColumn" prefWidth="75.0" text="Row" />
+                <TableColumn fx:id="stripColColumn" prefWidth="75.0" text="Column" />
+                  <TableColumn fx:id="stripWidthColumn" prefWidth="75.0" text="Width" />
               </columns>
             </TableView>
             <Label text="Vias (links):" />
-            <TableView prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
+            <TableView fx:id="linksTable" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
               <columns>
-                <TableColumn prefWidth="75.0" text="C1" />
-                <TableColumn prefWidth="75.0" text="C2" />
+                <TableColumn fx:id="linkRowColumn" prefWidth="75.0" text="Row" />
+                <TableColumn fx:id="linkColColumn" prefWidth="75.0" text="Column" />
+                  <TableColumn fx:id="linkSpanColumn" prefWidth="75.0" text="Span" />
               </columns>
             </TableView>
          </children>

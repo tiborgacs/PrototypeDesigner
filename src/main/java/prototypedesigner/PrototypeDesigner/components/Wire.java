@@ -29,7 +29,11 @@ public class Wire implements DrawableOnSchematics {
 	@Getter @Setter private List<Coordinate> intersections = new ArrayList<>();
 	@Setter @Getter private boolean highlighted;
 
-	public void connectToWire(Wire other, Coordinate intersection) {
+    public static void setCounter(int i) {
+		counter = i;
+    }
+
+    public void connectToWire(Wire other, Coordinate intersection) {
 		this.connectedWires.add(other);
 		other.connectedWires.add(this);
 		intersections.add(intersection);
@@ -63,7 +67,6 @@ public class Wire implements DrawableOnSchematics {
 				schPoints.add(new Coordinate(x, last.getY()));
 			} else schPoints.add(new Coordinate(last.getX(), y));
  		}
-		System.out.println(schPoints);
 	}
 
 	@Override

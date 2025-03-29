@@ -3,28 +3,20 @@ package prototypedesigner.PrototypeDesigner.components;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
-public class PolarizedCapacitor extends Capacitor implements ComponentValue, DrawableOnStripboard, DrawableOnProtoboard {
-	
-	private Terminal positiveLeg = new Terminal(this);
-	private Terminal negativeLeg = new Terminal(this);
-	private String value;
-	
+public class PolarizedCapacitor extends Capacitor implements DrawableOnStripboard, DrawableOnProtoboard {
+
 	{
-		schematicsOrientation = ComponentOrientation.RIGHT;
-		stripboardOrientation = ComponentOrientation.LEFT;
-		protoboardOrientation = ComponentOrientation.UP;
-	}
-	
-	public void setProtoboardOrientation(ComponentOrientation orientation) {
-		protoboardOrientation = orientation;
+		Terminal positiveLeg = new Terminal(this);
+		positiveLeg.setIdentifier(identifier + "_A");
+		Terminal negativeLeg = new Terminal(this);
+		negativeLeg.setIdentifier(identifier + "_C");
+		type = "PolarizedCapacitor";
 	}
 
-	public void setSchematicsOrientation(ComponentOrientation orientation) {
-		schematicsOrientation = orientation;
-	}
-	
 	@Override
 	public void setSchX(int x) {
+		Terminal positiveLeg = terminals.get(0);
+		Terminal negativeLeg = terminals.get(1);
 		super.setSchX(x);
 		if (schematicsOrientation == ComponentOrientation.LEFT) {
 			positiveLeg.setSchX(x);
@@ -40,6 +32,8 @@ public class PolarizedCapacitor extends Capacitor implements ComponentValue, Dra
 	
 	@Override
 	public void setSchY(int y) {
+		Terminal positiveLeg = terminals.get(0);
+		Terminal negativeLeg = terminals.get(1);
 		super.setSchY(y);
 		if (schematicsOrientation == ComponentOrientation.UP) {
 			positiveLeg.setSchY(y);
@@ -51,11 +45,6 @@ public class PolarizedCapacitor extends Capacitor implements ComponentValue, Dra
 			positiveLeg.setSchY(y+12);
 			negativeLeg.setSchY(y+12);
 		}
-	}
-	
-	@Override
-	public String getValue() {
-		return value;
 	}
 
 	@Override

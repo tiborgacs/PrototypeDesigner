@@ -5,34 +5,57 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.ArcType;
 
 public class QuadOpAmp extends IntegratedCircuit implements DrawableOnStripboard, DrawableOnProtoboard {
-	
+
+	private Terminal output1;
+	private Terminal invertingInput1;
+	private Terminal nonInvertingInput1;
+	private Terminal positiveSupply;
+	private Terminal nonInvertingInput2;
+	private Terminal invertingInput2;
+	private Terminal output2;
+	private Terminal output3;
+	private Terminal invertingInput3;
+	private Terminal nonInvertingInput3;
+	private Terminal negativeSupply;
+	private Terminal nonInvertingInput4;
+	private Terminal invertingInput4;
+	private Terminal output4;
+
 	// TL074
 	{
-		packaging = Packaging.DIL14;
+		type = "QuadOpAmp";
 		schematicsOrientation = ComponentOrientation.UP; // this one can be constant
-		stripboardOrientation = ComponentOrientation.LEFT;
-		protoboardOrientation = ComponentOrientation.UP;
+		output1 = new Terminal(this);
+		output1.setIdentifier(identifier + "_OUT1");
+		invertingInput1 = new Terminal(this);
+		invertingInput1.setIdentifier(identifier + "_INV1");
+		nonInvertingInput1 = new Terminal(this);
+		nonInvertingInput1.setIdentifier(identifier + "_NON1");
+		positiveSupply = new Terminal(this);
+		positiveSupply.setIdentifier(identifier + "_VCC");
+		nonInvertingInput2 = new Terminal(this);
+		nonInvertingInput2.setIdentifier(identifier + "_NON2");
+		invertingInput2 = new Terminal(this);
+		invertingInput2.setIdentifier(identifier + "_INV2");
+		output2 = new Terminal(this);
+		output2.setIdentifier(identifier + "_OUT2");
+		output3 = new Terminal(this);
+		output3.setIdentifier(identifier + "_OUT3");
+		invertingInput3 = new Terminal(this);
+		invertingInput3.setIdentifier(identifier + "_INV3");
+		nonInvertingInput3 = new Terminal(this);
+		nonInvertingInput3.setIdentifier(identifier + "_NON3");
+		negativeSupply = new Terminal(this);
+		negativeSupply.setIdentifier(identifier + "_VDD");
+		nonInvertingInput4 = new Terminal(this);
+		nonInvertingInput4.setIdentifier(identifier + "_NON4");
+		invertingInput4 = new Terminal(this);
+		invertingInput4.setIdentifier(identifier + "_INV4");
+		output4 = new Terminal(this);
+		output4.setIdentifier(identifier + "_OUT4");
+		pinout = "OUT1_INV1_NON1_VCC_NON2_INV2_OUT2_OUT3_INV3_NON3_VDD_NON4_INV4_OUT4";
 	}
-	
-	private Terminal output1 = new Terminal(this);
-	private Terminal invertingInput1 = new Terminal(this);
-	private Terminal nonInvertingInput1 = new Terminal(this);
-	private Terminal positiveSupply = new Terminal(this);
-	private Terminal nonInvertingInput2 = new Terminal(this);
-	private Terminal invertingInput2 = new Terminal(this);
-	private Terminal output2 = new Terminal(this);
-	private Terminal output3 = new Terminal(this);
-	private Terminal invertingInput3 = new Terminal(this);
-	private Terminal nonInvertingInput3 = new Terminal(this);
-	private Terminal negativeSuppy = new Terminal(this);
-	private Terminal nonInvertingInput4 = new Terminal(this);
-	private Terminal invertingInput4 = new Terminal(this);
-	private Terminal output4 = new Terminal(this);
-	
-	public void setProtoboardOrientation(ComponentOrientation orientation) {
-		protoboardOrientation = orientation;
-	}
-	
+
 	@Override
 	public void setSchX(int x) {
 		super.setSchX(x);
@@ -46,7 +69,7 @@ public class QuadOpAmp extends IntegratedCircuit implements DrawableOnStripboard
 		output3.setSchX(x+84);
 		invertingInput3.setSchX(x+84);
 		nonInvertingInput3.setSchX(x+84);
-		negativeSuppy.setSchX(x+84);
+		negativeSupply.setSchX(x+84);
 		nonInvertingInput4.setSchX(x+84);
 		invertingInput4.setSchX(x+84);
 		output4.setSchX(x+84);
@@ -65,7 +88,7 @@ public class QuadOpAmp extends IntegratedCircuit implements DrawableOnStripboard
 		output3.setSchY(y+156);
 		invertingInput3.setSchY(y+132);
 		nonInvertingInput3.setSchY(y+108);
-		negativeSuppy.setSchY(y+84);
+		negativeSupply.setSchY(y+84);
 		nonInvertingInput4.setSchY(y+60);
 		invertingInput4.setSchY(y+36);
 		output4.setSchY(y+12);

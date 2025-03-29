@@ -5,31 +5,27 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.ArcType;
 
 public class BipolarJunctionTransistor extends Transistor {
-	
-	private Terminal emitterLeg = new Terminal(this);
-	private Terminal collectorLeg = new Terminal(this);
-	private Terminal baseLeg = new Terminal(this);
-	private String polarity;
-	
+
+	private Terminal emitterLeg;
+	private Terminal collectorLeg;
+	private Terminal baseLeg;
+
 	{
-		schematicsOrientation = ComponentOrientation.UP;
-		polarity = "NPN";
+		type = "BipolarTransistor";
+		emitterLeg = new Terminal(this);
+		emitterLeg.setIdentifier(identifier + "_E");
+		collectorLeg = new Terminal(this);
+		collectorLeg.setIdentifier(identifier + "_C");
+		baseLeg = new Terminal(this);
+		baseLeg.setIdentifier(identifier + "_B");
 	}
-	
-	public void setSchematicsOrientation(ComponentOrientation orientation) {
-		schematicsOrientation = orientation;
-	}
-	
-	public void setPolarity(String polarity) {
-		this.polarity = polarity;
-	}
-	
+
 	@Override
 	public void setSchX(int x) {
 		super.setSchX(x);
 		emitterLeg.setSchX(x+36);
 		baseLeg.setSchX(x);
-		collectorLeg.setSchY(x+36);
+		collectorLeg.setSchX(x+36);
 	}
 	
 	@Override
@@ -70,11 +66,11 @@ public class BipolarJunctionTransistor extends Transistor {
 		context.strokeLine(x+18, y+18, x+36, y+9);
 		context.strokeLine(x+36, y+9, x+36, y);
 		context.setFill(highlighted ? Color.PURPLE : Color.DARKBLUE);
-		if (polarity == "PNP")
+		if (polarity == Polarity.P)
 			context.fillPolygon(new double[]{x+18, x+24, x+26}, new double[]{y+18, y+12, y+18}, 3);
 		context.strokeLine(x+18, y+30, x+36, y+39);
 		context.strokeLine(x+36, y+39, x+36, y+48);
-		if (polarity == "NPN")
+		if (polarity == Polarity.N)
 			context.fillPolygon(new double[]{x+36, x+29, x+27}, new double[]{y+39, y+32, y+38}, 3);
 	}
 

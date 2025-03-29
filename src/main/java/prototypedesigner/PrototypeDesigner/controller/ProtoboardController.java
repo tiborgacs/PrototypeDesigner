@@ -2,8 +2,11 @@ package prototypedesigner.PrototypeDesigner.controller;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
+import javafx.beans.property.ReadOnlyStringWrapper;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
 import javafx.scene.CacheHint;
 import javafx.scene.canvas.Canvas;
@@ -11,9 +14,7 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
-import prototypedesigner.PrototypeDesigner.MicroChip;
-import prototypedesigner.PrototypeDesigner.ProtoboardDot;
-import prototypedesigner.PrototypeDesigner.ProtoboardVia;
+import prototypedesigner.PrototypeDesigner.*;
 import prototypedesigner.PrototypeDesigner.components.BipolarJunctionTransistor;
 import prototypedesigner.PrototypeDesigner.components.CeramicCapacitor;
 import prototypedesigner.PrototypeDesigner.components.ComponentOrientation;
@@ -31,105 +32,69 @@ import prototypedesigner.PrototypeDesigner.components.Transistor;
 
 public class ProtoboardController {
 	
-	@FXML
-	private ScrollPane scrollPane;
+	@FXML private ScrollPane scrollPane;
 
-	@FXML
-	private Canvas protoboardCanvas;
+	@FXML private Canvas protoboardCanvas;
 	
-	@FXML
-	private ToggleGroup buttonMode;
+	@FXML private ToggleGroup buttonMode;
 	
-	@FXML
-	private ToggleButton linkToggle;
+	@FXML private ToggleButton linkToggle;
 	
-	@FXML
-	private ToggleButton cutToggle;
-	
-	@FXML
-	private ToggleButton microchipToggle;
+	@FXML private ToggleButton cutToggle;
 
-	@FXML
-	private ToggleButton viaToggle;
-	
-	@FXML
-	private ToggleButton resistorToggle;
-	
-	@FXML
-	private ToggleButton ceramicCapToggle;
-	
-	@FXML
-	private ToggleButton filmCapToggle;
-	
-	@FXML
-	private ToggleButton elcoToggle;
-	
-	@FXML
-	private ToggleButton diodeToggle;
-	
-	@FXML
-	private ToggleButton npnToggle;
-	
-	@FXML
-	private ToggleButton pnpToggle;
-	
-	@FXML
-	private ToggleButton njfetToggle;
-	
-	@FXML
-	private ToggleButton pjfetToggle;
-	
-	@FXML
-	private ToggleButton nmosToggle;
-	
-	@FXML
-	private ToggleButton pmosToggle;
-	
-	@FXML
-	private ToggleButton singleAmpToggle;
-	
-	@FXML
-	private ToggleButton dualAmpToggle;
-	
-	@FXML
-	private ToggleButton quadAmpToggle;
-	// TODO: transistors are generic, but add LED?	
-	
-	@FXML
-	private ToggleButton upToggle;
-	
-	@FXML
-	private ToggleButton downToggle;
-	
-	@FXML
-	private ToggleButton leftToggle;
-	
-	@FXML
-	private ToggleButton rightToggle;
-
-	@FXML
-	private ToggleGroup orientationGroup;
-	
-	@FXML
-	private ToggleButton genericIcToggle;
-	
-	@FXML
-	private ChoiceBox<Integer> genericIcPinsBox;
+	@FXML private ToggleButton viaToggle;
+	/*
+	@FXML private ToggleButton resistorToggle;
+	@FXML private ToggleButton ceramicCapToggle;
+	@FXML private ToggleButton filmCapToggle;
+	@FXML private ToggleButton elcoToggle;
+	@FXML private ToggleButton diodeToggle;
+	@FXML private ToggleButton npnToggle;
+	@FXML private ToggleButton pnpToggle;
+	@FXML private ToggleButton njfetToggle;
+	@FXML private ToggleButton pjfetToggle;
+	@FXML private ToggleButton nmosToggle;
+	@FXML private ToggleButton pmosToggle;
+	@FXML private ToggleButton singleAmpToggle;
+	@FXML private ToggleButton dualAmpToggle;
+	@FXML private ToggleButton quadAmpToggle;
+	// TODO: transistors are generic, but add LED?
+	*/
+	@FXML private ToggleButton upToggle;
+	@FXML private ToggleButton downToggle;
+	@FXML private ToggleButton leftToggle;
+	@FXML private ToggleButton rightToggle;
+	@FXML private ToggleGroup orientationGroup;
+	//@FXML private ToggleButton genericIcToggle;
+	//@FXML private ChoiceBox<Integer> genericIcPinsBox;
 
 	@FXML private TextField rowCountField;
 	private int boardHeight;
 
 	@FXML private TextField colCountField;
 	private int boardWidth;
+
+	@FXML private TreeTableView<ProtoLinkingItem> traceDotTable;
+	@FXML private TreeTableColumn<ProtoLinkingItem, String> traceTypeColumn;
+	@FXML private TreeTableColumn<ProtoLinkingItem, Integer> traceXColumn;
+	@FXML private TreeTableColumn<ProtoLinkingItem, Integer> traceYColumn;
+
+	@FXML private TableView<ProtoboardVia> linkTable;
+	@FXML private TableColumn<ProtoboardVia, Integer> viaFromXColumn;
+	@FXML private TableColumn<ProtoboardVia, Integer> viaFromYColumn;
+	@FXML private TableColumn<ProtoboardVia, Integer> viaToXColumn;
+	@FXML private TableColumn<ProtoboardVia, Integer> viaToYColumn;
+	// TODO: columns from X, from Y, to X, to Y
 	
-	@FXML
-	private Slider layerSlider;
+	@FXML private Slider layerSlider;
 	
 	private List<ProtoboardDot> dots = new ArrayList<>();
 	private ProtoboardDot lastLinked = null;
 	private List<DrawableOnProtoboard> drawQueue = new ArrayList<>();
-	private List<ProtoboardVia> links = new ArrayList<>();
 	private ProtoboardDot lastLinked2 = null;
+
+	private ProtoboardTrace currentTrace;
+	private TraceBuilder traceBuilder;
 	
 	@FXML
 	private void initialize() {
@@ -139,12 +104,20 @@ public class ProtoboardController {
 		protoboardCanvas.heightProperty().addListener((obs, ov, nv) -> draw());
 		protoboardCanvas.widthProperty().addListener((obs, ov, nv) -> draw());
 		layerSlider.valueProperty().addListener((obs, ov, nv) -> draw());
-		genericIcPinsBox.disableProperty().bind(genericIcToggle.selectedProperty().not());
-		genericIcPinsBox.getItems().setAll(4, 6, 8, 10, 12, 14, 16, 18, 20);
+//		genericIcPinsBox.disableProperty().bind(genericIcToggle.selectedProperty().not());
+//		genericIcPinsBox.getItems().setAll(4, 6, 8, 10, 12, 14, 16, 18, 20);
 		protoboardCanvas.setCache(true);
 		protoboardCanvas.setCacheHint(CacheHint.SPEED);
 		rowCountField.setText(boardHeight + "");
 		colCountField.setText(boardWidth + "");
+		traceDotTable.setRoot(new TreeItem<>(new ProtoLinkingItem()));
+		traceTypeColumn.setCellValueFactory(value -> new ReadOnlyStringWrapper(value.getValue().getValue().getDot() != null ? "Dot" : "Trace"));
+		traceXColumn.setCellValueFactory(value -> new SimpleObjectProperty<>(value.getValue().getValue().getDot() != null ? value.getValue().getValue().getDot().getX() : null));
+		traceYColumn.setCellValueFactory(value -> new SimpleObjectProperty<>(value.getValue().getValue().getDot() != null ? value.getValue().getValue().getDot().getY() : null));
+		viaFromXColumn.setCellValueFactory(value -> new SimpleObjectProperty<>(value.getValue().getStart().getX()));
+		viaFromYColumn.setCellValueFactory(value -> new SimpleObjectProperty<>(value.getValue().getStart().getY()));
+		viaToXColumn.setCellValueFactory(value -> new SimpleObjectProperty<>(value.getValue().getEnd().getX()));
+		viaToYColumn.setCellValueFactory(value -> new SimpleObjectProperty<>(value.getValue().getEnd().getY()));
 		draw();
 	}
 
@@ -173,7 +146,8 @@ public class ProtoboardController {
 		context.setFill(Color.rgb( 	204, 153, 51));
 		context.fillRect(0, 0, boardWidth*24, boardHeight*24);
 		for(ProtoboardDot dot: dots) dot.drawOnProtoboard(context);
-		for(ProtoboardVia link: links) link.drawOnProtoboard(context);
+		if (traceBuilder != null) traceBuilder.getTrace().drawOnProtoboard(context);
+		for(ProtoboardVia link: linkTable.getItems()) link.drawOnProtoboard(context);
 		context.setGlobalAlpha(layerSlider.getValue() / 100);
 		for(DrawableOnProtoboard drawable: drawQueue) {
 			drawable.drawOnProtoboard(context);
@@ -191,6 +165,7 @@ public class ProtoboardController {
 		if (rightToggle.isSelected()) orientation = ComponentOrientation.RIGHT;
 		if (upToggle.isSelected()) orientation = ComponentOrientation.UP;
 		if (downToggle.isSelected()) orientation = ComponentOrientation.DOWN;
+		/*
 		if (genericIcToggle.isSelected()) {
 			MicroChip mc = new MicroChip(genericIcPinsBox.getValue());
 			mc.setX((int) x);
@@ -296,15 +271,67 @@ public class ProtoboardController {
 			c.setProtoboardOrientation(orientation);
 			drawQueue.add(c);
 		}
+		*/
 		if (linkToggle.isSelected() || cutToggle.isSelected()) {
 			final int intX = (int) x / 24;
 			final int intY = (int) y / 24;
 			Optional<ProtoboardDot> linkable = dots.stream().filter(dot -> dot.getX() == intX && dot.getY() == intY).findFirst();
 			if (linkable.isPresent()) {
+				/*
+				if (linkToggle.isSelected()) {
+					if (currentTrace == null) currentTrace = new ProtoboardTrace(linkable.get());
+					else {
+						Optional<ProtoboardDot> newLink = currentTrace.getDots().stream().filter(dot -> dot.link(linkable.get())).findFirst();
+						if (newLink.isPresent()) {
+							currentTrace.getDots().add(linkable.get());
+							Optional<TreeItem<ProtoLinkingItem>> optTrace = traceDotTable.getRoot().getChildren().stream()
+									.filter(item -> item.getValue().getTrace() != null)
+									.filter(item -> item.getValue().getTrace().getDots().contains(linkable.get()))
+									.findFirst();
+							if (!optTrace.isPresent()) {
+								TreeItem<ProtoLinkingItem> newTraceItem = new TreeItem<>(new ProtoLinkingItem(currentTrace));
+								traceDotTable.getRoot().getChildren().add(newTraceItem);
+								for (ProtoboardDot dot: currentTrace.getDots()) {
+									if (newTraceItem.getChildren().stream().noneMatch(item -> item.getValue().getDot() == dot)) {
+										TreeItem<ProtoLinkingItem> newDotItem = new TreeItem<>(new ProtoLinkingItem(dot));
+										newTraceItem.getChildren().add(newDotItem);
+									}
+								}
+							} else {
+								if (optTrace.get().getChildren().stream().noneMatch(item -> item.getValue().getDot() == linkable.get()))
+									optTrace.get().getChildren().add(new TreeItem<>(new ProtoLinkingItem(linkable.get())));
+							}
+						}
+					}
+				}
+				*/
+				if (traceBuilder == null) traceBuilder = new TraceBuilder(linkable.get());
+				else traceBuilder.addDot(linkable.get(), dots);
+				if (e.getClickCount() == 2) {
+					ProtoboardTrace trace = traceBuilder.getTrace();
+					TreeItem<ProtoLinkingItem> traceItem = new TreeItem<>(new ProtoLinkingItem(trace));
+					traceDotTable.getRoot().getChildren().add(traceItem);
+					trace.getDots().forEach(dot -> traceItem.getChildren().add(new TreeItem<>(new ProtoLinkingItem(dot))));
+
+				}
 				if (lastLinked == null) lastLinked = linkable.get();
 				else {
-					if (linkToggle.isSelected())
+					if (linkToggle.isSelected()) {
 						lastLinked = linkable.get().link(lastLinked) ? linkable.get() : null;
+						/*if (lastLinked != null) {
+							Optional<TreeItem<ProtoLinkingItem>> optTrace = traceDotTable.getRoot().getChildren().stream()
+									.filter(item -> item.getValue().getTrace() != null)
+									.filter(item -> item.getValue().getTrace().getDots().contains(lastLinked))
+									.findFirst();
+							TreeItem<ProtoLinkingItem> trace = optTrace.orElse(new TreeItem<>(new ProtoLinkingItem(new ProtoboardTrace(lastLinked))));
+							trace.getValue().getTrace().getDots().add(linkable.get());
+							if (!optTrace.isPresent()) {
+								traceDotTable.getRoot().getChildren().add(trace);
+								trace.getChildren().add(new TreeItem<>(new ProtoLinkingItem(lastLinked)));
+							}
+							trace.getChildren().add(new TreeItem<>(new ProtoLinkingItem(linkable.get())));
+						}*/
+					}
 					if (cutToggle.isSelected())
 						lastLinked = linkable.get().unlink(lastLinked) ? linkable.get() : null;
 				}
@@ -318,7 +345,7 @@ public class ProtoboardController {
 				if (lastLinked2 == null) lastLinked2 = linkable.get();
 				else {
 					ProtoboardVia link = new ProtoboardVia(lastLinked2, linkable.get());
-					links.add(link);
+					linkTable.getItems().add(link);
 					lastLinked2 = null;
 				}
 			}

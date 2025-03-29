@@ -19,7 +19,6 @@ import javafx.stage.Modality;
 import prototypedesigner.PrototypeDesigner.CircuitDesign;
 import prototypedesigner.PrototypeDesigner.PrototypeDesignerApp;
 import prototypedesigner.PrototypeDesigner.components.Component;
-import prototypedesigner.PrototypeDesigner.components.ComponentValue;
 
 import javax.imageio.ImageIO;
 import java.awt.image.RenderedImage;
@@ -119,7 +118,7 @@ public class MenuController {
             List<String> bom = design.getSchematicsComponents().stream().sorted(Comparator.comparing(Component::getIdentifier))
                     .map(c -> String.join(
                     csv ? "," : "\t",
-                    c.getIdentifier(), c instanceof ComponentValue ? ((ComponentValue) c).getValue() : c.getType()))
+                    c.getIdentifier(), c.getType()))
                     .collect(Collectors.toList());
             try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
                 for (String line: bom) {

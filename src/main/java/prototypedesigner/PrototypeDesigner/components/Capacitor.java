@@ -5,35 +5,32 @@ import javafx.scene.paint.Color;
 import lombok.Getter;
 import lombok.Setter;
 
-public class Capacitor extends Component implements ComponentValue {
+public class Capacitor extends Component {
 
 	private static int idCounter = 0;
 
-	private Terminal leg1 = new Terminal(this);
-	private Terminal leg2 = new Terminal(this);
-	// TODO can be flipped
-	@Getter @Setter	private String value;
-	
 	{
-		schematicsOrientation = ComponentOrientation.LEFT;
 		identifier = "C" + ++idCounter;
-		leg1.setIdentifier(identifier + "A");
-		leg2.setIdentifier(identifier + "B");
+		type = "Capacitor";
+		Terminal leg1 = new Terminal(this);
+		leg1.setIdentifier(identifier + "_1");
+		Terminal leg2 = new Terminal(this);
+		leg2.setIdentifier(identifier + "_2");
 	}
 
-	public void setSchematicsOrientation(ComponentOrientation orientation) {
-		schematicsOrientation = orientation;
-	}
-	
-	@Override
+    public static void setCounter(int i) {
+		idCounter = i;
+    }
+
+    @Override
 	public void setSchX(int x) {
 		super.setSchX(x);
 		if (schematicsOrientation == ComponentOrientation.UP || schematicsOrientation == ComponentOrientation.DOWN) {
-			leg1.setSchX(x+12);
-			leg2.setSchX(x+12);
+			terminals.get(0).setSchX(x+12);
+			terminals.get(1).setSchX(x+12);
 		} else {
-			leg1.setSchX(x);
-			leg2.setSchY(x+24);
+			terminals.get(0).setSchX(x);
+			terminals.get(1).setSchX(x+24);
 		}
 	}
 	
@@ -41,17 +38,12 @@ public class Capacitor extends Component implements ComponentValue {
 	public void setSchY(int y) {
 		super.setSchY(y);
 		if (schematicsOrientation == ComponentOrientation.UP || schematicsOrientation == ComponentOrientation.DOWN) {
-			leg1.setSchY(y);
-			leg2.setSchY(y+24);
+			terminals.get(0).setSchY(y);
+			terminals.get(1).setSchY(y+24);
 		} else {
-			leg1.setSchY(y+12);
-			leg2.setSchY(y+12);
+			terminals.get(0).setSchY(y+12);
+			terminals.get(1).setSchY(y+12);
 		}
-	}
-	
-	@Override
-	public String getValue() {
-		return value;
 	}
 
 	@Override

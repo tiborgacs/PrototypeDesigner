@@ -2,32 +2,37 @@ package prototypedesigner.PrototypeDesigner.components;
 
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
+import lombok.Getter;
+import lombok.Setter;
 
-public class Diode extends Component implements DrawableOnStripboard, DrawableOnProtoboard {
+public class Diode extends Component implements DrawableOnStripboard, DrawableOnProtoboard, Spanning {
 
 	private static int idCounter = 0;
-
-	private Terminal anodeLeg = new Terminal(this);
-	private Terminal cathodeLeg = new Terminal(this);
 	
 	{
-		schematicsOrientation = ComponentOrientation.UP;
-		stripboardOrientation = ComponentOrientation.UP;
-		protoboardOrientation = ComponentOrientation.UP;
 		identifier = "D" + ++idCounter;
+		type = "Diode";
+		Terminal anodeLeg = new Terminal(this);
+		anodeLeg.setIdentifier(identifier + "_A");
+		Terminal cathodeLeg = new Terminal(this);
+		cathodeLeg.setIdentifier(identifier + "_C");
 	}
-	
-	public void setSchematicsOrientation(ComponentOrientation orientation) {
-		schematicsOrientation = orientation;
-	}
-	
-	public void setProtoboardOrientation(ComponentOrientation orientation) {
-		protoboardOrientation = orientation;
-	}
-	
-	@Override
+
+	@Getter
+	@Setter
+	private boolean spanning;
+	private Coordinate spanStart;
+	private Coordinate spanEnd;
+
+    public static void setCounter(int i) {
+		idCounter = i;
+    }
+
+    @Override
 	public void setSchX(int x) {
 		super.setSchX(x);
+		Terminal anodeLeg = terminals.get(0);
+		Terminal cathodeLeg = terminals.get(1);
 		if (schematicsOrientation == ComponentOrientation.LEFT) {
 			cathodeLeg.setSchX(x);
 			anodeLeg.setSchX(x+24);
@@ -39,10 +44,32 @@ public class Diode extends Component implements DrawableOnStripboard, DrawableOn
 			cathodeLeg.setSchX(x+12);
 		}
 	}
+
+	@Override
+	public Coordinate getStart() {
+		return spanStart;
+	}
+
+	@Override
+	public void setStart(Coordinate start) {
+		spanStart = start;
+	}
+
+	@Override
+	public Coordinate getEnd() {
+		return spanEnd;
+	}
+
+	@Override
+	public void setEnd(Coordinate end) {
+		spanEnd = end;
+	}
 	
 	@Override
 	public void setSchY(int y) {
 		super.setSchY(y);
+		Terminal anodeLeg = terminals.get(0);
+		Terminal cathodeLeg = terminals.get(1);
 		if (schematicsOrientation == ComponentOrientation.UP) {
 			cathodeLeg.setSchY(y);
 			anodeLeg.setSchY(y+24);

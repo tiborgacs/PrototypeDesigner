@@ -19,21 +19,29 @@ import java.util.List;
 		@JsonSubTypes.Type(name="resistor", value=Resistor.class),
 		@JsonSubTypes.Type(name="capacitor", value=Capacitor.class),
 		@JsonSubTypes.Type(name="polarized-capacitor", value=PolarizedCapacitor.class),
+		@JsonSubTypes.Type(name="diode", value=Diode.class),
+		@JsonSubTypes.Type(name="bipolar-junction-transistor", value=BipolarJunctionTransistor.class),
+		@JsonSubTypes.Type(name="junction-fet-transistor", value=JunctionFieldEffectTransistor.class),
+		@JsonSubTypes.Type(name="metal-oxide-fet-transistor", value=MetalOxideSemiconductorFET.class),
+		@JsonSubTypes.Type(name="single-op-amp", value=SingleOpAmp.class),
+		@JsonSubTypes.Type(name="dual-op-amp", value=DualOpAmp.class),
+		@JsonSubTypes.Type(name="quad-op-amp", value=QuadOpAmp.class),
 })
 public abstract class Component implements DrawableOnSchematics {
 
 	@Getter @Setter	protected String identifier;
 	@Getter @Setter protected String type;
+	@Getter @Setter protected String pinout;
+	@Getter @Setter protected String value;
 	@Getter @Setter protected ComponentOrientation schematicsOrientation;
 	@Getter @Setter protected int schX;
 	@Getter @Setter protected int schY;
-	protected ComponentOrientation stripboardOrientation;
-	protected int strX;
-	protected int strY;
-	protected ComponentOrientation protoboardOrientation;
-	protected int proX;
-	protected int proY;
-	protected Packaging packaging;
+	@Getter @Setter protected ComponentOrientation stripboardOrientation;
+	@Getter protected int strX;
+	@Getter protected int strY;
+	@Getter @Setter protected ComponentOrientation protoboardOrientation;
+	@Getter protected int proX;
+	@Getter protected int proY;
 	@Getter @Setter protected List<Terminal> terminals = new ArrayList<>();
 	@Setter protected boolean highlighted;
 

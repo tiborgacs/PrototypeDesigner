@@ -2,9 +2,13 @@ package prototypedesigner.PrototypeDesigner;
 
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
+import lombok.Getter;
+import lombok.Setter;
 import prototypedesigner.PrototypeDesigner.components.Coordinate;
 import prototypedesigner.PrototypeDesigner.components.DrawableOnProtoboard;
 
+@Getter
+@Setter
 public class ProtoboardVia implements DrawableOnProtoboard {
 
     private ProtoboardDot start;

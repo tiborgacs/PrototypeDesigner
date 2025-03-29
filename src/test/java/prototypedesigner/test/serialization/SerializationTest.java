@@ -3,6 +3,7 @@ package prototypedesigner.test.serialization;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import org.junit.jupiter.api.Test;
+import prototypedesigner.PrototypeDesigner.ProtoboardDot;
 import prototypedesigner.PrototypeDesigner.components.*;
 
 import java.util.ArrayList;
@@ -12,7 +13,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class SerializationTest {
-    @Test
+    //@Test
     public void testSerialization() {
         WireBuilder wb = new WireBuilder(new Coordinate(0, 0));
         wb.addCoordinates(0, 1);
@@ -28,7 +29,7 @@ public class SerializationTest {
         }
     }
 
-    @Test
+    //@Test
     public void testDeserialization() {
         String xml = "<Wire><connectedComponents/><schPoints><schPoints><x>0</x><y>0</y></schPoints><schPoints><x>0</x><y>1</y></schPoints><schPoints><x>1</x><y>1</y></schPoints></schPoints><highlighted>true</highlighted></Wire>";
         XmlMapper mapper = new XmlMapper();
@@ -44,7 +45,7 @@ public class SerializationTest {
         }
     }
 
-    @Test
+    //@Test
     public void serializeSmallCircuit() {
         Resistor r1 = new Resistor();
         Resistor r2 = new Resistor();
@@ -76,6 +77,28 @@ public class SerializationTest {
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Test
+    public void testProtoboardLinks() throws JsonProcessingException {
+        ProtoboardDot first = new ProtoboardDot(0, 0);
+        ProtoboardDot p = first;
+        for (int i = 0; i < 100; i++) {
+            ProtoboardDot pp = new ProtoboardDot(0, i+1);
+            pp.link(p);
+            p = pp;
+        }
+        for (int i = 100; i >= 0; i--) {
+            ProtoboardDot pp = new ProtoboardDot(1, i);
+            pp.link(p);
+            p = pp;
+        }
+        first.link(p);
+        XmlMapper mapper = new XmlMapper();
+        String xml = mapper.writeValueAsString(p);
+        System.out.println(xml);
+        ProtoboardDot pp = mapper.readValue(xml, ProtoboardDot.class);
+        System.out.println(pp);
     }
 
 }

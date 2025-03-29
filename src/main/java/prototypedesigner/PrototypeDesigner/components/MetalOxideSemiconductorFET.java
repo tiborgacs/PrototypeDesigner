@@ -6,19 +6,19 @@ import javafx.scene.shape.ArcType;
 
 public class MetalOxideSemiconductorFET extends Transistor {
 
-	private Terminal drainLeg = new Terminal(this);
-	private Terminal gateLeg = new Terminal(this);
-	private Terminal sourceLeg = new Terminal(this);
-	private String channel;
-	
+	private Terminal drainLeg;
+	private Terminal gateLeg;
+	private Terminal sourceLeg;
+
 	{
-		channel = "N";
+		drainLeg = new Terminal(this);
+		drainLeg.setIdentifier(identifier + "_D");
+		gateLeg = new Terminal(this);
+		gateLeg.setIdentifier(identifier + "_G");
+		sourceLeg = new Terminal(this);
+		sourceLeg.setIdentifier(identifier + "_S");
 	}
-	
-	public void setChannel(String channel) {
-		this.channel = channel;
-	}
-	
+
 	@Override
 	public void setSchX(int x) {
 		super.setSchX(x);
@@ -48,11 +48,11 @@ public class MetalOxideSemiconductorFET extends Transistor {
 		context.strokeLine(x+21, y+22, x+21, y+27);
 		context.strokeLine(x+21, y+29, x+21, y+33);
 		context.strokeLine(x+0, y+24, x+18, y+24); // G
-		context.setFill(Color.DARKBLUE);
+		context.setFill(highlighted ? Color.PURPLE : Color.DARKBLUE);
 		context.strokeLine(x+21, y+24, x+36, y+24);
-		if (channel == "P")
+		if (polarity == Polarity.P)
 			context.fillPolygon(new double[] {x+24, x+24, x+36}, new double[] {y+27, y+21, y+24}, 3);
-		else if (channel == "N")
+		else if (polarity == Polarity.N)
 			context.fillPolygon(new double[] {x+21, x+33, x+33}, new double[] {y+24, y+21, y+27}, 3);
 		context.strokeLine(x+21, y+18, x+36, y+18); // D
 		context.strokeLine(x+36, y+18, x+36, y);

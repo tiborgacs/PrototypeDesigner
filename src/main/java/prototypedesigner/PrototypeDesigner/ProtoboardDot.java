@@ -5,33 +5,42 @@ import java.util.Set;
 
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
+import lombok.Getter;
+import lombok.Setter;
 import prototypedesigner.PrototypeDesigner.components.DrawableOnProtoboard;
 
+@Getter
+@Setter
 public class ProtoboardDot implements DrawableOnProtoboard {
 	
 	private int x;
 	private int y;
+	private String identifier;
 	private Set<ProtoboardDot> linkedWith = new HashSet<>();
 	// TODO: linkable interface - tree traversal for checking;
 	// eg. microchip may aggregate linkable instances for every leg
 	// TODO: terminal that is connected
-	
+	public ProtoboardDot() {}
+
 	public ProtoboardDot(int x, int y) { // TODO rename?
 		this.x = x;
 		this.y = y;
+		identifier = x + ":" + y;
 	}
-	
-	public int getX() { return x; }
-	public int getY() { return y; }
-	
+
 	public boolean isNeighborTop(ProtoboardDot other) { return other.x == x && other.y == y - 1; }
 	public boolean isNeighborBottom(ProtoboardDot other) { return other.x == x && other.y == y + 1; }
 	public boolean isNeighborLeft(ProtoboardDot other) { return other.x == x - 1 && other.y == y; }
 	public boolean isNeighborRight(ProtoboardDot other) { return other.x == x + 1 && other.y == y; }
+
+	public boolean isNeighbor(ProtoboardDot other) {
+		return isNeighborBottom(other) || isNeighborTop(other) || isNeighborRight(other) || isNeighborLeft(other);
+	}
 	
 	public boolean link(ProtoboardDot other) {
 		if (isNeighborTop(other) || isNeighborBottom(other) || isNeighborLeft(other) || isNeighborRight(other)) {
 			linkedWith.add(other);
+			//other.linkedWith.add(this);
 			return true;
 		}
 		// TODO: diagonal
@@ -39,7 +48,7 @@ public class ProtoboardDot implements DrawableOnProtoboard {
 	}
 	
 	public boolean unlink(ProtoboardDot other) {
-		return linkedWith.remove(other) || other.linkedWith.remove(this);
+		return linkedWith.remove(other) && other.linkedWith.remove(this);
 	}
 
 	@Override
