@@ -23,7 +23,8 @@ public class TraceBuilder {
                         if (d.getX() == dot.getX() && d.getY() > min && d.getY() < max)
                             trace.getDots().add(d);
                 }
-                trace.getDots().add(dot);
+                if (!trace.getDots().contains(dot))
+                    trace.getDots().add(dot);
             }
             if (dot.getY() == trace.getDots().getLast().getY()) {
                 int max = dot.getX() > trace.getDots().getLast().getX() ? dot.getX() : trace.getDots().getLast().getX();
@@ -33,7 +34,8 @@ public class TraceBuilder {
                         if (d.getY() == dot.getY() && d.getX() > min && d.getX() < max)
                             trace.getDots().add(d);
                 }
-                trace.getDots().add(dot);
+                if (!trace.getDots().contains(dot))
+                    trace.getDots().add(dot);
             }
         }
         return trace;

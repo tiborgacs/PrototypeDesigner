@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.beans.property.SimpleObjectProperty;
@@ -146,6 +147,8 @@ public class ProtoboardController {
 		context.setFill(Color.rgb( 	204, 153, 51));
 		context.fillRect(0, 0, boardWidth*24, boardHeight*24);
 		for(ProtoboardDot dot: dots) dot.drawOnProtoboard(context);
+		for (TreeItem<ProtoLinkingItem> traceItem: traceDotTable.getRoot().getChildren())
+			traceItem.getValue().getTrace().drawOnProtoboard(context);
 		if (traceBuilder != null) traceBuilder.getTrace().drawOnProtoboard(context);
 		for(ProtoboardVia link: linkTable.getItems()) link.drawOnProtoboard(context);
 		context.setGlobalAlpha(layerSlider.getValue() / 100);
@@ -275,7 +278,8 @@ public class ProtoboardController {
 		if (linkToggle.isSelected() || cutToggle.isSelected()) {
 			final int intX = (int) x / 24;
 			final int intY = (int) y / 24;
-			Optional<ProtoboardDot> linkable = dots.stream().filter(dot -> dot.getX() == intX && dot.getY() == intY).findFirst();
+			Optional<ProtoboardDot> linkable = dots.stream()
+					.filter(dot -> dot.getX() == intX && dot.getY() == intY).findFirst();
 			if (linkable.isPresent()) {
 				/*
 				if (linkToggle.isSelected()) {
@@ -305,35 +309,44 @@ public class ProtoboardController {
 					}
 				}
 				*/
-				if (traceBuilder == null) traceBuilder = new TraceBuilder(linkable.get());
-				else traceBuilder.addDot(linkable.get(), dots);
-				if (e.getClickCount() == 2) {
-					ProtoboardTrace trace = traceBuilder.getTrace();
-					TreeItem<ProtoLinkingItem> traceItem = new TreeItem<>(new ProtoLinkingItem(trace));
-					traceDotTable.getRoot().getChildren().add(traceItem);
-					trace.getDots().forEach(dot -> traceItem.getChildren().add(new TreeItem<>(new ProtoLinkingItem(dot))));
-
-				}
 				if (lastLinked == null) lastLinked = linkable.get();
-				else {
-					if (linkToggle.isSelected()) {
-						lastLinked = linkable.get().link(lastLinked) ? linkable.get() : null;
-						/*if (lastLinked != null) {
-							Optional<TreeItem<ProtoLinkingItem>> optTrace = traceDotTable.getRoot().getChildren().stream()
-									.filter(item -> item.getValue().getTrace() != null)
-									.filter(item -> item.getValue().getTrace().getDots().contains(lastLinked))
-									.findFirst();
-							TreeItem<ProtoLinkingItem> trace = optTrace.orElse(new TreeItem<>(new ProtoLinkingItem(new ProtoboardTrace(lastLinked))));
-							trace.getValue().getTrace().getDots().add(linkable.get());
-							if (!optTrace.isPresent()) {
-								traceDotTable.getRoot().getChildren().add(trace);
-								trace.getChildren().add(new TreeItem<>(new ProtoLinkingItem(lastLinked)));
-							}
-							trace.getChildren().add(new TreeItem<>(new ProtoLinkingItem(linkable.get())));
-						}*/
+				if (linkToggle.isSelected()) {
+					if (traceBuilder == null) traceBuilder = new TraceBuilder(linkable.get());
+					else traceBuilder.addDot(linkable.get(), dots);
+					if (e.getClickCount() == 2) {
+						ProtoboardTrace trace = traceBuilder.getTrace();
+						TreeItem<ProtoLinkingItem> traceItem = new TreeItem<>(new ProtoLinkingItem(trace));
+						traceDotTable.getRoot().getChildren().add(traceItem);
+						trace.getDots().forEach(dot ->
+								traceItem.getChildren().add(new TreeItem<>(new ProtoLinkingItem(dot))));
+						traceBuilder = null;
+						lastLinked = null;
 					}
-					if (cutToggle.isSelected())
-						lastLinked = linkable.get().unlink(lastLinked) ? linkable.get() : null;
+				} else if (cutToggle.isSelected() && linkable.get().isNeighbor(lastLinked)) {
+					List<ProtoboardTrace> tracesToCut = traceDotTable.getRoot().getChildren().stream()
+							.map(TreeItem::getValue).map(ProtoLinkingItem::getTrace)
+							.filter(trace -> trace.getDots().contains(linkable.get())
+									&& trace.getDots().contains(lastLinked)).collect(Collectors.toList());
+					for (ProtoboardTrace trace: tracesToCut) {
+						ProtoboardTrace possibleNewTrace = trace.cut(linkable.get(), lastLinked);
+						if (possibleNewTrace != null) {
+							TreeItem<ProtoLinkingItem> traceItem = new TreeItem<>(new ProtoLinkingItem(possibleNewTrace));
+							traceDotTable.getRoot().getChildren().add(traceItem);
+							possibleNewTrace.getDots().forEach(dot ->
+									traceItem.getChildren().add(new TreeItem<>(new ProtoLinkingItem(dot))));
+						}
+						if (trace.getDots().size() > 1) {
+							traceDotTable.getRoot().getChildren().stream()
+									.filter(item -> item.getValue().getTrace() == trace).findFirst()
+									.ifPresent(item -> item.getChildren()
+											.removeIf(dotItem -> !trace.getDots()
+													.contains(dotItem.getValue().getDot())));
+						} else {
+							traceDotTable.getRoot().getChildren()
+									.removeIf(item -> item.getValue().getTrace() == trace);
+						}
+						lastLinked = null;
+					}
 				}
 			}
 		} else lastLinked = null;
