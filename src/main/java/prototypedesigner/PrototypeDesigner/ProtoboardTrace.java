@@ -1,8 +1,12 @@
 package prototypedesigner.PrototypeDesigner;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import prototypedesigner.PrototypeDesigner.components.DrawableOnProtoboard;
 
@@ -10,6 +14,9 @@ import java.util.LinkedList;
 
 @Getter
 @Setter
+@NoArgsConstructor
+@JsonInclude
+@JsonIdentityInfo(property = "identifier", generator = ObjectIdGenerators.PropertyGenerator.class)
 public class ProtoboardTrace implements DrawableOnProtoboard {
 
     private static int counter = 0;
@@ -18,8 +25,6 @@ public class ProtoboardTrace implements DrawableOnProtoboard {
         identifier = "trace#" + ++counter;
     }
     private LinkedList<ProtoboardDot> dots = new LinkedList<>();
-
-    public ProtoboardTrace() {}
 
     public ProtoboardTrace(ProtoboardDot first) {
         dots.add(first);

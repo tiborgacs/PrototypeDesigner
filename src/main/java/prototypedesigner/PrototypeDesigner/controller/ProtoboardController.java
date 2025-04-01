@@ -2,7 +2,6 @@ package prototypedesigner.PrototypeDesigner.controller;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -16,20 +15,7 @@ import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import prototypedesigner.PrototypeDesigner.*;
-import prototypedesigner.PrototypeDesigner.components.BipolarJunctionTransistor;
-import prototypedesigner.PrototypeDesigner.components.CeramicCapacitor;
-import prototypedesigner.PrototypeDesigner.components.ComponentOrientation;
-import prototypedesigner.PrototypeDesigner.components.Diode;
-import prototypedesigner.PrototypeDesigner.components.DrawableOnProtoboard;
-import prototypedesigner.PrototypeDesigner.components.DualOpAmp;
-import prototypedesigner.PrototypeDesigner.components.FilmCapacitor;
-import prototypedesigner.PrototypeDesigner.components.JunctionFieldEffectTransistor;
-import prototypedesigner.PrototypeDesigner.components.MetalOxideSemiconductorFET;
-import prototypedesigner.PrototypeDesigner.components.PolarizedCapacitor;
-import prototypedesigner.PrototypeDesigner.components.QuadOpAmp;
-import prototypedesigner.PrototypeDesigner.components.Resistor;
-import prototypedesigner.PrototypeDesigner.components.SingleOpAmp;
-import prototypedesigner.PrototypeDesigner.components.Transistor;
+import prototypedesigner.PrototypeDesigner.components.*;
 
 public class ProtoboardController {
 	
@@ -44,30 +30,26 @@ public class ProtoboardController {
 	@FXML private ToggleButton cutToggle;
 
 	@FXML private ToggleButton viaToggle;
-	/*
-	@FXML private ToggleButton resistorToggle;
-	@FXML private ToggleButton ceramicCapToggle;
-	@FXML private ToggleButton filmCapToggle;
-	@FXML private ToggleButton elcoToggle;
-	@FXML private ToggleButton diodeToggle;
-	@FXML private ToggleButton npnToggle;
-	@FXML private ToggleButton pnpToggle;
-	@FXML private ToggleButton njfetToggle;
-	@FXML private ToggleButton pjfetToggle;
-	@FXML private ToggleButton nmosToggle;
-	@FXML private ToggleButton pmosToggle;
-	@FXML private ToggleButton singleAmpToggle;
-	@FXML private ToggleButton dualAmpToggle;
-	@FXML private ToggleButton quadAmpToggle;
-	// TODO: transistors are generic, but add LED?
-	*/
 	@FXML private ToggleButton upToggle;
 	@FXML private ToggleButton downToggle;
 	@FXML private ToggleButton leftToggle;
 	@FXML private ToggleButton rightToggle;
-	@FXML private ToggleGroup orientationGroup;
-	//@FXML private ToggleButton genericIcToggle;
-	//@FXML private ChoiceBox<Integer> genericIcPinsBox;
+	@SuppressWarnings("unused") @FXML private ToggleGroup orientationGroup;
+
+	@FXML TableView<Component> schComponentTable;
+	@FXML TableColumn<Component, String> schCompIdColumn;
+	@FXML TableColumn<Component, String> schCompTypeColumn;
+	@FXML TableColumn<Component, String> schCompValueColumn;
+	@FXML TableColumn<Component, Component> schCompAddColumn;
+	private ToggleGroup schCompAddToggle = new ToggleGroup();
+
+	@FXML private ComboBox<String> pinoutBox;
+
+	@FXML private TableView<Component> protoComponentTable;
+	@FXML private TableColumn<Component, String> protoCompIdColumn;
+	@FXML private TableColumn<Component, String> protoCompTypeColumn;
+	@FXML private TableColumn<Component, String> protoCompValueColumn;
+	@FXML private TableColumn<Component, Component> protoCompRemoveColumn;
 
 	@FXML private TextField rowCountField;
 	private int boardHeight;
@@ -75,28 +57,27 @@ public class ProtoboardController {
 	@FXML private TextField colCountField;
 	private int boardWidth;
 
-	@FXML private TreeTableView<ProtoLinkingItem> traceDotTable;
+	@FXML private TreeTableView<ProtoLinkingItem> traceDotTable; // TODO: delete entire trace
 	@FXML private TreeTableColumn<ProtoLinkingItem, String> traceTypeColumn;
 	@FXML private TreeTableColumn<ProtoLinkingItem, Integer> traceXColumn;
 	@FXML private TreeTableColumn<ProtoLinkingItem, Integer> traceYColumn;
 
-	@FXML private TableView<ProtoboardVia> linkTable;
+	@FXML private TableView<ProtoboardVia> linkTable; // TODO: delete, editable coordinates
 	@FXML private TableColumn<ProtoboardVia, Integer> viaFromXColumn;
 	@FXML private TableColumn<ProtoboardVia, Integer> viaFromYColumn;
 	@FXML private TableColumn<ProtoboardVia, Integer> viaToXColumn;
 	@FXML private TableColumn<ProtoboardVia, Integer> viaToYColumn;
-	// TODO: columns from X, from Y, to X, to Y
 	
 	@FXML private Slider layerSlider;
 	
 	private List<ProtoboardDot> dots = new ArrayList<>();
 	private ProtoboardDot lastLinked = null;
 	private List<DrawableOnProtoboard> drawQueue = new ArrayList<>();
-	private ProtoboardDot lastLinked2 = null;
+	private ProtoboardDot lastViaDot = null;
 
-	private ProtoboardTrace currentTrace;
 	private TraceBuilder traceBuilder;
-	
+	private CircuitDesign design;
+
 	@FXML
 	private void initialize() {
 		layerSlider.setValue(100.0);
@@ -105,10 +86,76 @@ public class ProtoboardController {
 		protoboardCanvas.heightProperty().addListener((obs, ov, nv) -> draw());
 		protoboardCanvas.widthProperty().addListener((obs, ov, nv) -> draw());
 		layerSlider.valueProperty().addListener((obs, ov, nv) -> draw());
-//		genericIcPinsBox.disableProperty().bind(genericIcToggle.selectedProperty().not());
-//		genericIcPinsBox.getItems().setAll(4, 6, 8, 10, 12, 14, 16, 18, 20);
 		protoboardCanvas.setCache(true);
 		protoboardCanvas.setCacheHint(CacheHint.SPEED);
+		buttonMode.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
+			if (newValue != null && newValue.isSelected() && schCompAddToggle.getSelectedToggle() != null)
+				schCompAddToggle.getSelectedToggle().setSelected(false);
+		});
+		schComponentTable.setRowFactory(value -> new TableRow<>() {
+			@Override protected void updateItem(Component item, boolean empty) {
+				super.updateItem(item, empty);
+				if (!empty && item != null && protoComponentTable.getItems().contains(item)) setDisable(true);
+				else setDisable(false);
+			}
+		});
+		schCompIdColumn.setCellValueFactory(value -> new ReadOnlyStringWrapper(value.getValue().getIdentifier()));
+		protoCompIdColumn.setCellValueFactory(value -> new ReadOnlyStringWrapper(value.getValue().getIdentifier()));
+		schCompTypeColumn.setCellValueFactory(value -> new ReadOnlyStringWrapper(value.getValue().getType()));
+		protoCompTypeColumn.setCellValueFactory(value -> new ReadOnlyStringWrapper(value.getValue().getType()));
+		schCompValueColumn.setCellValueFactory(value -> new ReadOnlyStringWrapper(value.getValue().getValue()));
+		protoCompValueColumn.setCellValueFactory(value -> new ReadOnlyStringWrapper(value.getValue().getValue()));
+		schCompAddColumn.setCellValueFactory(value -> new SimpleObjectProperty<>(value.getValue()));
+		protoCompRemoveColumn.setCellValueFactory(value -> new SimpleObjectProperty<>(value.getValue()));
+		schCompAddColumn.setCellFactory(value -> new TableCell<>() {
+			@Override protected void updateItem(Component item, boolean empty) {
+				super.updateItem(item, empty);
+				if (!empty && item != null) {
+					ToggleButton componentAddToggle = new ToggleButton("+");
+					componentAddToggle.setToggleGroup(schCompAddToggle);
+					componentAddToggle.setUserData(item);
+					setGraphic(componentAddToggle);
+				} else setGraphic(null);
+			}
+		});
+		schCompAddToggle.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
+			if (newValue != null && newValue.isSelected()) {
+				if (buttonMode.getSelectedToggle() != null)
+					buttonMode.getSelectedToggle().setSelected(false);
+				if (newValue.getUserData() instanceof BipolarJunctionTransistor
+						|| newValue.getUserData() instanceof JunctionFieldEffectTransistor
+						|| newValue.getUserData() instanceof MetalOxideSemiconductorFET) {
+					pinoutBox.setDisable(false);
+					pinoutBox.getItems().setAll(TransistorPinouts.getBjtPinouts());
+					Component transistor = (Component) newValue.getUserData();
+					if (transistor.getPinout() != null && !transistor.getPinout().isEmpty()) {
+						if (!pinoutBox.getItems().contains(transistor.getPinout()))
+							pinoutBox.getItems().add(transistor.getPinout());
+						pinoutBox.getSelectionModel().select(transistor.getPinout());
+					}
+					pinoutBox.valueProperty().addListener((_observable, _oldValue, _newValue) -> {
+						if (_newValue != null && !_newValue.isEmpty()) transistor.setPinout(_newValue); // TODO: remove listener?
+					});
+				} else {
+					pinoutBox.setDisable(true);
+					pinoutBox.getSelectionModel().clearSelection();
+					pinoutBox.getItems().clear();
+				}
+			}
+		});
+		protoCompRemoveColumn.setCellFactory(value -> new TableCell<>() {
+			@Override protected void updateItem(Component item, boolean empty) {
+				super.updateItem(item, empty);
+				if (!empty && item != null) {
+					Button button = new Button("-");
+					button.setOnAction(e -> {
+						protoComponentTable.getItems().remove(item);
+						draw();
+					});
+					setGraphic(button);
+				} else setGraphic(null);
+			}
+		});
 		rowCountField.setText(boardHeight + "");
 		colCountField.setText(boardWidth + "");
 		traceDotTable.setRoot(new TreeItem<>(new ProtoLinkingItem()));
@@ -119,6 +166,13 @@ public class ProtoboardController {
 		viaFromYColumn.setCellValueFactory(value -> new SimpleObjectProperty<>(value.getValue().getStart().getY()));
 		viaToXColumn.setCellValueFactory(value -> new SimpleObjectProperty<>(value.getValue().getEnd().getX()));
 		viaToYColumn.setCellValueFactory(value -> new SimpleObjectProperty<>(value.getValue().getEnd().getY()));
+		draw();
+	}
+
+	public void setDesign(CircuitDesign design) {
+		this.design = design;
+		// TODO: fill lists and tables
+		schComponentTable.getItems().setAll(design.getSchematicsComponents());
 		draw();
 	}
 
@@ -152,8 +206,8 @@ public class ProtoboardController {
 		if (traceBuilder != null) traceBuilder.getTrace().drawOnProtoboard(context);
 		for(ProtoboardVia link: linkTable.getItems()) link.drawOnProtoboard(context);
 		context.setGlobalAlpha(layerSlider.getValue() / 100);
-		for(DrawableOnProtoboard drawable: drawQueue) {
-			drawable.drawOnProtoboard(context);
+		for(Component drawable: protoComponentTable.getItems()) {
+			((DrawableOnProtoboard) drawable).drawOnProtoboard(context);
 		}
 	}
 	
@@ -168,147 +222,12 @@ public class ProtoboardController {
 		if (rightToggle.isSelected()) orientation = ComponentOrientation.RIGHT;
 		if (upToggle.isSelected()) orientation = ComponentOrientation.UP;
 		if (downToggle.isSelected()) orientation = ComponentOrientation.DOWN;
-		/*
-		if (genericIcToggle.isSelected()) {
-			MicroChip mc = new MicroChip(genericIcPinsBox.getValue());
-			mc.setX((int) x);
-			mc.setY((int) y);
-			drawQueue.add(mc);
-			lastLinked = null;
-		}
-		if (resistorToggle.isSelected()) {
-			Resistor c = new Resistor();
-			c.setProX((int) x);
-			c.setProY((int) y);
-			c.setProtoboardOrientation(orientation);
-			drawQueue.add(c);
-		}
-		if (ceramicCapToggle.isSelected()) {
-			CeramicCapacitor c = new CeramicCapacitor();
-			c.setProX((int) x);
-			c.setProY((int) y);
-			c.setProtoboardOrientation(orientation);
-			drawQueue.add(c);
-		}
-		if (filmCapToggle.isSelected()) {
-			FilmCapacitor c = new FilmCapacitor();
-			c.setProX((int) x);
-			c.setProY((int) y);
-			c.setProtoboardOrientation(orientation);
-			drawQueue.add(c);
-		}
-		if (elcoToggle.isSelected()) {
-			PolarizedCapacitor c = new PolarizedCapacitor();
-			c.setProX((int) x);
-			c.setProY((int) y);
-			c.setProtoboardOrientation(orientation);
-			drawQueue.add(c);
-		}
-		if (diodeToggle.isSelected()) {
-			Diode c = new Diode();
-			c.setProX((int) x);
-			c.setProY((int) y);
-			c.setProtoboardOrientation(orientation);
-			drawQueue.add(c);
-		}
-		if (npnToggle.isSelected()) {
-			Transistor c = new BipolarJunctionTransistor();
-			c.setProX((int) x);
-			c.setProY((int) y);
-			c.setProtoboardOrientation(orientation);
-			drawQueue.add(c);
-		}
-		if (pnpToggle.isSelected()) {
-			Transistor c = new BipolarJunctionTransistor();
-			c.setProX((int) x);
-			c.setProY((int) y);
-			c.setProtoboardOrientation(orientation);
-			drawQueue.add(c);
-		}
-		if (njfetToggle.isSelected()) {
-			Transistor c = new JunctionFieldEffectTransistor();
-			c.setProX((int) x);
-			c.setProY((int) y);
-			c.setProtoboardOrientation(orientation);
-			drawQueue.add(c);
-		}
-		if (pjfetToggle.isSelected()) {
-			Transistor c = new JunctionFieldEffectTransistor();
-			c.setProX((int) x);
-			c.setProY((int) y);
-			c.setProtoboardOrientation(orientation);
-			drawQueue.add(c);
-		}
-		if (nmosToggle.isSelected()) {
-			Transistor c = new MetalOxideSemiconductorFET();
-			c.setProX((int) x);
-			c.setProY((int) y);
-			c.setProtoboardOrientation(orientation);
-			drawQueue.add(c);
-		}
-		if (pmosToggle.isSelected()) {
-			Transistor c = new MetalOxideSemiconductorFET();
-			c.setProX((int) x);
-			c.setProY((int) y);
-			c.setProtoboardOrientation(orientation);
-			drawQueue.add(c);
-		}
-		if (singleAmpToggle.isSelected()) {
-			SingleOpAmp c = new SingleOpAmp();
-			c.setProX((int) x);
-			c.setProY((int) y);
-			c.setProtoboardOrientation(orientation);
-			drawQueue.add(c);
-		}
-		if (dualAmpToggle.isSelected()) {
-			DualOpAmp c = new DualOpAmp();
-			c.setProX((int) x);
-			c.setProY((int) y);
-			c.setProtoboardOrientation(orientation);
-			drawQueue.add(c);
-		}
-		if (quadAmpToggle.isSelected()) {
-			QuadOpAmp c = new QuadOpAmp();
-			c.setProX((int) x);
-			c.setProY((int) y);
-			c.setProtoboardOrientation(orientation);
-			drawQueue.add(c);
-		}
-		*/
 		if (linkToggle.isSelected() || cutToggle.isSelected()) {
 			final int intX = (int) x / 24;
 			final int intY = (int) y / 24;
 			Optional<ProtoboardDot> linkable = dots.stream()
 					.filter(dot -> dot.getX() == intX && dot.getY() == intY).findFirst();
 			if (linkable.isPresent()) {
-				/*
-				if (linkToggle.isSelected()) {
-					if (currentTrace == null) currentTrace = new ProtoboardTrace(linkable.get());
-					else {
-						Optional<ProtoboardDot> newLink = currentTrace.getDots().stream().filter(dot -> dot.link(linkable.get())).findFirst();
-						if (newLink.isPresent()) {
-							currentTrace.getDots().add(linkable.get());
-							Optional<TreeItem<ProtoLinkingItem>> optTrace = traceDotTable.getRoot().getChildren().stream()
-									.filter(item -> item.getValue().getTrace() != null)
-									.filter(item -> item.getValue().getTrace().getDots().contains(linkable.get()))
-									.findFirst();
-							if (!optTrace.isPresent()) {
-								TreeItem<ProtoLinkingItem> newTraceItem = new TreeItem<>(new ProtoLinkingItem(currentTrace));
-								traceDotTable.getRoot().getChildren().add(newTraceItem);
-								for (ProtoboardDot dot: currentTrace.getDots()) {
-									if (newTraceItem.getChildren().stream().noneMatch(item -> item.getValue().getDot() == dot)) {
-										TreeItem<ProtoLinkingItem> newDotItem = new TreeItem<>(new ProtoLinkingItem(dot));
-										newTraceItem.getChildren().add(newDotItem);
-									}
-								}
-							} else {
-								if (optTrace.get().getChildren().stream().noneMatch(item -> item.getValue().getDot() == linkable.get()))
-									optTrace.get().getChildren().add(new TreeItem<>(new ProtoLinkingItem(linkable.get())));
-							}
-						}
-					}
-				}
-				*/
 				if (lastLinked == null) lastLinked = linkable.get();
 				if (linkToggle.isSelected()) {
 					if (traceBuilder == null) traceBuilder = new TraceBuilder(linkable.get());
@@ -355,14 +274,25 @@ public class ProtoboardController {
 			final int intY = (int) y / 24;
 			Optional<ProtoboardDot> linkable = dots.stream().filter(dot -> dot.getX() == intX && dot.getY() == intY).findFirst();
 			if (linkable.isPresent()) {
-				if (lastLinked2 == null) lastLinked2 = linkable.get();
+				if (lastViaDot == null) lastViaDot = linkable.get();
 				else {
-					ProtoboardVia link = new ProtoboardVia(lastLinked2, linkable.get());
+					ProtoboardVia link = new ProtoboardVia(lastViaDot, linkable.get());
 					linkTable.getItems().add(link);
-					lastLinked2 = null;
+					lastViaDot = null;
 				}
 			}
-		} else lastLinked2 = null;
+		} else lastViaDot = null;
+		if (schCompAddToggle.getSelectedToggle() != null) {
+			Component c = (Component) schCompAddToggle.getSelectedToggle().getUserData();
+			// TODO: spanning for R, D, C?
+			c.setProtoboardOrientation(orientation);
+			c.setProX((int) x);
+			c.setProY((int) y);
+			if (!protoComponentTable.getItems().contains(c))
+				protoComponentTable.getItems().add(c);
+			schComponentTable.refresh();
+		}
+		e.consume();
 		draw();
 	}
 	

@@ -5,7 +5,9 @@ import javafx.scene.paint.Color;
 import lombok.Getter;
 import lombok.Setter;
 
-public class Capacitor extends Component {
+@Getter
+@Setter
+public class Capacitor extends Component implements Spanning {
 
 	private static int idCounter = 0;
 
@@ -21,6 +23,13 @@ public class Capacitor extends Component {
     public static void setCounter(int i) {
 		idCounter = i;
     }
+
+	private boolean spanningOnStripboard;
+	private boolean spanningOnProtoboard;
+	private Coordinate startOnStripboard;
+	private Coordinate startOnProtoboard;
+	private Coordinate endOnStripboard;
+	private Coordinate endOnProtoboard;
 
     @Override
 	public void setSchX(int x) {
@@ -67,5 +76,4 @@ public class Capacitor extends Component {
 		context.strokeText(identifier, schX, schY);
 	}
 
-	
 }

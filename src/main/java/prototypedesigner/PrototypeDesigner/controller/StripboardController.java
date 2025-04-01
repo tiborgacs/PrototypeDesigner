@@ -107,7 +107,10 @@ public class StripboardController {
 				super.updateItem(item, empty);
 				if (!empty && item != null) {
 					Button button = new Button("-");
-					button.setOnAction(e -> stripComponentTable.getItems().remove(item));
+					button.setOnAction(e -> {
+						stripComponentTable.getItems().remove(item);
+						draw();
+					});
 					setGraphic(button);
 				} else setGraphic(null);
 			}
@@ -200,7 +203,7 @@ public class StripboardController {
 	public void setDesign(CircuitDesign design) {
 		this.design = design;
 		// TODO: fill lists and tables
-		schComponentTable.getItems().addAll(design.getSchematicsComponents());
+		schComponentTable.getItems().setAll(design.getSchematicsComponents());
 		draw();
 	}
 
@@ -226,30 +229,6 @@ public class StripboardController {
 		x = x - (x % 24);
 		double y = e.getY();
 		y = y - (y % 24);
-//		if (chipToggle.isSelected()) {
-//			/*
-//			BipolarJunctionTransistor bjt = new BipolarJunctionTransistor();
-//			bjt.setStrX((int) x);
-//			bjt.setStrY((int) y);
-//			drawQueue.add(bjt);
-//			*/
-//			if (spanStarted == null) {
-//				spanStarted = new Coordinate((int) x, (int) y);
-//			} else {
-//				Resistor r = new Resistor();
-//				r.setSpanning(true);
-//				r.setStart(spanStarted);
-//				r.setStrX(spanStarted.getX());
-//				r.setStrY(spanStarted.getY());
-//				r.setEnd(new Coordinate((int) x, (int) y));
-//				spanStarted = null;
-//				/*
-//				r.setStrX((int) x);
-//				r.setStrY((int) y);
-//				*/
-//				drawQueue.add(r);
-//			}
-//		}
 		if (cutToggle.isSelected()) drawStripeCut(x/24, y/24);
 		if (linkToggle.isSelected()) {
 			if (linkStarted == null) {
@@ -270,6 +249,7 @@ public class StripboardController {
 			c.setStrY((int) y);
 			if (!stripComponentTable.getItems().contains(c))
 				stripComponentTable.getItems().add(c);
+			schComponentTable.refresh();
 		}
 		e.consume();
 //		for (DrawableOnStripboard drawable: drawQueue) {

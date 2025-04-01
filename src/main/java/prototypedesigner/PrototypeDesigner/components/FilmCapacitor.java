@@ -3,7 +3,7 @@ package prototypedesigner.PrototypeDesigner.components;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
-public class FilmCapacitor extends Capacitor implements DrawableOnStripboard, DrawableOnProtoboard {
+public abstract class FilmCapacitor extends Capacitor implements DrawableOnStripboard, DrawableOnProtoboard {
 	
 	{
 		schematicsOrientation = ComponentOrientation.UP;

@@ -3,7 +3,7 @@ package prototypedesigner.PrototypeDesigner.components;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
-public class CeramicCapacitor extends Capacitor implements DrawableOnStripboard, DrawableOnProtoboard {
+public abstract class CeramicCapacitor extends Capacitor implements DrawableOnStripboard, DrawableOnProtoboard {
 	{
 		stripboardOrientation = ComponentOrientation.LEFT;
 		protoboardOrientation = ComponentOrientation.UP;

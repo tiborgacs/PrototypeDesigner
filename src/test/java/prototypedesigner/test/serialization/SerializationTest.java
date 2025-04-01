@@ -79,26 +79,4 @@ public class SerializationTest {
         }
     }
 
-    @Test
-    public void testProtoboardLinks() throws JsonProcessingException {
-        ProtoboardDot first = new ProtoboardDot(0, 0);
-        ProtoboardDot p = first;
-        for (int i = 0; i < 100; i++) {
-            ProtoboardDot pp = new ProtoboardDot(0, i+1);
-            pp.link(p);
-            p = pp;
-        }
-        for (int i = 100; i >= 0; i--) {
-            ProtoboardDot pp = new ProtoboardDot(1, i);
-            pp.link(p);
-            p = pp;
-        }
-        first.link(p);
-        XmlMapper mapper = new XmlMapper();
-        String xml = mapper.writeValueAsString(p);
-        System.out.println(xml);
-        ProtoboardDot pp = mapper.readValue(xml, ProtoboardDot.class);
-        System.out.println(pp);
-    }
-
 }

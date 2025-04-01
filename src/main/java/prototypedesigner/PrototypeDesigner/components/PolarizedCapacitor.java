@@ -2,7 +2,11 @@ package prototypedesigner.PrototypeDesigner.components;
 
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 public class PolarizedCapacitor extends Capacitor implements DrawableOnStripboard, DrawableOnProtoboard {
 
 	{
@@ -12,6 +16,13 @@ public class PolarizedCapacitor extends Capacitor implements DrawableOnStripboar
 		negativeLeg.setIdentifier(identifier + "_C");
 		type = "PolarizedCapacitor";
 	}
+
+	private boolean spanningOnStripboard;
+	private boolean spanningOnProtoboard;
+	private Coordinate startOnStripboard;
+	private Coordinate startOnProtoboard;
+	private Coordinate endOnStripboard;
+	private Coordinate endOnProtoboard;
 
 	@Override
 	public void setSchX(int x) {

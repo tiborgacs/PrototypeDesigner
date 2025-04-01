@@ -55,6 +55,7 @@ public class MainController {
         this.design = design;
         schematicsViewController.setDesign(design);
         stripboardViewController.setDesign(design);
+        protoboardViewController.setDesign(design);
         Wire.setCounter(design.getConnectionsOnSchematics().size());
         int transistorCount = 0;
         int resistorCount = 0;

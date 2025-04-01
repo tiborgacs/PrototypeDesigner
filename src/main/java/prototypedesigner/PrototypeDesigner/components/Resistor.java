@@ -10,9 +10,12 @@ public class Resistor extends Component implements DrawableOnStripboard, Drawabl
 
 	private static int idCounter = 0;
 
-	@Getter @Setter private boolean spanning;
-	private Coordinate spanStart;
-	private Coordinate spanEnd;
+	private boolean spanningOnStripboard;
+	private boolean spanningOnProtoboard;
+	private Coordinate startOnStripboard;
+	private Coordinate startOnProtoboard;
+	private Coordinate endOnStripboard;
+	private Coordinate endOnProtoboard;
 
 	{
 		identifier = "R" + ++idCounter;
@@ -27,16 +30,12 @@ public class Resistor extends Component implements DrawableOnStripboard, Drawabl
 		idCounter = i;
     }
 
-    public void setProtoboardOrientation(ComponentOrientation orientation) {
-		protoboardOrientation = orientation;
-	}
-
 	public void setSchX(int x) {
 		schX = x;
 		if (schematicsOrientation == ComponentOrientation.UP || schematicsOrientation == ComponentOrientation.DOWN) {
 			terminals.get(0).setSchX(x+12);
 			terminals.get(1).setSchX(x+12);
-		} else {
+		} else { // TODO: flip?
 			terminals.get(0).setSchX(x);
 			terminals.get(1).setSchX(x+48);
 		}
@@ -47,6 +46,7 @@ public class Resistor extends Component implements DrawableOnStripboard, Drawabl
 		if (schematicsOrientation == ComponentOrientation.UP || schematicsOrientation == ComponentOrientation.DOWN) {
 			terminals.get(0).setSchY(y);
 			terminals.get(1).setSchY(y+48);
+			// TODO: flip?
 		} else {
 			terminals.get(0).setSchY(y+12);
 			terminals.get(1).setSchY(y+12);
@@ -64,6 +64,7 @@ public class Resistor extends Component implements DrawableOnStripboard, Drawabl
 			context.strokeRect(x + 6, y + 6, 12, 36);
 			context.strokeLine(x + 12, y, x + 12, y + 6);
 			context.strokeLine(x + 12, y + 42, x + 12, y + 48);
+			// TODO: identifier - KiCAD has it on the right
 		} else {
 			context.strokeRect(x + 6, y + 6, 36, 12);
 			context.strokeLine(x, y + 12, x + 6, y + 12);
@@ -74,23 +75,26 @@ public class Resistor extends Component implements DrawableOnStripboard, Drawabl
 
 	@Override
 	public void drawOnStripboard(GraphicsContext context) {
-		draw(context, strX, strY, stripboardOrientation);
+		draw(context, strX, strY, stripboardOrientation, spanningOnStripboard, startOnStripboard, endOnStripboard);
 	}
 
 	@Override
 	public void drawOnProtoboard(GraphicsContext context) {
-		draw(context, proX, proY, protoboardOrientation);
+		draw(context, proX, proY, protoboardOrientation, spanningOnProtoboard, startOnProtoboard, endOnProtoboard);
 	}
 	
-	private void draw(GraphicsContext context, int x, int y, ComponentOrientation orientation) {
+	private void draw(GraphicsContext context, int x, int y, ComponentOrientation orientation,
+					  boolean spanning, Coordinate spanStart, Coordinate spanEnd) {
 		context.setFill(Color.DODGERBLUE);
 		if (spanning) {
 			// line - drawing in the middle - line
-			int h = Math.abs(spanStart.getY()-spanEnd.getY());
-			context.fillRoundRect(x + 3, y + 12+ h/2 - 32, 18, 64, 12, 12);
-			context.setFill(Color.DARKGREY);
-			context.fillRoundRect(x+9, y+12, 6, h/2-32, 6, 6);
-			context.fillRoundRect(x+9, y+12 + h/2 + 32, 6, h/2-32, 6, 6);
+			if (orientation == ComponentOrientation.UP || orientation == ComponentOrientation.DOWN) {
+				int h = Math.abs(spanStart.getY() - spanEnd.getY());
+				context.fillRoundRect(x + 3, y + 12 + h / 2 - 32, 18, 64, 12, 12);
+				context.setFill(Color.DARKGREY);
+				context.fillRoundRect(x + 9, y + 12, 6, h / 2 - 32, 6, 6);
+				context.fillRoundRect(x + 9, y + 12 + h / 2 + 32, 6, h / 2 - 32, 6, 6);
+			}
 		} else {
 			if (orientation == ComponentOrientation.UP || orientation == ComponentOrientation.DOWN) {
 				context.fillRoundRect(x + 3, y + 16, 18, 64, 12, 12);
@@ -101,23 +105,4 @@ public class Resistor extends Component implements DrawableOnStripboard, Drawabl
 		}
 	}
 
-	@Override
-	public Coordinate getStart() {
-		return spanStart;
-	}
-
-	@Override
-	public void setStart(Coordinate start) {
-		spanStart = start;
-	}
-
-	@Override
-	public Coordinate getEnd() {
-		return spanEnd;
-	}
-
-	@Override
-	public void setEnd(Coordinate end) {
-		spanEnd = end;
-	}
 }

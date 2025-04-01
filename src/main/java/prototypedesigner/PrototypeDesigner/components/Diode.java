@@ -5,6 +5,8 @@ import javafx.scene.paint.Color;
 import lombok.Getter;
 import lombok.Setter;
 
+@Getter
+@Setter
 public class Diode extends Component implements DrawableOnStripboard, DrawableOnProtoboard, Spanning {
 
 	private static int idCounter = 0;
@@ -18,11 +20,12 @@ public class Diode extends Component implements DrawableOnStripboard, DrawableOn
 		cathodeLeg.setIdentifier(identifier + "_C");
 	}
 
-	@Getter
-	@Setter
-	private boolean spanning;
-	private Coordinate spanStart;
-	private Coordinate spanEnd;
+	private boolean spanningOnStripboard;
+	private boolean spanningOnProtoboard;
+	private Coordinate startOnStripboard;
+	private Coordinate startOnProtoboard;
+	private Coordinate endOnStripboard;
+	private Coordinate endOnProtoboard;
 
     public static void setCounter(int i) {
 		idCounter = i;
@@ -45,26 +48,6 @@ public class Diode extends Component implements DrawableOnStripboard, DrawableOn
 		}
 	}
 
-	@Override
-	public Coordinate getStart() {
-		return spanStart;
-	}
-
-	@Override
-	public void setStart(Coordinate start) {
-		spanStart = start;
-	}
-
-	@Override
-	public Coordinate getEnd() {
-		return spanEnd;
-	}
-
-	@Override
-	public void setEnd(Coordinate end) {
-		spanEnd = end;
-	}
-	
 	@Override
 	public void setSchY(int y) {
 		super.setSchY(y);
@@ -128,11 +111,10 @@ public class Diode extends Component implements DrawableOnStripboard, DrawableOn
 	private void draw(GraphicsContext context, int x, int y, ComponentOrientation orientation) {
 		if (orientation == ComponentOrientation.UP) {
 			context.setFill(Color.BLACK);
-			context.fillRect(x+3, y+16, 18, 8);
+			// TODO: can grow with span?
+			context.fillRect(x+3, y+16, 18, 16);
 			context.setFill(Color.WHITE);
-			context.fillRect(x+3, y+24, 18, 8);
-			context.setFill(Color.BLACK);
-			context.fillRect(x+3, y+32, 18, 24);
+			context.fillRect(x+4, y+21, 16, 4);
 		}
 		if (orientation == ComponentOrientation.DOWN) {
 			context.setFill(Color.BLACK);
