@@ -74,6 +74,7 @@ public class ProtoboardController {
 	private ProtoboardDot lastLinked = null;
 	private List<DrawableOnProtoboard> drawQueue = new ArrayList<>();
 	private ProtoboardDot lastViaDot = null;
+	private Coordinate spanStarted;
 
 	private TraceBuilder traceBuilder;
 	private CircuitDesign design;
@@ -150,6 +151,7 @@ public class ProtoboardController {
 					Button button = new Button("-");
 					button.setOnAction(e -> {
 						protoComponentTable.getItems().remove(item);
+						schComponentTable.refresh();
 						draw();
 					});
 					setGraphic(button);
@@ -217,14 +219,14 @@ public class ProtoboardController {
 		x = x - (x % 24);
 		double y = e.getY();
 		y = y - (y % 24);
+		final int intX = (int) x / 24;
+		final int intY = (int) y / 24;
 		ComponentOrientation orientation = null;
 		if (leftToggle.isSelected()) orientation = ComponentOrientation.LEFT;
 		if (rightToggle.isSelected()) orientation = ComponentOrientation.RIGHT;
 		if (upToggle.isSelected()) orientation = ComponentOrientation.UP;
 		if (downToggle.isSelected()) orientation = ComponentOrientation.DOWN;
 		if (linkToggle.isSelected() || cutToggle.isSelected()) {
-			final int intX = (int) x / 24;
-			final int intY = (int) y / 24;
 			Optional<ProtoboardDot> linkable = dots.stream()
 					.filter(dot -> dot.getX() == intX && dot.getY() == intY).findFirst();
 			if (linkable.isPresent()) {
@@ -270,8 +272,6 @@ public class ProtoboardController {
 			}
 		} else lastLinked = null;
 		if (viaToggle.isSelected()) {
-			final int intX = (int) x / 24;
-			final int intY = (int) y / 24;
 			Optional<ProtoboardDot> linkable = dots.stream().filter(dot -> dot.getX() == intX && dot.getY() == intY).findFirst();
 			if (linkable.isPresent()) {
 				if (lastViaDot == null) lastViaDot = linkable.get();
@@ -284,13 +284,31 @@ public class ProtoboardController {
 		} else lastViaDot = null;
 		if (schCompAddToggle.getSelectedToggle() != null) {
 			Component c = (Component) schCompAddToggle.getSelectedToggle().getUserData();
-			// TODO: spanning for R, D, C?
 			c.setProtoboardOrientation(orientation);
-			c.setProX((int) x);
-			c.setProY((int) y);
-			if (!protoComponentTable.getItems().contains(c))
-				protoComponentTable.getItems().add(c);
-			schComponentTable.refresh();
+			if (c instanceof Spanning) {
+				if (spanStarted == null) spanStarted = new Coordinate(intX, intY);
+				else {
+					Spanning sc = (Spanning) c;
+					sc.setSpanningOnProtoboard(true);
+					if (intX > spanStarted.getX() || intY > spanStarted.getY()) {
+						sc.setStartOnProtoboard(spanStarted);
+						sc.setEndOnProtoboard(new Coordinate(intX, intY));
+					} else {
+						sc.setStartOnProtoboard(new Coordinate(intX, intY));
+						sc.setEndOnProtoboard(spanStarted);
+					}
+					if (!protoComponentTable.getItems().contains(c))
+						protoComponentTable.getItems().add(c);
+					schComponentTable.refresh();
+					spanStarted = null;
+				}
+			} else {
+				c.setProX(intX);
+				c.setProY(intY);
+				if (!protoComponentTable.getItems().contains(c))
+					protoComponentTable.getItems().add(c);
+				schComponentTable.refresh();
+			}
 		}
 		e.consume();
 		draw();

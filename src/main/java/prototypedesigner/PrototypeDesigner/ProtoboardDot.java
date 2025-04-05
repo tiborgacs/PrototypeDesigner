@@ -23,7 +23,6 @@ public class ProtoboardDot implements DrawableOnProtoboard {
 	private int x;
 	private int y;
 	private String identifier;
-	private Set<ProtoboardDot> linkedWith = new HashSet<>();
 
 	public ProtoboardDot(int x, int y) {
 		this.x = x;
@@ -46,13 +45,6 @@ public class ProtoboardDot implements DrawableOnProtoboard {
 		context.fillOval(x*24+3, y*24+3, 18, 18);
 		context.setFill(Color.WHITE);
 		context.fillOval(x*24+9, y*24+9, 6, 6);
-		for (ProtoboardDot linked: linkedWith) {
-			context.setFill(Color.SILVER);
-			if (isNeighborTop(linked)) context.fillRect(x*24+9, linked.y*24+15, 6, 18);
-			if (isNeighborBottom(linked)) context.fillRect(x*24+9, y*24+15, 6, 18);
-			if (isNeighborLeft(linked)) context.fillRect(linked.x*24+15, y*24+9, 18, 6);
-			if (isNeighborRight(linked)) context.fillRect(x*24+15, y*24+9, 18, 6);
-		}
 	}
 
 }

@@ -109,6 +109,7 @@ public class StripboardController {
 					Button button = new Button("-");
 					button.setOnAction(e -> {
 						stripComponentTable.getItems().remove(item);
+						schComponentTable.refresh();
 						draw();
 					});
 					setGraphic(button);
@@ -245,8 +246,8 @@ public class StripboardController {
 			Component c = (Component) schCompAddToggle.getSelectedToggle().getUserData();
 			// TODO: spanning for R, D, C
 			c.setStripboardOrientation(getOrientation());
-			c.setStrX((int) x);
-			c.setStrY((int) y);
+			c.setStrX((int) x/24);
+			c.setStrY((int) y/24);
 			if (!stripComponentTable.getItems().contains(c))
 				stripComponentTable.getItems().add(c);
 			schComponentTable.refresh();

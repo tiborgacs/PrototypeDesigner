@@ -10,6 +10,7 @@ import lombok.Setter;
 public class PolarizedCapacitor extends Capacitor implements DrawableOnStripboard, DrawableOnProtoboard {
 
 	{
+		terminals.clear();
 		Terminal positiveLeg = new Terminal(this);
 		positiveLeg.setIdentifier(identifier + "_A");
 		Terminal negativeLeg = new Terminal(this);
@@ -58,6 +59,125 @@ public class PolarizedCapacitor extends Capacitor implements DrawableOnStripboar
 		}
 	}
 
+	public void setProX(int x) {
+		proX = x;
+		if (!spanningOnProtoboard) {
+			Terminal anodeLeg = terminals.get(0);
+			Terminal cathodeLeg = terminals.get(1);
+			if (protoboardOrientation == ComponentOrientation.LEFT) {
+				cathodeLeg.setProX(x);
+				anodeLeg.setProX(x+2);
+			} else if (protoboardOrientation == ComponentOrientation.RIGHT) {
+				cathodeLeg.setProX(x+2);
+				anodeLeg.setProX(x);
+			} else {
+				cathodeLeg.setProX(x);
+				anodeLeg.setProX(x);
+			}
+		}
+	}
+
+	public void setProY(int y) {
+		proY = y;
+		if (!spanningOnProtoboard) {
+			Terminal anodeLeg = terminals.get(0);
+			Terminal cathodeLeg = terminals.get(1);
+			if (protoboardOrientation == ComponentOrientation.UP) {
+				cathodeLeg.setProY(y);
+				anodeLeg.setProY(y+2);
+			} else if (protoboardOrientation == ComponentOrientation.DOWN) {
+				cathodeLeg.setProY(y+2);
+				anodeLeg.setProY(y);
+			} else {
+				cathodeLeg.setProY(y);
+				anodeLeg.setProY(y);
+			}
+		}
+	}
+
+	public void setStrX(int x) {
+		strX = x;
+		if (!spanningOnStripboard) {
+			Terminal anodeLeg = terminals.get(0);
+			Terminal cathodeLeg = terminals.get(1);
+			if (stripboardOrientation == ComponentOrientation.LEFT) {
+				cathodeLeg.setStrX(x);
+				anodeLeg.setStrX(x+2);
+			} else if (stripboardOrientation == ComponentOrientation.RIGHT) {
+				cathodeLeg.setStrX(x+2);
+				anodeLeg.setStrX(x);
+			} else {
+				cathodeLeg.setStrX(x);
+				anodeLeg.setStrX(x);
+			}
+		}
+	}
+
+	public void setStrY(int y) {
+		strY = y;
+		if (!spanningOnStripboard) {
+			Terminal anodeLeg = terminals.get(0);
+			Terminal cathodeLeg = terminals.get(1);
+			if (stripboardOrientation == ComponentOrientation.UP) {
+				cathodeLeg.setStrY(y);
+				anodeLeg.setStrY(y+2);
+			} else if (stripboardOrientation == ComponentOrientation.DOWN) {
+				cathodeLeg.setStrY(y+2);
+				anodeLeg.setStrY(y);
+			} else {
+				cathodeLeg.setStrY(y);
+				anodeLeg.setStrY(y);
+			}
+		}
+	}
+
+
+	public void setStartOnProtoboard(Coordinate startOnProtoboard) {
+		this.startOnProtoboard = startOnProtoboard;
+		proX = startOnProtoboard.getX();
+		proY = startOnProtoboard.getY();
+	}
+
+	public void setEndOnProtoboard(Coordinate endOnProtoboard) {
+		this.endOnProtoboard = endOnProtoboard;
+		Terminal anodeLeg = terminals.get(0);
+		Terminal cathodeLeg = terminals.get(1);
+		if (protoboardOrientation == ComponentOrientation.UP || protoboardOrientation == ComponentOrientation.LEFT) {
+			cathodeLeg.setProX(startOnProtoboard.getX());
+			cathodeLeg.setProY(startOnProtoboard.getY());
+			anodeLeg.setProX(endOnProtoboard.getX());
+			anodeLeg.setProY(endOnProtoboard.getY());
+		} else {
+			anodeLeg.setProX(startOnProtoboard.getX());
+			anodeLeg.setProY(startOnProtoboard.getY());
+			cathodeLeg.setProX(endOnProtoboard.getX());
+			cathodeLeg.setProY(endOnProtoboard.getY());
+		}
+	}
+
+	public void setStartOnStripboard(Coordinate startOnStripboard) {
+		this.startOnStripboard = startOnStripboard;
+		strX = startOnStripboard.getX();
+		strY = startOnStripboard.getY();
+	}
+
+	public void setEndOnStripboard(Coordinate endOnStripboard) {
+		this.endOnStripboard = endOnStripboard;
+		Terminal anodeLeg = terminals.get(0);
+		Terminal cathodeLeg = terminals.get(1);
+		if (protoboardOrientation == ComponentOrientation.UP || protoboardOrientation == ComponentOrientation.LEFT) {
+			cathodeLeg.setProX(startOnStripboard.getX());
+			cathodeLeg.setProY(startOnStripboard.getY());
+			anodeLeg.setProX(endOnStripboard.getX());
+			anodeLeg.setProY(endOnStripboard.getY());
+		} else {
+			anodeLeg.setProX(startOnStripboard.getX());
+			anodeLeg.setProY(startOnStripboard.getY());
+			cathodeLeg.setProX(endOnStripboard.getX());
+			cathodeLeg.setProY(endOnStripboard.getY());
+		}
+	}
+
 	@Override
 	public void drawOnSchematics(GraphicsContext context) {
 		int x = schX;
@@ -102,38 +222,65 @@ public class PolarizedCapacitor extends Capacitor implements DrawableOnStripboar
 
 	@Override
 	public void drawOnStripboard(GraphicsContext context) {
-		draw(context, strX, strY, stripboardOrientation);
+		draw(context, strX, strY, stripboardOrientation, spanningOnStripboard, startOnStripboard, endOnStripboard);
 	}
 
 	@Override
 	public void drawOnProtoboard(GraphicsContext context) {
-		draw(context, proX, proY, protoboardOrientation);
+		draw(context, proX, proY, protoboardOrientation, spanningOnProtoboard, startOnProtoboard, endOnProtoboard);
 	}
 	
-	private void draw(GraphicsContext context, int x, int y, ComponentOrientation orientation) {
-		if (orientation == ComponentOrientation.UP) {
-			context.setFill(Color.DARKBLUE);
-			context.fillOval(x-12, y, 48, 48);
-			context.setFill(Color.WHITE);
-			context.fillRect(x+3, y+36, 18, 6);
-		}
-		if (orientation == ComponentOrientation.DOWN) {
-			context.setFill(Color.DARKBLUE);
-			context.fillOval(x-12, y, 48, 48);
-			context.setFill(Color.WHITE);
-			context.fillRect(x+3, y+6, 18, 6);
-		}
-		if (orientation == ComponentOrientation.RIGHT) {
-			context.setFill(Color.DARKBLUE);
-			context.fillOval(x, y-12, 48, 48);
-			context.setFill(Color.WHITE);
-			context.fillRect(x+6, y+3, 6, 18);
-		}
-		if (orientation == ComponentOrientation.LEFT) {
-			context.setFill(Color.DARKBLUE);
-			context.fillOval(x, y-12, 48, 48);
-			context.setFill(Color.WHITE);
-			context.fillRect(x+36, y+3, 6, 18);
+	private void draw(GraphicsContext context, int x, int y, ComponentOrientation orientation,
+					  boolean spanning, Coordinate spanStart, Coordinate spanEnd) {
+		x = x * 24;
+		y = y * 24;
+		if (spanning) {
+			if (orientation == ComponentOrientation.UP || orientation == ComponentOrientation.DOWN) {
+				int h = Math.abs(spanStart.getY() - spanEnd.getY()) * 24;
+				context.setFill(Color.DARKGREY);
+				context.fillRoundRect(x + 9, y + 9, 6, h + 6, 6, 6);
+				context.setFill(Color.DARKBLUE);
+				context.fillOval(x - 12, h/2 - 12, 48, 48);
+				context.setFill(Color.WHITE);
+				if (orientation == ComponentOrientation.UP)
+					context.fillRect(x + 3, h/2 + 24, 18, 6);
+				else context.fillRect(x + 3, h/2 - 6, 18, 6);
+			} else {
+				int w = Math.abs(spanStart.getX() - spanEnd.getX()) * 24;
+				context.setFill(Color.DARKGREY);
+				context.fillRoundRect(x + 9, y + 9, w + 6, 6, 6, 6);
+				context.setFill(Color.DARKBLUE);
+				context.fillOval(w/2 - 12, y - 12, 48, 48);
+				context.setFill(Color.WHITE);
+				if (orientation == ComponentOrientation.RIGHT)
+					context.fillRect(w/2 - 6, y + 3, 6, 18);
+				else context.fillRect(w/2 + 24, y + 3, 6, 18);
+			}
+		} else {
+			if (orientation == ComponentOrientation.UP) {
+				context.setFill(Color.DARKBLUE);
+				context.fillOval(x - 12, y, 48, 48);
+				context.setFill(Color.WHITE);
+				context.fillRect(x + 3, y + 36, 18, 6);
+			}
+			if (orientation == ComponentOrientation.DOWN) {
+				context.setFill(Color.DARKBLUE);
+				context.fillOval(x - 12, y, 48, 48);
+				context.setFill(Color.WHITE);
+				context.fillRect(x + 3, y + 6, 18, 6);
+			}
+			if (orientation == ComponentOrientation.RIGHT) {
+				context.setFill(Color.DARKBLUE);
+				context.fillOval(x, y - 12, 48, 48);
+				context.setFill(Color.WHITE);
+				context.fillRect(x + 6, y + 3, 6, 18);
+			}
+			if (orientation == ComponentOrientation.LEFT) {
+				context.setFill(Color.DARKBLUE);
+				context.fillOval(x, y - 12, 48, 48);
+				context.setFill(Color.WHITE);
+				context.fillRect(x + 36, y + 3, 6, 18);
+			}
 		}
 	}
 
