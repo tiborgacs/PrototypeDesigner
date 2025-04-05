@@ -240,21 +240,21 @@ public class PolarizedCapacitor extends Capacitor implements DrawableOnStripboar
 				context.setFill(Color.DARKGREY);
 				context.fillRoundRect(x + 9, y + 9, 6, h + 6, 6, 6);
 				context.setFill(Color.DARKBLUE);
-				context.fillOval(x - 12, h/2 - 12, 48, 48);
+				context.fillOval(x - 12, y + h/2 - 12, 48, 48);
 				context.setFill(Color.WHITE);
 				if (orientation == ComponentOrientation.UP)
-					context.fillRect(x + 3, h/2 + 24, 18, 6);
-				else context.fillRect(x + 3, h/2 - 6, 18, 6);
+					context.fillRect(x + 3, y+ h/2 + 24, 18, 6);
+				else context.fillRect(x + 3, y + h/2 - 6, 18, 6);
 			} else {
 				int w = Math.abs(spanStart.getX() - spanEnd.getX()) * 24;
 				context.setFill(Color.DARKGREY);
 				context.fillRoundRect(x + 9, y + 9, w + 6, 6, 6, 6);
 				context.setFill(Color.DARKBLUE);
-				context.fillOval(w/2 - 12, y - 12, 48, 48);
+				context.fillOval(x + w/2 - 12, y - 12, 48, 48);
 				context.setFill(Color.WHITE);
 				if (orientation == ComponentOrientation.RIGHT)
-					context.fillRect(w/2 - 6, y + 3, 6, 18);
-				else context.fillRect(w/2 + 24, y + 3, 6, 18);
+					context.fillRect(x + w/2 - 6, y + 3, 6, 18);
+				else context.fillRect(x + w/2 + 24, y + 3, 6, 18);
 			}
 		} else {
 			if (orientation == ComponentOrientation.UP) {

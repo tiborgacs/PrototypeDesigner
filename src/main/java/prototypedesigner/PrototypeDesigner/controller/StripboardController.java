@@ -230,13 +230,15 @@ public class StripboardController {
 		x = x - (x % 24);
 		double y = e.getY();
 		y = y - (y % 24);
-		if (cutToggle.isSelected()) drawStripeCut(x/24, y/24);
+		final int intX = (int) x / 24;
+		final int intY = (int) y / 24;
+		if (cutToggle.isSelected()) drawStripeCut(intX, intY);
 		if (linkToggle.isSelected()) {
 			if (linkStarted == null) {
-				linkStarted = new Coordinate((int) x/24, (int) y/24);
+				linkStarted = new Coordinate(intX, intY);
 			} else {
-				int linkY = Math.min((int) y/24, linkStarted.getY());
-				int span = Math.abs(linkY - Math.max((int) y/24, linkStarted.getY()));
+				int linkY = Math.min(intY, linkStarted.getY());
+				int span = Math.abs(linkY - Math.max(intY, linkStarted.getY()));
 				StripboardLink link = new StripboardLink(linkStarted.getX(), linkY, span);
 				linksTable.getItems().add(link);
 				linkStarted = null;
@@ -244,13 +246,31 @@ public class StripboardController {
 		}
 		if (schCompAddToggle.getSelectedToggle() != null) {
 			Component c = (Component) schCompAddToggle.getSelectedToggle().getUserData();
-			// TODO: spanning for R, D, C
 			c.setStripboardOrientation(getOrientation());
-			c.setStrX((int) x/24);
-			c.setStrY((int) y/24);
-			if (!stripComponentTable.getItems().contains(c))
-				stripComponentTable.getItems().add(c);
-			schComponentTable.refresh();
+			if (c instanceof Spanning) {
+				if (spanStarted == null) spanStarted = new Coordinate(intX, intY);
+				else {
+					Spanning sc = (Spanning) c;
+					sc.setSpanningOnStripboard(true);
+					if (intX > spanStarted.getX() || intY > spanStarted.getY()) {
+						sc.setStartOnStripboard(spanStarted);
+						sc.setEndOnStripboard(new Coordinate(intX, intY));
+					} else {
+						sc.setStartOnStripboard(new Coordinate(intX, intY));
+						sc.setEndOnStripboard(spanStarted);
+					}
+					if (!stripComponentTable.getItems().contains(c))
+						stripComponentTable.getItems().add(c);
+					schComponentTable.refresh();
+					spanStarted = null;
+				}
+			} else {
+				c.setStrX((int) x / 24);
+				c.setStrY((int) y / 24);
+				if (!stripComponentTable.getItems().contains(c))
+					stripComponentTable.getItems().add(c);
+				schComponentTable.refresh();
+			}
 		}
 		e.consume();
 //		for (DrawableOnStripboard drawable: drawQueue) {

@@ -276,7 +276,10 @@ public class ProtoboardController {
 			if (linkable.isPresent()) {
 				if (lastViaDot == null) lastViaDot = linkable.get();
 				else {
-					ProtoboardVia link = new ProtoboardVia(lastViaDot, linkable.get());
+					ProtoboardVia link;
+					if (linkable.get().getX() > lastViaDot.getX() || linkable.get().getY() > lastViaDot.getY())
+						link = new ProtoboardVia(lastViaDot, linkable.get());
+					else link = new ProtoboardVia(linkable.get(), lastViaDot);
 					linkTable.getItems().add(link);
 					lastViaDot = null;
 				}
