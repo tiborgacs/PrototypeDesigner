@@ -37,23 +37,6 @@ public class BipolarJunctionTransistor extends Transistor {
 	}
 
 	@Override
-	public void setStrX(int x) {
-		super.setStrX(x);
-		// TODO: orientation, pinout
-		emitterLeg.setStrX(x);
-		baseLeg.setStrX(x+24);
-		collectorLeg.setStrX(x+48);
-	}
-
-	@Override
-	public void setStrY(int y) {
-		super.setStrY(y);
-		emitterLeg.setStrY(y);
-		baseLeg.setStrY(y);
-		collectorLeg.setStrY(y);
-	}
-
-	@Override
 	public void drawOnSchematics(GraphicsContext context) {
 		int x = schX;
 		int y = schY;
