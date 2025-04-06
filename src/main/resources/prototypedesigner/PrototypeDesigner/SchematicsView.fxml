@@ -68,8 +68,8 @@
                                 <ToggleButton fx:id="singleAmpToggle" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Single OpAmp" toggleGroup="$buttonMode" />
                                 <ToggleButton fx:id="dualAmpToggle" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Dual OpAmp" toggleGroup="$buttonMode" />
                                 <ToggleButton fx:id="quadAmpToggle" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Quad OpAmp" toggleGroup="$buttonMode" />
-                                <ToggleButton fx:id="genericIcToggle" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Generic IC:" toggleGroup="$buttonMode" />
-                                <ChoiceBox fx:id="genericIcPinsBox" prefWidth="150.0" />
+                                <ToggleButton fx:id="genericIcToggle" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Generic IC:" toggleGroup="$buttonMode" visible="false" />
+                                <ChoiceBox fx:id="genericIcPinsBox" prefWidth="150.0" visible="false" />
                             </children>
                         </VBox>
                     </content>
@@ -101,8 +101,8 @@
                         <TreeTableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
                     </columnResizePolicy>
                 </TreeTableView>
-                <Label text="Properties:" />
-                <TableView VBox.vgrow="ALWAYS">
+                <Label text="Properties:" visible="false" VBox.vgrow="NEVER" />
+                <TableView prefHeight="0.0" visible="false" VBox.vgrow="NEVER">
                     <columns>
                         <TableColumn maxWidth="-1.0" minWidth="-1.0" prefWidth="-1.0" text="C1" />
                         <TableColumn maxWidth="-1.0" minWidth="-1.0" prefWidth="-1.0" text="C2" />

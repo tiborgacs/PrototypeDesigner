@@ -16,12 +16,15 @@ public class CircuitDesign {
 	private boolean isSchematics;
 	private boolean isStripboard;
 	private boolean isProtoboard;
-	private List<Component> billOfMaterials;
 	private List<Component> schematicsComponents;
 	private List<Component> stripboardComponents;
 	private List<Component> protoboardComponents;
+	private int protoboardWidth;
+	private int protoboardHeight;
 	private List<Wire> connectionsOnSchematics;
-	private List<Wire> connectionsOnStripboard;
-	private List<Wire> connectionsOnProtoboard;
+	private List<StripboardTrace> connectionsOnStripboard;
+	private List<StripboardLink> linksOnStripboard;
+	private List<ProtoboardTrace> connectionsOnProtoboard;
+	private List<ProtoboardVia> viasOnProtoboard;
 	
 }

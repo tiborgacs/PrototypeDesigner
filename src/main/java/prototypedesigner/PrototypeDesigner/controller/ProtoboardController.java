@@ -1,12 +1,14 @@
 package prototypedesigner.PrototypeDesigner.controller;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.collections.ListChangeListener;
 import javafx.fxml.FXML;
 import javafx.scene.CacheHint;
 import javafx.scene.canvas.Canvas;
@@ -72,7 +74,6 @@ public class ProtoboardController {
 	
 	private List<ProtoboardDot> dots = new ArrayList<>();
 	private ProtoboardDot lastLinked = null;
-	private List<DrawableOnProtoboard> drawQueue = new ArrayList<>();
 	private ProtoboardDot lastViaDot = null;
 	private Coordinate spanStarted;
 
@@ -168,13 +169,67 @@ public class ProtoboardController {
 		viaFromYColumn.setCellValueFactory(value -> new SimpleObjectProperty<>(value.getValue().getStart().getY()));
 		viaToXColumn.setCellValueFactory(value -> new SimpleObjectProperty<>(value.getValue().getEnd().getX()));
 		viaToYColumn.setCellValueFactory(value -> new SimpleObjectProperty<>(value.getValue().getEnd().getY()));
+		protoComponentTable.getItems().addListener((ListChangeListener<? super Component>) lc -> {
+			lc.next();
+			lc.getAddedSubList().stream().distinct().forEach(component ->
+					design.getProtoboardComponents().stream().filter(c -> c.getIdentifier().equals(component.getIdentifier()))
+							.findFirst().ifPresentOrElse(
+									c -> {
+										int idx = design.getProtoboardComponents().indexOf(c);
+										design.getProtoboardComponents().set(idx, component);
+									}, () -> design.getProtoboardComponents().add(component))
+			);
+			design.getProtoboardComponents().removeAll(lc.getRemoved());
+		});
+		traceDotTable.getRoot().getChildren().addListener((ListChangeListener<? super TreeItem<ProtoLinkingItem>>) lc -> {
+			lc.next();
+			lc.getAddedSubList().stream().distinct().forEach(item ->
+					design.getConnectionsOnProtoboard().stream()
+							.filter(t -> t.getIdentifier().equals(item.getValue().getTrace().getIdentifier()))
+							.findFirst().ifPresentOrElse(
+									t -> {
+										int idx = design.getConnectionsOnProtoboard().indexOf(t);
+										design.getConnectionsOnProtoboard().set(idx, item.getValue().getTrace());
+									}, () -> design.getConnectionsOnProtoboard().add(item.getValue().getTrace()))
+			);
+			design.getConnectionsOnProtoboard().removeAll(
+					lc.getRemoved().stream().map(item -> item.getValue().getTrace())
+							.collect(Collectors.toList()));
+		});
+		linkTable.getItems().addListener((ListChangeListener<? super ProtoboardVia>) lc -> {
+			lc.next();
+			lc.getAddedSubList().stream().distinct().forEach(via ->
+					design.getViasOnProtoboard().stream().filter(v -> v.getIdentifier().equals(via.getIdentifier()))
+							.findFirst().ifPresentOrElse(
+									v -> {
+										int idx = design.getViasOnProtoboard().indexOf(v);
+										design.getViasOnProtoboard().set(idx, via);
+									}, () -> design.getViasOnProtoboard().add(via))
+			);
+			design.getViasOnProtoboard().removeAll(lc.getRemoved());
+		});
 		draw();
 	}
 
 	public void setDesign(CircuitDesign design) {
 		this.design = design;
-		// TODO: fill lists and tables
-		schComponentTable.getItems().setAll(design.getSchematicsComponents());
+		schComponentTable.getItems().setAll(
+				design.getSchematicsComponents() == null ? Collections.emptyList() : design.getSchematicsComponents());
+		protoComponentTable.getItems().setAll(
+				design.getProtoboardComponents() == null ? Collections.emptyList() : design.getProtoboardComponents());
+		colCountField.setText(design.getProtoboardWidth() + "");
+		rowCountField.setText(design.getProtoboardHeight() + "");
+		resizeBoard();
+		traceDotTable.getRoot().getChildren().clear();
+		if (design.getConnectionsOnProtoboard() != null)
+			for (ProtoboardTrace trace: design.getConnectionsOnProtoboard()) {
+				TreeItem<ProtoLinkingItem> traceItem = new TreeItem<>(new ProtoLinkingItem(trace));
+				traceDotTable.getRoot().getChildren().add(traceItem);
+				trace.getDots().forEach(dot ->
+						traceItem.getChildren().add(new TreeItem<>(new ProtoLinkingItem(dot))));
+			}
+		linkTable.getItems().setAll(
+				design.getViasOnProtoboard() == null ? Collections.emptyList() : design.getViasOnProtoboard());
 		draw();
 	}
 
@@ -193,6 +248,8 @@ public class ProtoboardController {
 			}
 		}
 		dots.removeIf(d -> d.getX() >= boardWidth || d.getY() >= boardHeight);
+		design.setProtoboardHeight(boardHeight);
+		design.setProtoboardWidth(boardWidth);
 		draw();
 	}
 	

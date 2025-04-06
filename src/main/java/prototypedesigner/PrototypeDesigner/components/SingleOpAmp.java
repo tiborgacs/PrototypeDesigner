@@ -102,6 +102,8 @@ public class SingleOpAmp extends IntegratedCircuit implements DrawableOnStripboa
 	}
 	
 	private void draw(GraphicsContext context, int x, int y, ComponentOrientation orientation) {
+		x = x * 24;
+		y = y * 24;
 		context.setFill(Color.BLACK);
 		if (orientation == ComponentOrientation.UP || orientation == ComponentOrientation.DOWN) {
 			context.fillRect(x+15, y+3, 24*4-30, 24*4-6);

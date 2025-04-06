@@ -23,6 +23,7 @@ import prototypedesigner.PrototypeDesigner.components.Component;
 import javax.imageio.ImageIO;
 import java.awt.image.RenderedImage;
 import java.io.*;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -49,6 +50,14 @@ public class MenuController {
             XmlMapper mapper = new XmlMapper();
             try {
                 CircuitDesign cd = mapper.readValue(file, CircuitDesign.class);
+                if (cd.getSchematicsComponents() == null) cd.setSchematicsComponents(new ArrayList<>());
+                if (cd.getProtoboardComponents() == null) cd.setProtoboardComponents(new ArrayList<>());
+                if (cd.getStripboardComponents() == null) cd.setStripboardComponents(new ArrayList<>());
+                if (cd.getConnectionsOnSchematics() == null) cd.setConnectionsOnSchematics(new ArrayList<>());
+                if (cd.getConnectionsOnProtoboard() == null) cd.setConnectionsOnProtoboard(new ArrayList<>());
+                if (cd.getConnectionsOnStripboard() == null) cd.setConnectionsOnStripboard(new ArrayList<>());
+                if (cd.getLinksOnStripboard() == null) cd.setLinksOnStripboard(new ArrayList<>());
+                if (cd.getViasOnProtoboard() == null) cd.setViasOnProtoboard(new ArrayList<>());
                 PrototypeDesignerApp.getMainController().setDesign(cd);
                 current = file;
             } catch (IOException e) {
@@ -214,7 +223,7 @@ public class MenuController {
         alert.setContentText("Dissertation of Tibor Gacs\n" +
                         "Consultant: Tibor Gregorics Dr.\n" +
                 "Used technologies: Java 11 (OpenJDK),\n" +
-                "OpenJFX,Project Lombok, FasterXML Jackson,\n" +
+                "OpenJFX, Project Lombok, FasterXML Jackson,\n" +
                 "JUnit, Apache Maven");
         alert.getButtonTypes().add(ButtonType.OK);
         alert.initOwner(PrototypeDesignerApp.getMainController().getStage());

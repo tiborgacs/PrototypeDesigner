@@ -4,6 +4,7 @@ import java.util.Comparator;
 
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.collections.ListChangeListener;
 import javafx.fxml.FXML;
 import javafx.scene.CacheHint;
 import javafx.scene.canvas.Canvas;
@@ -158,6 +159,42 @@ public class StripboardController {
 		linkRowColumn.setCellValueFactory(value -> new SimpleObjectProperty<>(value.getValue().getY()));
 		linkColColumn.setCellValueFactory(value -> new SimpleObjectProperty<>(value.getValue().getX()));
 		linkSpanColumn.setCellValueFactory(value -> new SimpleObjectProperty<>(value.getValue().getSpan()));
+		stripComponentTable.getItems().addListener((ListChangeListener<? super Component>) lc -> {
+			lc.next();
+			lc.getAddedSubList().stream().distinct().forEach(component ->
+					design.getStripboardComponents().stream().filter(c -> c.getIdentifier().equals(component.getIdentifier()))
+							.findFirst().ifPresentOrElse(
+									c -> {
+										int idx = design.getStripboardComponents().indexOf(c);
+										design.getStripboardComponents().set(idx, component);
+									}, () -> design.getStripboardComponents().add(component))
+			);
+			design.getStripboardComponents().removeAll(lc.getRemoved());
+		});
+		stripTable.getItems().addListener((ListChangeListener<? super StripboardTrace>) lc -> {
+			lc.next();
+			lc.getAddedSubList().stream().distinct().forEach(trace ->
+					design.getStripboardComponents().stream().filter(c -> c.getIdentifier().equals(trace.getIdentifier()))
+							.findFirst().ifPresentOrElse(
+									c -> {
+										int idx = design.getConnectionsOnStripboard().indexOf(c);
+										design.getConnectionsOnStripboard().set(idx, trace);
+									}, () -> design.getConnectionsOnStripboard().add(trace))
+			);
+			design.getConnectionsOnStripboard().removeAll(lc.getRemoved());
+		});
+		linksTable.getItems().addListener((ListChangeListener<? super StripboardLink>) lc -> {
+			lc.next();
+			lc.getAddedSubList().stream().distinct().forEach(link ->
+					design.getLinksOnStripboard().stream().filter(c -> c.getIdentifier().equals(link.getIdentifier()))
+							.findFirst().ifPresentOrElse(
+									c -> {
+										int idx = design.getLinksOnStripboard().indexOf(c);
+										design.getLinksOnStripboard().set(idx, link);
+									}, () -> design.getLinksOnStripboard().add(link))
+			);
+			design.getLinksOnStripboard().removeAll(lc.getRemoved());
+		});
 		draw();
 	}
 
@@ -195,7 +232,7 @@ public class StripboardController {
 			StripboardTrace last = tail(stripTable.getItems());
 			int increaseWith = boardWidth - last.getX() - last.getW();
 			last.setW(last.getW() + increaseWith);
-			stripTable.getItems().removeIf(s -> s.getW() == 0);
+			stripTable.getItems().removeIf(s -> s.getW() <= 0);
 			stripTable.getItems().removeIf(s -> s.getY() >= boardHeight);
 		}
 		draw();
@@ -205,6 +242,9 @@ public class StripboardController {
 		this.design = design;
 		// TODO: fill lists and tables
 		schComponentTable.getItems().setAll(design.getSchematicsComponents());
+		stripComponentTable.getItems().setAll(design.getStripboardComponents());
+		stripTable.getItems().setAll(design.getConnectionsOnStripboard());
+		linksTable.getItems().setAll(design.getLinksOnStripboard());
 		draw();
 	}
 
