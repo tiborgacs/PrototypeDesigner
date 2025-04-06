@@ -1,28 +1,33 @@
 package prototypedesigner.PrototypeDesigner;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import prototypedesigner.PrototypeDesigner.components.DrawableOnStripboard;
 
-@Getter @Setter
+@Getter
+@Setter
+@NoArgsConstructor
+@JsonInclude
+@JsonIdentityInfo(property = "identifier", generator = ObjectIdGenerators.PropertyGenerator.class)
 public class StripboardTrace implements DrawableOnStripboard {
 	
 	private int x;
 	private int y;
 	private int w;
 
-	private static int counter;
 	private String identifier;
-	{
-		identifier = "str#" + ++counter;
-	}
-	
+
 	public StripboardTrace(int x, int y, int length) {
 		this.x = x;
 		this.y = y;
 		this.w = length;
+		identifier = "str#" + x + ":" + y;
 	}
 	
 	public StripboardTrace cutAt(int x, int y) {

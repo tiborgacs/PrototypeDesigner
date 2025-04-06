@@ -47,4 +47,11 @@ public class ProtoboardDot implements DrawableOnProtoboard {
 		context.fillOval(x*24+9, y*24+9, 6, 6);
 	}
 
+	public boolean equals(Object other) {
+		if (other == null) return false;
+		if (other instanceof ProtoboardDot) {
+			ProtoboardDot _other = (ProtoboardDot) other;
+			return x == _other.x && y == _other.y;
+		} else return false;
+	}
 }

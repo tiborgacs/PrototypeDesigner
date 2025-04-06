@@ -17,6 +17,7 @@ public class MetalOxideSemiconductorFET extends Transistor {
 		gateLeg.setIdentifier(identifier + "_G");
 		sourceLeg = new Terminal(this);
 		sourceLeg.setIdentifier(identifier + "_S");
+		type = "MOSFET";
 	}
 
 	@Override

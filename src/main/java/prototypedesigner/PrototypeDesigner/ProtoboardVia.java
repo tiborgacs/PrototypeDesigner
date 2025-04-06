@@ -1,22 +1,37 @@
 package prototypedesigner.PrototypeDesigner;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import prototypedesigner.PrototypeDesigner.components.Coordinate;
 import prototypedesigner.PrototypeDesigner.components.DrawableOnProtoboard;
 
 @Getter
 @Setter
+@NoArgsConstructor
+@JsonInclude
+@JsonIdentityInfo(property = "identifier", generator = ObjectIdGenerators.PropertyGenerator.class)
 public class ProtoboardVia implements DrawableOnProtoboard {
 
     private ProtoboardDot start;
     private ProtoboardDot end;
 
+    private static int counter = 0;
+    private String identifier;
+
+    public static void setCounter(int counter) {
+        ProtoboardVia.counter = counter;
+    }
+
     public ProtoboardVia(ProtoboardDot start, ProtoboardDot end) {
         this.start = start;
         this.end = end;
+        identifier = "via#" + ++counter;
     }
 
     @Override

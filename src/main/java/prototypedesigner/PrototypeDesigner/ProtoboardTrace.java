@@ -24,6 +24,11 @@ public class ProtoboardTrace implements DrawableOnProtoboard {
     {
         identifier = "trace#" + ++counter;
     }
+
+    public static void setCounter(int counter) {
+        ProtoboardTrace.counter = counter;
+    }
+
     private LinkedList<ProtoboardDot> dots = new LinkedList<>();
 
     public ProtoboardTrace(ProtoboardDot first) {

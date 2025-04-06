@@ -17,6 +17,7 @@ public class JunctionFieldEffectTransistor extends Transistor {
 		gateLeg.setIdentifier(identifier + "_G");
 		sourceLeg = new Terminal(this);
 		sourceLeg.setIdentifier(identifier + "_S");
+		type = "JFET";
 	}
 
 	@Override
