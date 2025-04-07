@@ -12,6 +12,7 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
+import lombok.Getter;
 import prototypedesigner.PrototypeDesigner.*;
 import prototypedesigner.PrototypeDesigner.components.*;
 
@@ -22,12 +23,12 @@ public class StripboardController {
 	@FXML private ScrollPane scrollPane;
 
 	@FXML private TextField rowCountField;
-	private int boardHeight;
+	@Getter private int boardHeight;
 
 	@FXML private TextField colCountField;
-	private int boardWidth;
+	@Getter private int boardWidth;
 	
-	@FXML private Canvas stripboardCanvas;
+	@Getter @FXML private Canvas stripboardCanvas;
 	
 	@FXML private ToggleGroup buttonMode;
 	

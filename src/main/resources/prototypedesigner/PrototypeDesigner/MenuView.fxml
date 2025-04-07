@@ -16,6 +16,8 @@
               <items>
                 <MenuItem mnemonicParsing="false" onAction="#exportBom" text="BOM as Text" />
                 <MenuItem mnemonicParsing="false" onAction="#exportSchematics" text="Schematics as PNG" />
+                <MenuItem mnemonicParsing="false" onAction="#exportStripboard" text="Stripboard as PNG" />
+                <MenuItem mnemonicParsing="false" onAction="#exportProtoboard" text="Protoboard as PNG" />
               </items>
             </Menu>
             <MenuItem mnemonicParsing="false" onAction="#exit" text="Close" />

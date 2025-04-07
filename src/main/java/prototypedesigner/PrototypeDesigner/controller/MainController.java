@@ -26,16 +26,11 @@ public class MainController {
     @FXML private BorderPane schematicsView;
     @Getter @FXML private SchematicsController schematicsViewController;
     @FXML private BorderPane stripboardView;
-    @FXML private StripboardController stripboardViewController;
+    @Getter @FXML private StripboardController stripboardViewController;
     @FXML private BorderPane protoboardView;
-    @FXML private ProtoboardController protoboardViewController;
-
-    private EventBus eventbus = new EventBus(); // TODO: register listeners
+    @Getter @FXML private ProtoboardController protoboardViewController;
 
     @FXML public void initialize() {
-        eventbus.register(schematicsViewController);
-        eventbus.register(stripboardViewController);
-        eventbus.register(protoboardViewController);
         newDesign();
     }
 

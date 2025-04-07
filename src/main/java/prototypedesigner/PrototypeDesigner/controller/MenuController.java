@@ -162,6 +162,50 @@ public class MenuController {
     }
 
     @FXML
+    private void exportStripboard() {
+        FileChooser fc = new FileChooser();
+        fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("PNG images", "*.png"));
+        File file = fc.showSaveDialog(PrototypeDesignerApp.getMainController().getStage());
+        if (file != null) {
+            Canvas canvas = PrototypeDesignerApp.getMainController().getStripboardViewController().getStripboardCanvas();
+            int w = PrototypeDesignerApp.getMainController().getStripboardViewController().getBoardWidth() * 24;
+            if (w == 0) w = (int) canvas.getWidth();
+            int h = PrototypeDesignerApp.getMainController().getStripboardViewController().getBoardHeight() * 24;
+            if (h == 0) h = (int) canvas.getHeight();
+            WritableImage writableImage = new WritableImage(w, h);
+            canvas.snapshot(null, writableImage);
+            RenderedImage renderedImage = SwingFXUtils.fromFXImage(writableImage, null);
+            try {
+                ImageIO.write(renderedImage, "png", file);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    @FXML
+    private void exportProtoboard() {
+        FileChooser fc = new FileChooser();
+        fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("PNG images", "*.png"));
+        File file = fc.showSaveDialog(PrototypeDesignerApp.getMainController().getStage());
+        if (file != null) {
+            Canvas canvas = PrototypeDesignerApp.getMainController().getProtoboardViewController().getProtoboardCanvas();
+            int w = PrototypeDesignerApp.getMainController().getProtoboardViewController().getBoardWidth() * 24;
+            if (w == 0) w = (int) canvas.getWidth();
+            int h = PrototypeDesignerApp.getMainController().getProtoboardViewController().getBoardHeight() * 24;
+            if (h == 0) h = (int) canvas.getHeight();
+            WritableImage writableImage = new WritableImage(w, h);
+            canvas.snapshot(null, writableImage);
+            RenderedImage renderedImage = SwingFXUtils.fromFXImage(writableImage, null);
+            try {
+                ImageIO.write(renderedImage, "png", file);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    @FXML
     private void exit() {
         // TODO: ask to save etc
         Platform.exit();

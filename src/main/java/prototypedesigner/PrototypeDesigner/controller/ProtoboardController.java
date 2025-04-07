@@ -16,6 +16,7 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
+import lombok.Getter;
 import prototypedesigner.PrototypeDesigner.*;
 import prototypedesigner.PrototypeDesigner.components.*;
 
@@ -23,7 +24,7 @@ public class ProtoboardController {
 	
 	@FXML private ScrollPane scrollPane;
 
-	@FXML private Canvas protoboardCanvas;
+	@Getter @FXML private Canvas protoboardCanvas;
 	
 	@FXML private ToggleGroup buttonMode;
 	
@@ -54,10 +55,10 @@ public class ProtoboardController {
 	@FXML private TableColumn<Component, Component> protoCompRemoveColumn;
 
 	@FXML private TextField rowCountField;
-	private int boardHeight;
+	@Getter private int boardHeight;
 
 	@FXML private TextField colCountField;
-	private int boardWidth;
+	@Getter private int boardWidth;
 
 	@FXML private TreeTableView<ProtoLinkingItem> traceDotTable; // TODO: delete entire trace
 	@FXML private TreeTableColumn<ProtoLinkingItem, String> traceTypeColumn;
