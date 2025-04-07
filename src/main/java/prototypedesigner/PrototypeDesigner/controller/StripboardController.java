@@ -16,6 +16,7 @@ import lombok.Getter;
 import prototypedesigner.PrototypeDesigner.*;
 import prototypedesigner.PrototypeDesigner.components.*;
 
+import static prototypedesigner.PrototypeDesigner.Utility.getRowParentItem;
 import static prototypedesigner.PrototypeDesigner.Utility.tail;
 
 public class StripboardController {
@@ -68,6 +69,7 @@ public class StripboardController {
 	@FXML private TableColumn<StripboardLink, Integer> linkRowColumn;
 	@FXML private TableColumn<StripboardLink, Integer> linkColColumn;
 	@FXML private TableColumn<StripboardLink, Integer> linkSpanColumn;
+	@FXML private TableColumn<StripboardLink, StripboardLink> viaDeleteColumn;
 
 	private CircuitDesign design;
 
@@ -160,6 +162,21 @@ public class StripboardController {
 		linkRowColumn.setCellValueFactory(value -> new SimpleObjectProperty<>(value.getValue().getY()));
 		linkColColumn.setCellValueFactory(value -> new SimpleObjectProperty<>(value.getValue().getX()));
 		linkSpanColumn.setCellValueFactory(value -> new SimpleObjectProperty<>(value.getValue().getSpan()));
+		viaDeleteColumn.setCellValueFactory(value -> new SimpleObjectProperty<>(value.getValue()));
+		viaDeleteColumn.setCellFactory(value -> new TableCell<>() {
+			@Override protected void updateItem(StripboardLink item, boolean empty) {
+				super.updateItem(item, empty);
+				if (item == null || empty) setGraphic(null);
+				else {
+					Button deleteButton = new Button("\uD83D\uDDD1");
+					deleteButton.setOnAction(event -> {
+						linksTable.getItems().remove(item);
+						draw();
+					});
+					setGraphic(deleteButton);
+				}
+			}
+		});
 		stripComponentTable.getItems().addListener((ListChangeListener<? super Component>) lc -> {
 			lc.next();
 			lc.getAddedSubList().stream().distinct().forEach(component ->

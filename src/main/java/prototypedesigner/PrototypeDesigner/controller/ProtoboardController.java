@@ -60,16 +60,18 @@ public class ProtoboardController {
 	@FXML private TextField colCountField;
 	@Getter private int boardWidth;
 
-	@FXML private TreeTableView<ProtoLinkingItem> traceDotTable; // TODO: delete entire trace
+	@FXML private TreeTableView<ProtoLinkingItem> traceDotTable;
 	@FXML private TreeTableColumn<ProtoLinkingItem, String> traceTypeColumn;
 	@FXML private TreeTableColumn<ProtoLinkingItem, Integer> traceXColumn;
 	@FXML private TreeTableColumn<ProtoLinkingItem, Integer> traceYColumn;
+	@FXML private  TreeTableColumn<ProtoLinkingItem, ProtoboardTrace> traceDeleteColumn;
 
-	@FXML private TableView<ProtoboardVia> linkTable; // TODO: delete, editable coordinates
+	@FXML private TableView<ProtoboardVia> linkTable; // TODO: editable coordinates
 	@FXML private TableColumn<ProtoboardVia, Integer> viaFromXColumn;
 	@FXML private TableColumn<ProtoboardVia, Integer> viaFromYColumn;
 	@FXML private TableColumn<ProtoboardVia, Integer> viaToXColumn;
 	@FXML private TableColumn<ProtoboardVia, Integer> viaToYColumn;
+	@FXML private TableColumn<ProtoboardVia, ProtoboardVia> viaDeleteColumn;
 	
 	@FXML private Slider layerSlider;
 	
@@ -166,10 +168,41 @@ public class ProtoboardController {
 		traceTypeColumn.setCellValueFactory(value -> new ReadOnlyStringWrapper(value.getValue().getValue().getDot() != null ? "Dot" : "Trace"));
 		traceXColumn.setCellValueFactory(value -> new SimpleObjectProperty<>(value.getValue().getValue().getDot() != null ? value.getValue().getValue().getDot().getX() : null));
 		traceYColumn.setCellValueFactory(value -> new SimpleObjectProperty<>(value.getValue().getValue().getDot() != null ? value.getValue().getValue().getDot().getY() : null));
+		traceDeleteColumn.setCellValueFactory(value -> new SimpleObjectProperty<>(value.getValue().getValue().getTrace()));
+		traceDeleteColumn.setCellFactory(value -> new TreeTableCell<>() {
+			@Override protected void updateItem(ProtoboardTrace item, boolean empty) {
+				super.updateItem(item, empty);
+				if (item == null || empty) setGraphic(null);
+				else {
+					Button deleteButton = new Button("\uD83D\uDDD1");
+					deleteButton.setOnAction(event -> {
+						traceDotTable.getRoot().getChildren()
+								.removeIf(treeItem -> treeItem.getValue().getTrace() == item);
+						draw();
+					});
+					setGraphic(deleteButton);
+				}
+			}
+		});
 		viaFromXColumn.setCellValueFactory(value -> new SimpleObjectProperty<>(value.getValue().getStart().getX()));
 		viaFromYColumn.setCellValueFactory(value -> new SimpleObjectProperty<>(value.getValue().getStart().getY()));
 		viaToXColumn.setCellValueFactory(value -> new SimpleObjectProperty<>(value.getValue().getEnd().getX()));
 		viaToYColumn.setCellValueFactory(value -> new SimpleObjectProperty<>(value.getValue().getEnd().getY()));
+		viaDeleteColumn.setCellValueFactory(value -> new SimpleObjectProperty<>(value.getValue()));
+		viaDeleteColumn.setCellFactory(value -> new TableCell<>() {
+			@Override protected void updateItem(ProtoboardVia item, boolean empty) {
+				super.updateItem(item, empty);
+				if (item == null || empty) setGraphic(null);
+				else {
+					Button deleteButton = new Button("\uD83D\uDDD1");
+					deleteButton.setOnAction(event -> {
+						linkTable.getItems().remove(item);
+						draw();
+					});
+					setGraphic(deleteButton);
+				}
+			}
+		});
 		protoComponentTable.getItems().addListener((ListChangeListener<? super Component>) lc -> {
 			lc.next();
 			lc.getAddedSubList().stream().distinct().forEach(component ->
