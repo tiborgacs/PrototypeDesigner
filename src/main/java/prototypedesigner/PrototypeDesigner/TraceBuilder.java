@@ -3,6 +3,9 @@ package prototypedesigner.PrototypeDesigner;
 import lombok.Getter;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class TraceBuilder {
 
@@ -15,25 +18,31 @@ public class TraceBuilder {
 
     public ProtoboardTrace addDot(ProtoboardDot dot, Collection<ProtoboardDot> between) {
         if (!trace.getDots().contains(dot)) {
-            if (dot.getX() == trace.getDots().getLast().getX()) {
-                int max = dot.getY() > trace.getDots().getLast().getY() ? dot.getY() : trace.getDots().getLast().getY();
-                int min = dot.getY() < trace.getDots().getLast().getY() ? dot.getY() : trace.getDots().getLast().getY();
-                for (ProtoboardDot d : between) {
-                    if (!trace.getDots().contains(d))
-                        if (d.getX() == dot.getX() && d.getY() > min && d.getY() < max)
-                            trace.getDots().add(d);
-                }
+            ProtoboardDot last = trace.getDots().getLast();
+            if (dot.getX() == last.getX()) {
+                int max = dot.getY() > last.getY() ? dot.getY() : last.getY();
+                int min = dot.getY() < last.getY() ? dot.getY() : last.getY();
+                boolean dec = max == last.getY();
+                List<ProtoboardDot> sublist = between.stream().filter(d ->
+                        !trace.getDots().contains(d)
+                                && d.getX() == dot.getX()
+                                && d.getY() > min && d.getY() < max)
+                        .collect(Collectors.toList());
+                if (dec) Collections.reverse(sublist);
+                trace.getDots().addAll(sublist);
                 if (!trace.getDots().contains(dot))
                     trace.getDots().add(dot);
             }
             if (dot.getY() == trace.getDots().getLast().getY()) {
-                int max = dot.getX() > trace.getDots().getLast().getX() ? dot.getX() : trace.getDots().getLast().getX();
-                int min = dot.getX() < trace.getDots().getLast().getX() ? dot.getX() : trace.getDots().getLast().getX();
-                for (ProtoboardDot d : between) {
-                    if (!trace.getDots().contains(d))
-                        if (d.getY() == dot.getY() && d.getX() > min && d.getX() < max)
-                            trace.getDots().add(d);
-                }
+                int max = dot.getX() > last.getX() ? dot.getX() : last.getX();
+                int min = dot.getX() < last.getX() ? dot.getX() : last.getX();
+                boolean dec = max == last.getX();
+                List<ProtoboardDot> sublist = between.stream().filter(d ->
+                        !trace.getDots().contains(d)
+                                && d.getY() == dot.getY()
+                                && d.getX() > min && d.getX() < max).collect(Collectors.toList());
+                if (dec) Collections.reverse(sublist);
+                trace.getDots().addAll(sublist);
                 if (!trace.getDots().contains(dot))
                     trace.getDots().add(dot);
             }

@@ -63,10 +63,14 @@ public class ProtoboardTrace implements DrawableOnProtoboard {
         for (int i = 0; i < dots.size() - 1; i++) {
             ProtoboardDot dot = dots.get(i);
             ProtoboardDot linked = dots.get(i+1);
-            if (dot.isNeighborTop(linked)) context.fillRect(dot.getX()*24+9, linked.getY()*24+15, 6, 18);
-            if (dot.isNeighborBottom(linked)) context.fillRect(dot.getX()*24+9, dot.getY()*24+15, 6, 18);
-            if (dot.isNeighborLeft(linked)) context.fillRect(linked.getX()*24+15, dot.getY()*24+9, 18, 6);
-            if (dot.isNeighborRight(linked)) context.fillRect(dot.getX()*24+15, dot.getY()*24+9, 18, 6);
+            if (dot.isNeighborTop(linked) || linked.isNeighborBottom(dot))
+                context.fillRect(dot.getX()*24+9, linked.getY()*24+15, 6, 18);
+            if (dot.isNeighborBottom(linked) || linked.isNeighborTop(dot))
+                context.fillRect(dot.getX()*24+9, dot.getY()*24+15, 6, 18);
+            if (dot.isNeighborLeft(linked) || linked.isNeighborRight(dot))
+                context.fillRect(linked.getX()*24+15, dot.getY()*24+9, 18, 6);
+            if (dot.isNeighborRight(linked) || linked.isNeighborLeft(dot))
+                context.fillRect(dot.getX()*24+15, dot.getY()*24+9, 18, 6);
         }
     }
 }
