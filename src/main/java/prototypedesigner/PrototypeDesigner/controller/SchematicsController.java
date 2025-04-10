@@ -23,10 +23,8 @@ import prototypedesigner.PrototypeDesigner.components.Component;
 import prototypedesigner.PrototypeDesigner.components.*;
 import prototypedesigner.PrototypeDesigner.converter.NoOpStringConverter;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.OptionalInt;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static prototypedesigner.PrototypeDesigner.Utility.getRowParentItem;
 
@@ -334,7 +332,7 @@ public class SchematicsController {
 			components.add(c);
 		}
 		if (capacitorToggle.isSelected()) {
-			Capacitor c = new Capacitor();
+			NonPolarizedCapacitor c = new NonPolarizedCapacitor();
 			c.setSchematicsOrientation(orientation);
 			c.setSchX(x);
 			c.setSchY(y);
@@ -461,4 +459,44 @@ public class SchematicsController {
 		});
 		drawGrid();
 	}
+
+    public List<Set<Terminal>> getConnections() {
+		List<Set<Wire>> traversed = new ArrayList<>();
+		for (Wire wire: design.getConnectionsOnSchematics()) {
+			if (traversed.stream().noneMatch(s -> s.contains(wire)
+					|| wire.getConnectedWires().stream().anyMatch(s::contains))) {
+				Set<Wire> net = new HashSet<>();
+				net.add(wire);
+				net.addAll(wire.getConnectedWires());
+				traversed.add(net);
+			} else {
+				traversed.stream().filter(s -> s.contains(wire)
+						|| wire.getConnectedWires().stream().anyMatch(s::contains))
+						.findFirst().ifPresent(s -> {
+							s.add(wire);
+							s.addAll(wire.getConnectedWires());
+						});
+			}
+		}
+		// FIXME probably unnecessary to run again O(n*n)
+		for (Set<Wire> s1: traversed) {
+			for (Set<Wire> s2: traversed) {
+				if (s1 != s2 && !s1.isEmpty() && !s2.isEmpty()) {
+					Set<Wire> temp = new HashSet<>(s1);
+					temp.retainAll(new HashSet<>(s2));
+					if (!temp.isEmpty()) {
+						s1.addAll(s2);
+						s2.clear();
+					}
+				}
+			}
+		}
+		traversed.removeIf(Set::isEmpty);
+		return traversed.stream()
+				.map(s -> s.stream()
+						.flatMap(w -> w.getConnectedComponents().stream())
+						.collect(Collectors.toSet()))
+				.collect(Collectors.toList());
+	}
+
 }

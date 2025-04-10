@@ -11,23 +11,24 @@ import javafx.scene.paint.Color;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import prototypedesigner.PrototypeDesigner.components.Coordinate;
 import prototypedesigner.PrototypeDesigner.components.DrawableOnProtoboard;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @JsonInclude
-@JsonIdentityInfo(property = "identifier", generator = ObjectIdGenerators.PropertyGenerator.class)
+//@JsonIdentityInfo(property = "identifier", generator = ObjectIdGenerators.PropertyGenerator.class)
 public class ProtoboardDot implements DrawableOnProtoboard {
 	
 	private int x;
 	private int y;
-	private String identifier;
+	//private String identifier;
 
 	public ProtoboardDot(int x, int y) {
 		this.x = x;
 		this.y = y;
-		identifier = x + ":" + y;
+		//identifier = x + ":" + y;
 	}
 
 	public boolean isNeighborTop(ProtoboardDot other) { return other.x == x && other.y == y - 1; }
@@ -47,11 +48,12 @@ public class ProtoboardDot implements DrawableOnProtoboard {
 		context.fillOval(x*24+9, y*24+9, 6, 6);
 	}
 
-	public boolean equals(Object other) {
-		if (other == null) return false;
-		if (other instanceof ProtoboardDot) {
-			ProtoboardDot _other = (ProtoboardDot) other;
-			return x == _other.x && y == _other.y;
+	public boolean equals(Object object) {
+		if (object == null) return false;
+		if (object instanceof ProtoboardDot) {
+			ProtoboardDot other = (ProtoboardDot) object;
+			return x == other.x && y == other.y;
 		} else return false;
 	}
+
 }

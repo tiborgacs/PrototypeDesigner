@@ -120,7 +120,6 @@ public class Diode extends Component implements DrawableOnStripboard, DrawableOn
 		}
 	}
 
-
 	public void setStartOnProtoboard(Coordinate startOnProtoboard) {
 		this.startOnProtoboard = startOnProtoboard;
 		proX = startOnProtoboard.getX();
@@ -155,15 +154,15 @@ public class Diode extends Component implements DrawableOnStripboard, DrawableOn
 		Terminal anodeLeg = terminals.get(0);
 		Terminal cathodeLeg = terminals.get(1);
 		if (protoboardOrientation == ComponentOrientation.UP || protoboardOrientation == ComponentOrientation.LEFT) {
-			cathodeLeg.setProX(startOnStripboard.getX());
-			cathodeLeg.setProY(startOnStripboard.getY());
-			anodeLeg.setProX(endOnStripboard.getX());
-			anodeLeg.setProY(endOnStripboard.getY());
+			cathodeLeg.setStrX(startOnStripboard.getX());
+			cathodeLeg.setStrY(startOnStripboard.getY());
+			anodeLeg.setStrX(endOnStripboard.getX());
+			anodeLeg.setStrY(endOnStripboard.getY());
 		} else {
-			anodeLeg.setProX(startOnStripboard.getX());
-			anodeLeg.setProY(startOnStripboard.getY());
-			cathodeLeg.setProX(endOnStripboard.getX());
-			cathodeLeg.setProY(endOnStripboard.getY());
+			anodeLeg.setStrX(startOnStripboard.getX());
+			anodeLeg.setStrY(startOnStripboard.getY());
+			cathodeLeg.setStrX(endOnStripboard.getX());
+			cathodeLeg.setStrY(endOnStripboard.getY());
 		}
 	}
 

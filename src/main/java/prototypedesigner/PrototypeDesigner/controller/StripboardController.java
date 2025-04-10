@@ -1,6 +1,7 @@
 package prototypedesigner.PrototypeDesigner.controller;
 
-import java.util.Comparator;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.beans.property.SimpleObjectProperty;
@@ -12,11 +13,11 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
+import javafx.util.Pair;
 import lombok.Getter;
 import prototypedesigner.PrototypeDesigner.*;
 import prototypedesigner.PrototypeDesigner.components.*;
 
-import static prototypedesigner.PrototypeDesigner.Utility.getRowParentItem;
 import static prototypedesigner.PrototypeDesigner.Utility.tail;
 
 public class StripboardController {
@@ -200,6 +201,8 @@ public class StripboardController {
 									}, () -> design.getConnectionsOnStripboard().add(trace))
 			);
 			design.getConnectionsOnStripboard().removeAll(lc.getRemoved());
+			design.setConnectionsOnStripboard(
+					design.getConnectionsOnStripboard().stream().distinct().collect(Collectors.toList()));
 		});
 		linksTable.getItems().addListener((ListChangeListener<? super StripboardLink>) lc -> {
 			lc.next();
@@ -258,7 +261,6 @@ public class StripboardController {
 
 	public void setDesign(CircuitDesign design) {
 		this.design = design;
-		// TODO: fill lists and tables
 		schComponentTable.getItems().setAll(design.getSchematicsComponents());
 		stripComponentTable.getItems().setAll(design.getStripboardComponents());
 		stripTable.getItems().setAll(design.getConnectionsOnStripboard());
@@ -331,19 +333,6 @@ public class StripboardController {
 			}
 		}
 		e.consume();
-//		for (DrawableOnStripboard drawable: drawQueue) {
-//			if (drawable instanceof Component) {
-//				Component component = (Component) drawable;
-//				for (Terminal terminal: component.getTerminals()) {
-//					for (StripboardTrace trace: stripes) {
-//						if (terminal.getStrY()/24 == trace.getY() && terminal.getStrX()/24 >= trace.getX() && terminal.getStrX()/24 < (trace.getX() + trace.getW())) {
-//							// TODO: connect
-//						}
-//					}
-//				}
-//				System.out.println();
-//			}
-//		}
 		draw();
 	}
 
@@ -366,6 +355,36 @@ public class StripboardController {
 			}
 		}
 		if (remainder != null) stripTable.getItems().add(index, remainder);
-		// TODO recheck connections
+	}
+
+	public List<Pair<Set<Terminal>, Set<Terminal>>> checkConnections(List<Set<Terminal>> schNetwork) {
+		List<Set<Terminal>> traversedTerminals = new ArrayList<>();
+		for (StripboardTrace strip: design.getConnectionsOnStripboard()) {
+			Set<Terminal> terminals = new HashSet<>();
+			for (Component component: design.getStripboardComponents()) {
+				for (Terminal terminal: component.getTerminals()) {
+					if (terminal.getStrY() == strip.getY()
+							&& terminal.getStrX() >= strip.getX()
+							&& terminal.getStrX() < (strip.getX() + strip.getW()))
+						terminals.add(terminal);
+				}
+			}
+			traversedTerminals.add(terminals);
+		} // FIXME: false correct for polarized caps?
+		for (StripboardLink via: design.getLinksOnStripboard()) {
+			Optional<StripboardTrace> from = design.getConnectionsOnStripboard().stream()
+					.filter(trace -> trace.getY() == via.getY()
+							&& trace.getX() >= via.getX() && (trace.getX() + trace.getW()) < via.getX()).findFirst();
+			Optional<StripboardTrace> to = design.getConnectionsOnStripboard().stream()
+					.filter(trace -> trace.getY() == (via.getY() + via.getSpan() + 1)
+							&& trace.getX() >= via.getX() && (trace.getX() + trace.getW()) < via.getX()).findFirst();
+			if (from.isPresent() && to.isPresent()) {
+				traversedTerminals.get(design.getConnectionsOnStripboard().indexOf(from.get()))
+						.addAll(traversedTerminals.get(design.getConnectionsOnStripboard().indexOf(to.get())));
+				traversedTerminals.get(design.getConnectionsOnStripboard().indexOf(to.get())).clear();
+			}
+		}
+		traversedTerminals.removeIf(Set::isEmpty);
+		return DifferenceExtractor.extractDifferences(schNetwork, traversedTerminals);
 	}
 }

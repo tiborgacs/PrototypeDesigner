@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import javafx.scene.canvas.GraphicsContext;
@@ -27,7 +28,7 @@ public class Wire implements DrawableOnSchematics {
 	@Getter @Setter private List<Wire> connectedWires = new ArrayList<>();
 	@Getter @Setter private LinkedList<Coordinate> schPoints = new LinkedList<>();
 	@Getter @Setter private List<Coordinate> intersections = new ArrayList<>();
-	@Setter @Getter private boolean highlighted;
+	@JsonIgnore @Setter @Getter private boolean highlighted;
 
     public static void setCounter(int i) {
 		counter = i;

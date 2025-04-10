@@ -26,6 +26,8 @@
     <Menu mnemonicParsing="false" text="Edit">
       <items>
         <MenuItem mnemonicParsing="false" text="Project Info" onAction="#projectInfo" />
+        <MenuItem mnemonicParsing="false" text="Check Stripboard" onAction="#stripboardCheck" />
+        <MenuItem mnemonicParsing="false" text="Check Protoboard" onAction="#protoboardCheck" />
       </items>
     </Menu>
     <Menu mnemonicParsing="false" text="Help">

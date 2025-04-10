@@ -2,60 +2,47 @@ package prototypedesigner.PrototypeDesigner.components;
 
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
-import lombok.Getter;
-import lombok.Setter;
 
-@Getter
-@Setter
-public class PolarizedCapacitor extends Capacitor implements DrawableOnStripboard, DrawableOnProtoboard {
+public class PolarizedCapacitor extends Capacitor {
+
+	private Terminal anodeLeg;
+	private Terminal cathodeLeg;
 
 	{
-		terminals.clear();
-		Terminal positiveLeg = new Terminal(this);
-		positiveLeg.setIdentifier(identifier + "_A");
-		Terminal negativeLeg = new Terminal(this);
-		negativeLeg.setIdentifier(identifier + "_C");
+		anodeLeg = new Terminal(this);
+		anodeLeg.setIdentifier(identifier + "_A");
+		cathodeLeg = new Terminal(this);
+		cathodeLeg.setIdentifier(identifier + "_C");
 		type = "PolarizedCapacitor";
 	}
 
-	private boolean spanningOnStripboard;
-	private boolean spanningOnProtoboard;
-	private Coordinate startOnStripboard;
-	private Coordinate startOnProtoboard;
-	private Coordinate endOnStripboard;
-	private Coordinate endOnProtoboard;
-
 	@Override
 	public void setSchX(int x) {
-		Terminal positiveLeg = terminals.get(0);
-		Terminal negativeLeg = terminals.get(1);
 		super.setSchX(x);
 		if (schematicsOrientation == ComponentOrientation.LEFT) {
-			positiveLeg.setSchX(x);
-			negativeLeg.setSchX(x+24);
+			anodeLeg.setSchX(x);
+			cathodeLeg.setSchX(x+24);
 		} else if (schematicsOrientation == ComponentOrientation.RIGHT) {
-			positiveLeg.setSchX(x+24);
-			negativeLeg.setSchX(x);
+			anodeLeg.setSchX(x+24);
+			cathodeLeg.setSchX(x);
 		} else {
-			positiveLeg.setSchX(x+12);
-			negativeLeg.setSchX(x+12);
+			anodeLeg.setSchX(x+12);
+			cathodeLeg.setSchX(x+12);
 		}
 	}
 	
 	@Override
 	public void setSchY(int y) {
-		Terminal positiveLeg = terminals.get(0);
-		Terminal negativeLeg = terminals.get(1);
 		super.setSchY(y);
 		if (schematicsOrientation == ComponentOrientation.UP) {
-			positiveLeg.setSchY(y);
-			negativeLeg.setSchY(y+24);
+			anodeLeg.setSchY(y);
+			cathodeLeg.setSchY(y+24);
 		} else if (schematicsOrientation == ComponentOrientation.DOWN) {
-			positiveLeg.setSchY(y+24);
-			negativeLeg.setSchY(y);
+			anodeLeg.setSchY(y+24);
+			cathodeLeg.setSchY(y);
 		} else {
-			positiveLeg.setSchY(y+12);
-			negativeLeg.setSchY(y+12);
+			anodeLeg.setSchY(y+12);
+			cathodeLeg.setSchY(y+12);
 		}
 	}
 
@@ -131,7 +118,6 @@ public class PolarizedCapacitor extends Capacitor implements DrawableOnStripboar
 		}
 	}
 
-
 	public void setStartOnProtoboard(Coordinate startOnProtoboard) {
 		this.startOnProtoboard = startOnProtoboard;
 		proX = startOnProtoboard.getX();
@@ -166,15 +152,15 @@ public class PolarizedCapacitor extends Capacitor implements DrawableOnStripboar
 		Terminal anodeLeg = terminals.get(0);
 		Terminal cathodeLeg = terminals.get(1);
 		if (protoboardOrientation == ComponentOrientation.UP || protoboardOrientation == ComponentOrientation.LEFT) {
-			cathodeLeg.setProX(startOnStripboard.getX());
-			cathodeLeg.setProY(startOnStripboard.getY());
-			anodeLeg.setProX(endOnStripboard.getX());
-			anodeLeg.setProY(endOnStripboard.getY());
+			cathodeLeg.setStrX(startOnStripboard.getX());
+			cathodeLeg.setStrY(startOnStripboard.getY());
+			anodeLeg.setStrX(endOnStripboard.getX());
+			anodeLeg.setStrY(endOnStripboard.getY());
 		} else {
-			anodeLeg.setProX(startOnStripboard.getX());
-			anodeLeg.setProY(startOnStripboard.getY());
-			cathodeLeg.setProX(endOnStripboard.getX());
-			cathodeLeg.setProY(endOnStripboard.getY());
+			anodeLeg.setStrX(startOnStripboard.getX());
+			anodeLeg.setStrY(startOnStripboard.getY());
+			cathodeLeg.setStrX(endOnStripboard.getX());
+			cathodeLeg.setStrY(endOnStripboard.getY());
 		}
 	}
 
@@ -189,7 +175,7 @@ public class PolarizedCapacitor extends Capacitor implements DrawableOnStripboar
 		if (schematicsOrientation == ComponentOrientation.UP) {
 			context.strokeRect(x+3, y+8, 18, 3);
 			context.strokeLine(x+15, y+3, x+21, y+3);
-			context.strokeLine(x+18, y+0, x+18, y+6);
+			context.strokeLine(x+18, y, x+18, y+6);
 			context.fillRect(x+3, y+14, 18, 3);
 			context.strokeLine(x+12, y, x+12, y+8);
 			context.strokeLine(x+12, y+18, x+12, y+24);
@@ -204,8 +190,8 @@ public class PolarizedCapacitor extends Capacitor implements DrawableOnStripboar
 		}
 		if (schematicsOrientation == ComponentOrientation.LEFT) {
 			context.strokeRect(x+8, y+3, 3, 18);
-			context.strokeLine(x+0, y+3, x+6, y+3);
-			context.strokeLine(x+3, y+0, x+3, y+6);
+			context.strokeLine(x, y+3, x+6, y+3);
+			context.strokeLine(x+3, y, x+3, y+6);
 			context.fillRect(x+14, y+3, 3, 18);
 			context.strokeLine(x, y+12, x+8, y+12);
 			context.strokeLine(x+18, y+12, x+24, y+12);
@@ -213,7 +199,7 @@ public class PolarizedCapacitor extends Capacitor implements DrawableOnStripboar
 		if (schematicsOrientation == ComponentOrientation.RIGHT) {
 			context.fillRect(x+8, y+3, 3, 18);
 			context.strokeLine(x+18, y+3, x+24, y+3);
-			context.strokeLine(x+21, y+0, x+21, y+6);
+			context.strokeLine(x+21, y, x+21, y+6);
 			context.strokeRect(x+14, y+3, 3, 18);
 			context.strokeLine(x, y+12, x+8, y+12);
 			context.strokeLine(x+18, y+12, x+24, y+12);
@@ -242,7 +228,7 @@ public class PolarizedCapacitor extends Capacitor implements DrawableOnStripboar
 				context.setFill(Color.DARKBLUE);
 				context.fillOval(x - 12, y + h/2 - 12, 48, 48);
 				context.setFill(Color.WHITE);
-				if (orientation == ComponentOrientation.UP)
+				if (orientation == ComponentOrientation.DOWN)
 					context.fillRect(x + 3, y+ h/2 + 24, 18, 6);
 				else context.fillRect(x + 3, y + h/2 - 6, 18, 6);
 			} else {
@@ -252,7 +238,7 @@ public class PolarizedCapacitor extends Capacitor implements DrawableOnStripboar
 				context.setFill(Color.DARKBLUE);
 				context.fillOval(x + w/2 - 12, y - 12, 48, 48);
 				context.setFill(Color.WHITE);
-				if (orientation == ComponentOrientation.RIGHT)
+				if (orientation == ComponentOrientation.LEFT)
 					context.fillRect(x + w/2 - 6, y + 3, 6, 18);
 				else context.fillRect(x + w/2 + 24, y + 3, 6, 18);
 			}

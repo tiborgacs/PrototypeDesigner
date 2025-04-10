@@ -3,10 +3,7 @@ package prototypedesigner.PrototypeDesigner.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import javafx.application.Platform;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import javafx.beans.property.*;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
@@ -16,17 +13,16 @@ import javafx.scene.image.WritableImage;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
+import javafx.util.Pair;
 import prototypedesigner.PrototypeDesigner.CircuitDesign;
 import prototypedesigner.PrototypeDesigner.PrototypeDesignerApp;
 import prototypedesigner.PrototypeDesigner.components.Component;
+import prototypedesigner.PrototypeDesigner.components.Terminal;
 
 import javax.imageio.ImageIO;
 import java.awt.image.RenderedImage;
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class MenuController {
@@ -60,6 +56,7 @@ public class MenuController {
                 if (cd.getViasOnProtoboard() == null) cd.setViasOnProtoboard(new ArrayList<>());
                 PrototypeDesignerApp.getMainController().setDesign(cd);
                 current = file;
+                PrototypeDesignerApp.getMainController().getStage().setTitle(current.getName());
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -257,6 +254,57 @@ public class MenuController {
             design.setStripboard(hasStripboardProperty.get());
             design.setProtoboard(hasProtoboardProperty.get());
         }
+    }
+
+    @FXML
+    private void stripboardCheck() {
+        List<Set<Terminal>> schNetwork = PrototypeDesignerApp.getMainController()
+                .getSchematicsViewController().getConnections();
+        List<Pair<Set<Terminal>, Set<Terminal>>> differences = PrototypeDesignerApp.getMainController()
+                .getStripboardViewController().checkConnections(schNetwork);
+        if (differences.isEmpty()) {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Design check");
+            alert.setHeaderText("Wiring of components on stripboard is matching the schematics.");
+            alert.initOwner(PrototypeDesignerApp.getMainController().getStage());
+            alert.show();
+        } else showDiffAlert("stripboard", differences);
+    }
+
+    @FXML
+    private void protoboardCheck() {
+        List<Set<Terminal>> schNetwork = PrototypeDesignerApp.getMainController()
+                .getSchematicsViewController().getConnections();
+        List<Pair<Set<Terminal>, Set<Terminal>>> differences = PrototypeDesignerApp.getMainController()
+                .getProtoboardViewController().checkConnections(schNetwork);
+        if (differences.isEmpty()) {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Design check");
+            alert.setHeaderText("Wiring of components on protoboard is matching the schematics.");
+            alert.initOwner(PrototypeDesignerApp.getMainController().getStage());
+            alert.show();
+        } else showDiffAlert("protoboard", differences);
+    }
+
+    private void showDiffAlert(String boardName, List<Pair<Set<Terminal>, Set<Terminal>>> differences) {
+        Alert alert = new Alert(Alert.AlertType.WARNING);
+        alert.setTitle("Design check");
+        alert.setHeaderText("Wiring of components on " + boardName + " is not matching the schematics.");
+        alert.setContentText("Please review the differences in connections:");
+        TableView<Pair<Set<Terminal>, Set<Terminal>>> diffTable = new TableView<>();
+        diffTable.getItems().addAll(differences);
+        TableColumn<Pair<Set<Terminal>, Set<Terminal>>, String> schColumn = new TableColumn<>("Connected on schematics");
+        schColumn.setCellValueFactory(value ->
+                new ReadOnlyStringWrapper(
+                        value.getValue().getKey().stream().map(Terminal::getIdentifier).collect(Collectors.joining(" "))));
+        TableColumn<Pair<Set<Terminal>, Set<Terminal>>, String> designColumn = new TableColumn<>("Connected on " + boardName);
+        designColumn.setCellValueFactory(value ->
+                new ReadOnlyStringWrapper(
+                        value.getValue().getValue().stream().map(Terminal::getIdentifier).collect(Collectors.joining(" "))));
+        diffTable.getColumns().addAll(schColumn, designColumn);
+        alert.getDialogPane().setContent(diffTable);
+        alert.initOwner(PrototypeDesignerApp.getMainController().getStage());
+        alert.show();
     }
 
     @FXML

@@ -1,9 +1,6 @@
 package prototypedesigner.PrototypeDesigner.controller;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import javafx.beans.property.ReadOnlyStringWrapper;
@@ -16,6 +13,7 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
+import javafx.util.Pair;
 import lombok.Getter;
 import prototypedesigner.PrototypeDesigner.*;
 import prototypedesigner.PrototypeDesigner.components.*;
@@ -407,5 +405,36 @@ public class ProtoboardController {
 		e.consume();
 		draw();
 	}
-	
+
+	public List<Pair<Set<Terminal>, Set<Terminal>>> checkConnections(List<Set<Terminal>> schNetwork) {
+		List<Set<ProtoboardDot>> traversedDots = new ArrayList<>();
+		for (ProtoboardTrace trace: design.getConnectionsOnProtoboard()) {
+			Optional<Set<ProtoboardDot>> optSet = traversedDots.stream()
+					.filter(s -> trace.getDots().stream().anyMatch(s::contains)).findFirst();
+			if (optSet.isPresent()) optSet.get().addAll(trace.getDots());
+			else traversedDots.add(new HashSet<>(trace.getDots()));
+		}
+		for (ProtoboardVia via: design.getViasOnProtoboard()) {
+			Optional<Set<ProtoboardDot>> start = traversedDots.stream()
+					.filter(s -> s.contains(via.getStart())).findFirst();
+			Optional<Set<ProtoboardDot>> end = traversedDots.stream()
+					.filter(s -> s.contains(via.getEnd())).findFirst();
+			if (start.isPresent() && end.isPresent()) {
+				start.get().addAll(end.get());
+				end.get().clear();
+			}
+		}
+		traversedDots.removeIf(Set::isEmpty);
+		List<Set<Terminal>> traversedTerminals = new ArrayList<>();
+		for (Set<ProtoboardDot> net: traversedDots) {
+			Set<Terminal> terminals = new HashSet<>();
+			for (ProtoboardDot dot: net) {
+				design.getProtoboardComponents().stream().flatMap(c -> c.getTerminals().stream())
+						.filter(t -> t.getProX() == dot.getX() && t.getProY() == dot.getY())
+						.findFirst().ifPresent(terminals::add);
+			}
+			traversedTerminals.add(terminals);
+		}
+		return DifferenceExtractor.extractDifferences(schNetwork, traversedTerminals);
+	}
 }

@@ -1,6 +1,5 @@
 package prototypedesigner.PrototypeDesigner.controller;
 
-import com.google.common.eventbus.EventBus;
 import javafx.fxml.FXML;
 import javafx.scene.control.MenuBar;
 import javafx.scene.layout.BorderPane;

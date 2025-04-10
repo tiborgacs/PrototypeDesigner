@@ -1,9 +1,6 @@
 package prototypedesigner.PrototypeDesigner.components;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.annotation.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -17,7 +14,7 @@ import java.util.List;
 		property = "type")
 @JsonSubTypes({
 		@JsonSubTypes.Type(name="resistor", value=Resistor.class),
-		@JsonSubTypes.Type(name="capacitor", value=Capacitor.class),
+		@JsonSubTypes.Type(name="capacitor", value= NonPolarizedCapacitor.class),
 		@JsonSubTypes.Type(name="polarized-capacitor", value=PolarizedCapacitor.class),
 		@JsonSubTypes.Type(name="diode", value=Diode.class),
 		@JsonSubTypes.Type(name="bipolar-junction-transistor", value=BipolarJunctionTransistor.class),
@@ -43,7 +40,7 @@ public abstract class Component implements DrawableOnSchematics {
 	@Getter protected int proX;
 	@Getter protected int proY;
 	@Getter @Setter protected List<Terminal> terminals = new ArrayList<>();
-	@Setter protected boolean highlighted;
+	@JsonIgnore	@Setter protected boolean highlighted;
 
 	public void setStrX(int x) {
 		this.strX = x;
