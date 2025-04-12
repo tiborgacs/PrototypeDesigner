@@ -151,26 +151,37 @@ public class NonPolarizedCapacitor extends Capacitor {
 	private void draw(GraphicsContext context, int x, int y, ComponentOrientation orientation,
 					  boolean spanning, Coordinate spanStart, Coordinate spanEnd) {
 		context.setFill(Color.GOLD);
+		context.setStroke(Color.WHITE);
 		x = x * 24;
 		y = y * 24;
 		if (spanning) {
 			if (orientation == ComponentOrientation.UP || orientation == ComponentOrientation.DOWN) {
 				int h = Math.abs(spanStart.getY() - spanEnd.getY()) * 24;
-				if (h <= 24) context.fillOval(x + 3, y + 3, 18, 42);
-				else {
+				if (h <= 24) {
+					context.fillOval(x + 3, y + 3, 18, 42);
+					context.strokeText(
+							identifier.length() == 2 ? identifier : identifier.replace("C", ""),
+							x + 4, y + 30);
+				} else {
 					context.fillRoundRect(x + 3, y + 12 + h / 2 - 32, 18, 64, 12, 12);
 					context.setFill(Color.DARKGREY);
 					context.fillRoundRect(x + 9, y + 12, 6, h / 2 - 32, 6, 6);
 					context.fillRoundRect(x + 9, y + 12 + h / 2 + 32, 6, h / 2 - 32, 6, 6);
+					context.strokeText(identifier.replace("C", "C\n"), x + 4, y + h / 2);
 				}
 			} else {
 				int w = Math.abs(spanStart.getX() - spanEnd.getX()) * 24;
-				if (w <= 24) context.fillOval(x + 3, y + 3, 42, 18);
-				else {
+				if (w <= 24) {
+					context.fillOval(x + 3, y + 3, 42, 18);
+					context.strokeText(
+							identifier.length() == 2 ? identifier : identifier.replace("C", ""),
+							x + 16, y + 18);
+				} else {
 					context.fillRoundRect(x + 12 + w / 2 - 32, y + 3, 64, 18, 12, 12);
 					context.setFill(Color.DARKGREY);
 					context.fillRoundRect(x + 12, y + 9, w / 2 - 32, 6, 6, 6);
 					context.fillRoundRect(x  + 12 + w / 2 + 32, y + 9,w / 2 - 32, 6, 6, 6);
+					context.strokeText(identifier, x + w / 2, y + 18);
 				}
 			}
 		} else {

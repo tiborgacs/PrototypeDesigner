@@ -115,6 +115,9 @@ public abstract class Transistor extends Component implements DrawableOnStripboa
 		if (orientation == ComponentOrientation.DOWN) {
 			context.fillArc(x, y, 72, 24, 0, 180, ArcType.CHORD);
 			context.fillRect(x, y+12, 72, 12);
+			context.strokeText(
+					identifiers[0] + "  " + identifier + (identifier.length() == 2 ? " " : "")
+							+ identifiers[1] + "  " + identifiers[2], x + 4, y + 16);
 		}
 		if (orientation == ComponentOrientation.LEFT) {
 			context.fillArc(x, y, 24, 72, 270, 180, ArcType.CHORD);
@@ -125,6 +128,9 @@ public abstract class Transistor extends Component implements DrawableOnStripboa
 		if (orientation == ComponentOrientation.UP) {
 			context.fillArc(x, y, 72, 24, 180, 180, ArcType.CHORD);
 			context.fillRect(x, y, 72, 12);
+			context.strokeText(
+					identifiers[2] + "  " + identifier + (identifier.length() == 2 ? " " : "")
+							+ identifiers[1] + "  " + identifiers[0], x + 4, y + 16);
 		}
 		if (orientation == ComponentOrientation.RIGHT) {
 			context.fillArc(x, y, 24, 72, 90, 180, ArcType.CHORD);

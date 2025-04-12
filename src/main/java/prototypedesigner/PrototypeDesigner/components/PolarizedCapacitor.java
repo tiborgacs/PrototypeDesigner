@@ -51,10 +51,10 @@ public class PolarizedCapacitor extends Capacitor {
 		if (!spanningOnProtoboard) {
 			Terminal anodeLeg = terminals.get(0);
 			Terminal cathodeLeg = terminals.get(1);
-			if (protoboardOrientation == ComponentOrientation.LEFT) {
+			if (protoboardOrientation == ComponentOrientation.RIGHT) {
 				cathodeLeg.setProX(x);
 				anodeLeg.setProX(x+2);
-			} else if (protoboardOrientation == ComponentOrientation.RIGHT) {
+			} else if (protoboardOrientation == ComponentOrientation.LEFT) {
 				cathodeLeg.setProX(x+2);
 				anodeLeg.setProX(x);
 			} else {
@@ -69,10 +69,10 @@ public class PolarizedCapacitor extends Capacitor {
 		if (!spanningOnProtoboard) {
 			Terminal anodeLeg = terminals.get(0);
 			Terminal cathodeLeg = terminals.get(1);
-			if (protoboardOrientation == ComponentOrientation.UP) {
+			if (protoboardOrientation == ComponentOrientation.DOWN) {
 				cathodeLeg.setProY(y);
 				anodeLeg.setProY(y+2);
-			} else if (protoboardOrientation == ComponentOrientation.DOWN) {
+			} else if (protoboardOrientation == ComponentOrientation.UP) {
 				cathodeLeg.setProY(y+2);
 				anodeLeg.setProY(y);
 			} else {
@@ -129,15 +129,15 @@ public class PolarizedCapacitor extends Capacitor {
 		Terminal anodeLeg = terminals.get(0);
 		Terminal cathodeLeg = terminals.get(1);
 		if (protoboardOrientation == ComponentOrientation.UP || protoboardOrientation == ComponentOrientation.LEFT) {
-			cathodeLeg.setProX(startOnProtoboard.getX());
-			cathodeLeg.setProY(startOnProtoboard.getY());
-			anodeLeg.setProX(endOnProtoboard.getX());
-			anodeLeg.setProY(endOnProtoboard.getY());
-		} else {
 			anodeLeg.setProX(startOnProtoboard.getX());
 			anodeLeg.setProY(startOnProtoboard.getY());
 			cathodeLeg.setProX(endOnProtoboard.getX());
 			cathodeLeg.setProY(endOnProtoboard.getY());
+		} else {
+			cathodeLeg.setProX(startOnProtoboard.getX());
+			cathodeLeg.setProY(startOnProtoboard.getY());
+			anodeLeg.setProX(endOnProtoboard.getX());
+			anodeLeg.setProY(endOnProtoboard.getY());
 		}
 	}
 
@@ -152,15 +152,15 @@ public class PolarizedCapacitor extends Capacitor {
 		Terminal anodeLeg = terminals.get(0);
 		Terminal cathodeLeg = terminals.get(1);
 		if (protoboardOrientation == ComponentOrientation.UP || protoboardOrientation == ComponentOrientation.LEFT) {
-			cathodeLeg.setStrX(startOnStripboard.getX());
-			cathodeLeg.setStrY(startOnStripboard.getY());
-			anodeLeg.setStrX(endOnStripboard.getX());
-			anodeLeg.setStrY(endOnStripboard.getY());
-		} else {
 			anodeLeg.setStrX(startOnStripboard.getX());
 			anodeLeg.setStrY(startOnStripboard.getY());
 			cathodeLeg.setStrX(endOnStripboard.getX());
 			cathodeLeg.setStrY(endOnStripboard.getY());
+		} else {
+			cathodeLeg.setStrX(startOnStripboard.getX());
+			cathodeLeg.setStrY(startOnStripboard.getY());
+			anodeLeg.setStrX(endOnStripboard.getX());
+			anodeLeg.setStrY(endOnStripboard.getY());
 		}
 	}
 
@@ -204,6 +204,7 @@ public class PolarizedCapacitor extends Capacitor {
 			context.strokeLine(x, y+12, x+8, y+12);
 			context.strokeLine(x+18, y+12, x+24, y+12);
 		}
+		context.strokeText(identifier, x + 20, y + 4);
 	}
 
 	@Override
@@ -221,6 +222,7 @@ public class PolarizedCapacitor extends Capacitor {
 		x = x * 24;
 		y = y * 24;
 		if (spanning) {
+			context.setStroke(Color.WHITE);
 			if (orientation == ComponentOrientation.UP || orientation == ComponentOrientation.DOWN) {
 				int h = Math.abs(spanStart.getY() - spanEnd.getY()) * 24;
 				context.setFill(Color.DARKGREY);
@@ -231,6 +233,7 @@ public class PolarizedCapacitor extends Capacitor {
 				if (orientation == ComponentOrientation.DOWN)
 					context.fillRect(x + 3, y+ h/2 + 24, 18, 6);
 				else context.fillRect(x + 3, y + h/2 - 6, 18, 6);
+				context.strokeText(identifier, x, y + h/2 + 20);
 			} else {
 				int w = Math.abs(spanStart.getX() - spanEnd.getX()) * 24;
 				context.setFill(Color.DARKGREY);
@@ -238,9 +241,10 @@ public class PolarizedCapacitor extends Capacitor {
 				context.setFill(Color.DARKBLUE);
 				context.fillOval(x + w/2 - 12, y - 12, 48, 48);
 				context.setFill(Color.WHITE);
-				if (orientation == ComponentOrientation.LEFT)
+				if (orientation == ComponentOrientation.RIGHT)
 					context.fillRect(x + w/2 - 6, y + 3, 6, 18);
 				else context.fillRect(x + w/2 + 24, y + 3, 6, 18);
+				context.strokeText(identifier, x + w/2, y + 20);
 			}
 		} else {
 			if (orientation == ComponentOrientation.UP) {

@@ -214,6 +214,7 @@ public class Diode extends Component implements DrawableOnStripboard, DrawableOn
 			context.strokePolygon(new double[] {x+18, x+6, x+18},new double[] {y+6, y+12, y+18},  3);
 			context.strokeLine(x+18, y+12, x+24, y+12);
 		}
+		context.strokeText(identifier, x + 16, y + 4);
 	}
 
 	@Override
@@ -232,6 +233,7 @@ public class Diode extends Component implements DrawableOnStripboard, DrawableOn
 		y = y * 24;
 		if (spanning) {
 			context.setFill(Color.BLACK);
+			context.setStroke(Color.LIGHTGRAY); // white cathode strip, gray label
 			if (orientation == ComponentOrientation.UP || orientation == ComponentOrientation.DOWN) {
 				int h = Math.abs(spanStart.getY() - spanEnd.getY()) * 24;
 				if (h <= 24) {
@@ -240,6 +242,9 @@ public class Diode extends Component implements DrawableOnStripboard, DrawableOn
 					if (orientation == ComponentOrientation.UP)
 						context.fillRect(x + 3, y + 12, 18, 4);
 					else context.fillRect(x + 3, y + 32, 18, 4);
+					context.strokeText(
+							identifier.length() == 2 ? identifier : identifier.replace("D", ""),
+							x + 4, y + 30);
 				} else if (h <= 48) {
 					if (orientation == ComponentOrientation.UP) {
 						context.setFill(Color.BLACK);
@@ -257,6 +262,7 @@ public class Diode extends Component implements DrawableOnStripboard, DrawableOn
 						context.setFill(Color.BLACK);
 						context.fillRect(x + 3, y + 48, 18, 8);
 					}
+					context.strokeText(identifier.replace("D", "D\n"), x + 4, y + 30);
 				} else {
 					context.fillRect(x + 3, y + 12 + h / 2 - 32, 18, 64);
 					context.setFill(Color.WHITE);
@@ -266,6 +272,7 @@ public class Diode extends Component implements DrawableOnStripboard, DrawableOn
 					context.setFill(Color.DARKGREY);
 					context.fillRoundRect(x + 9, y + 12, 6, h / 2 - 32, 6, 6);
 					context.fillRoundRect(x + 9, y + 12 + h / 2 + 32, 6, h / 2 - 32, 6, 6);
+					context.strokeText(identifier.replace("D", "D\n"), x + 4, y + h / 2);
 				}
 			} else {
 				int w = Math.abs(spanStart.getX() - spanEnd.getX()) * 24;
@@ -275,6 +282,9 @@ public class Diode extends Component implements DrawableOnStripboard, DrawableOn
 					if (orientation == ComponentOrientation.LEFT)
 						context.fillRect(x + 12, y + 3, 4, 18);
 					else context.fillRect(x + 32, y + 3, 4, 18);
+					context.strokeText(
+							identifier.length() == 2 ? identifier : identifier.replace("D", ""),
+							x + 16, y + 18);
 				} else if (w <= 48) {
 					if (orientation == ComponentOrientation.RIGHT) {
 						context.setFill(Color.BLACK);
@@ -292,6 +302,7 @@ public class Diode extends Component implements DrawableOnStripboard, DrawableOn
 						context.setFill(Color.BLACK);
 						context.fillRect(x + 32, y + 3, 24, 18);
 					}
+					context.strokeText(identifier, x + 16, y + 18);
 				} else {
 					context.fillRect(x + 12 + w / 2 - 32, y + 3, 64, 18);
 					context.setFill(Color.WHITE);
@@ -301,6 +312,7 @@ public class Diode extends Component implements DrawableOnStripboard, DrawableOn
 					context.setFill(Color.DARKGREY);
 					context.fillRoundRect(x + 12, y + 9, w / 2 - 32, 6, 6, 6);
 					context.fillRoundRect(x  + 12 + w / 2 + 32, y + 9,w / 2 - 32, 6, 6, 6);
+					context.strokeText(identifier, x + w / 2, y + 18);
 				}
 			}
 		} else {

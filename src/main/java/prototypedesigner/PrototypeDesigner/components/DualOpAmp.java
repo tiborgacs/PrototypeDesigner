@@ -107,6 +107,8 @@ public class DualOpAmp extends IntegratedCircuit implements DrawableOnStripboard
 				context.fillOval(x+72+9, y+21, 6, 6);
 			}
 		}
+		context.setStroke(Color.WHITE);
+		context.strokeText(identifier, x + 36, y + 48);
 	}
 	
 	@Override
@@ -116,6 +118,7 @@ public class DualOpAmp extends IntegratedCircuit implements DrawableOnStripboard
 		context.setStroke(highlighted ? Color.PURPLE : Color.DARKBLUE);
 		context.setGlobalAlpha(1.0);
 		context.setLineWidth(1.0);
+		context.strokeText(identifier, x+15, y);
 		context.strokeRect(x+15, y+3, 24*4-30, 24*4-6);
 		context.strokePolygon(new double[] {x+20, x+20, x+42}, new double[] {y+29, y+67, y+48}, 3);
 		context.strokeLine(x+42, y+48, x+44, y+48);

@@ -59,6 +59,7 @@ public class MetalOxideSemiconductorFET extends Transistor {
 		context.strokeLine(x+36, y+18, x+36, y);
 		context.strokeLine(x+21, y+30, x+36, y+30); // S
 		context.strokeLine(x+36, y+24, x+36, y+48);
+		context.strokeText(identifier, x + 38, y + 28);
 	}
 
 }

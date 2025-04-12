@@ -122,6 +122,8 @@ public class QuadOpAmp extends IntegratedCircuit implements DrawableOnStripboard
 				context.fillArc(x+36, y-15+7*24, 24.0, 24.0, 0, 180, ArcType.CHORD);
 				context.fillOval(x+48+21, y+6*24+9, 6, 6);
 			}
+			context.setStroke(Color.WHITE);
+			context.strokeText(identifier, x + 36, y + 96);
 		} else if (orientation == ComponentOrientation.LEFT || orientation == ComponentOrientation.RIGHT) {
 			context.fillRect(x+3, y+15, 24*7-6, 24*4-30);
 			context.setFill(Color.DARKGRAY);
@@ -136,6 +138,8 @@ public class QuadOpAmp extends IntegratedCircuit implements DrawableOnStripboard
 				context.fillArc(x-15+7*24, y+36, 24.0, 24.0, 90, 180, ArcType.CHORD);
 				context.fillOval(x+6*24+9, y+21, 6, 6);
 			}
+			context.setStroke(Color.WHITE);
+			context.strokeText(identifier, x + 84, y + 48);
 		}
 	}
 	
@@ -146,6 +150,7 @@ public class QuadOpAmp extends IntegratedCircuit implements DrawableOnStripboard
 		context.setStroke(highlighted ? Color.PURPLE : Color.DARKBLUE);
 		context.setGlobalAlpha(1.0);
 		context.setLineWidth(1.0);
+		context.strokeText(identifier, x+15, y);
 		context.strokeRect(x+15, y+3, 24*4-30, 24*7-6);
 		context.strokePolygon(new double[] {x+20, x+20, x+42}, new double[] {y+29, y+67, y+48}, 3);
 		context.strokeLine(x+42, y+48, x+44, y+48);

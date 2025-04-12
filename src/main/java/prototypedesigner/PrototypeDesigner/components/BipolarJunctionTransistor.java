@@ -45,7 +45,7 @@ public class BipolarJunctionTransistor extends Transistor {
 		context.setLineWidth(1.0);
 		context.strokeArc(x+6, y+6, 36, 36, 0, 360, ArcType.CHORD);
 		context.strokeLine(x+18, y+15, x+18, y+33);
-		context.strokeLine(x+0, y+24, x+18, y+24); // B
+		context.strokeLine(x, y+24, x+18, y+24); // B
 		context.strokeLine(x+18, y+18, x+36, y+9);
 		context.strokeLine(x+36, y+9, x+36, y);
 		context.setFill(highlighted ? Color.PURPLE : Color.DARKBLUE);
@@ -55,6 +55,7 @@ public class BipolarJunctionTransistor extends Transistor {
 		context.strokeLine(x+36, y+39, x+36, y+48);
 		if (polarity == Polarity.N)
 			context.fillPolygon(new double[]{x+36, x+29, x+27}, new double[]{y+39, y+32, y+38}, 3);
+		context.strokeText(identifier, x + 20, y + 28);
 	}
 
 }

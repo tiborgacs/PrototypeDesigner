@@ -55,6 +55,7 @@ public class JunctionFieldEffectTransistor extends Transistor {
 		context.strokeLine(x+36, y+18, x+36, y);
 		context.strokeLine(x+18, y+30, x+36, y+30); // S
 		context.strokeLine(x+36, y+30, x+36, y+48);
+		context.strokeText(identifier, x + 24, y + 28);
 	}
 	
 }
