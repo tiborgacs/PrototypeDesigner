@@ -36,7 +36,7 @@
                         <ToggleGroup fx:id="buttonMode" />
                     </toggleGroup>
                 </ToggleButton>
-                <ToggleButton fx:id="labelToggle" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Label" toggleGroup="$buttonMode" />
+                <ToggleButton fx:id="labelToggle" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Label" toggleGroup="$buttonMode" visible="false" />
                 <Label text="Orientation:" />
                 <HBox>
                     <children>
@@ -57,7 +57,7 @@
                             <children>
                                 <ToggleButton fx:id="resistorToggle" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Resistor" toggleGroup="$buttonMode" />
                                 <ToggleButton fx:id="capacitorToggle" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Capacitor" toggleGroup="$buttonMode" />
-                                <ToggleButton fx:id="elcoToggle" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Electrolytic" toggleGroup="$buttonMode" />
+                                <ToggleButton fx:id="elcoToggle" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Polarized Capacitor" toggleGroup="$buttonMode" />
                                 <ToggleButton fx:id="diodeToggle" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Diode" toggleGroup="$buttonMode" />
                                 <ToggleButton fx:id="npnToggle" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="NPN Transistor" toggleGroup="$buttonMode" />
                                 <ToggleButton fx:id="pnpToggle" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="PNP Transistor" toggleGroup="$buttonMode" />
