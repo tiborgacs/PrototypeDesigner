@@ -36,6 +36,7 @@ public class StripboardTrace implements DrawableOnStripboard {
 			if (x == this.x) {
 				this.x += 1;
 				this.w -= 1;
+				identifier = "str#" + this.x + ":" + this.y;
 				return null;
 			} else if (x == this.x + this.w - 1) {
 				this.w -= 1;
@@ -44,6 +45,7 @@ public class StripboardTrace implements DrawableOnStripboard {
 				StripboardTrace remainder = new StripboardTrace(this.x, this.y, x-this.x);
 				this.w = this.x + this.w - x - 1;
 				this.x = x + 1;
+				identifier = "str#" + this.x + ":" + this.y;
 				return remainder;
 			}
 		}
