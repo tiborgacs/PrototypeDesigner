@@ -224,7 +224,6 @@ public class SchematicsController {
 			coordinateLabel.setText(String.format("X: %d, Y: %d", snap((int) event.getX())/12, snap((int) event.getY())/12));
 		});
 		wires.addListener((ListChangeListener<? super Wire>) lc -> {
-			// FIXME: list change listener, elements must be distinct
 			lc.next();
 			lc.getAddedSubList().stream().distinct().forEach(wire ->
 				design.getConnectionsOnSchematics().stream().filter(w -> w.getIdentifier().equals(wire.getIdentifier()))

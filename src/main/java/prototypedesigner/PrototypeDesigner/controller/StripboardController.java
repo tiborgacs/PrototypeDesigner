@@ -136,7 +136,8 @@ public class StripboardController {
 						|| newValue.getUserData() instanceof JunctionFieldEffectTransistor
 						|| newValue.getUserData() instanceof MetalOxideSemiconductorFET) {
 					pinoutBox.setDisable(false);
-					pinoutBox.getItems().setAll(TransistorPinouts.getBjtPinouts());
+					pinoutBox.getItems().setAll(newValue.getUserData() instanceof BipolarJunctionTransistor ?
+							TransistorPinouts.getBjtPinouts() : TransistorPinouts.getFetPinouts());
 					Component transistor = (Component) newValue.getUserData();
 					if (transistor.getPinout() != null && !transistor.getPinout().isEmpty()) {
 						if (!pinoutBox.getItems().contains(transistor.getPinout()))

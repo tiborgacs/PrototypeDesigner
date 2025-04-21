@@ -34,8 +34,8 @@ public class Diode extends Component implements DrawableOnStripboard, DrawableOn
     @Override
 	public void setSchX(int x) {
 		super.setSchX(x);
-		Terminal anodeLeg = terminals.get(0);
-		Terminal cathodeLeg = terminals.get(1);
+		Terminal anodeLeg = terminals.get(0).getIdentifier().endsWith("A") ? terminals.get(0) : terminals.get(1);
+		Terminal cathodeLeg = terminals.get(0).getIdentifier().endsWith("C") ? terminals.get(0) : terminals.get(1);
 		if (schematicsOrientation == ComponentOrientation.LEFT) {
 			cathodeLeg.setSchX(x);
 			anodeLeg.setSchX(x+24);
@@ -51,8 +51,8 @@ public class Diode extends Component implements DrawableOnStripboard, DrawableOn
 	public void setProX(int x) {
 		proX = x;
 		if (!spanningOnProtoboard) {
-			Terminal anodeLeg = terminals.get(0);
-			Terminal cathodeLeg = terminals.get(1);
+			Terminal anodeLeg = terminals.get(0).getIdentifier().endsWith("A") ? terminals.get(0) : terminals.get(1);
+			Terminal cathodeLeg = terminals.get(0).getIdentifier().endsWith("C") ? terminals.get(0) : terminals.get(1);
 			if (protoboardOrientation == ComponentOrientation.LEFT) {
 				cathodeLeg.setProX(x);
 				anodeLeg.setProX(x+2);
@@ -69,8 +69,8 @@ public class Diode extends Component implements DrawableOnStripboard, DrawableOn
 	public void setProY(int y) {
 		proY = y;
 		if (!spanningOnProtoboard) {
-			Terminal anodeLeg = terminals.get(0);
-			Terminal cathodeLeg = terminals.get(1);
+			Terminal anodeLeg = terminals.get(0).getIdentifier().endsWith("A") ? terminals.get(0) : terminals.get(1);
+			Terminal cathodeLeg = terminals.get(0).getIdentifier().endsWith("C") ? terminals.get(0) : terminals.get(1);
 			if (protoboardOrientation == ComponentOrientation.UP) {
 				cathodeLeg.setProY(y);
 				anodeLeg.setProY(y+2);
@@ -87,8 +87,8 @@ public class Diode extends Component implements DrawableOnStripboard, DrawableOn
 	public void setStrX(int x) {
 		strX = x;
 		if (!spanningOnStripboard) {
-			Terminal anodeLeg = terminals.get(0);
-			Terminal cathodeLeg = terminals.get(1);
+			Terminal anodeLeg = terminals.get(0).getIdentifier().endsWith("A") ? terminals.get(0) : terminals.get(1);
+			Terminal cathodeLeg = terminals.get(0).getIdentifier().endsWith("C") ? terminals.get(0) : terminals.get(1);
 			if (stripboardOrientation == ComponentOrientation.LEFT) {
 				cathodeLeg.setStrX(x);
 				anodeLeg.setStrX(x+2);
@@ -105,8 +105,8 @@ public class Diode extends Component implements DrawableOnStripboard, DrawableOn
 	public void setStrY(int y) {
 		strY = y;
 		if (!spanningOnStripboard) {
-			Terminal anodeLeg = terminals.get(0);
-			Terminal cathodeLeg = terminals.get(1);
+			Terminal anodeLeg = terminals.get(0).getIdentifier().endsWith("A") ? terminals.get(0) : terminals.get(1);
+			Terminal cathodeLeg = terminals.get(0).getIdentifier().endsWith("C") ? terminals.get(0) : terminals.get(1);
 			if (stripboardOrientation == ComponentOrientation.UP) {
 				cathodeLeg.setStrY(y);
 				anodeLeg.setStrY(y+2);
@@ -128,8 +128,8 @@ public class Diode extends Component implements DrawableOnStripboard, DrawableOn
 
 	public void setEndOnProtoboard(Coordinate endOnProtoboard) {
 		this.endOnProtoboard = endOnProtoboard;
-		Terminal anodeLeg = terminals.get(0);
-		Terminal cathodeLeg = terminals.get(1);
+		Terminal anodeLeg = terminals.get(0).getIdentifier().endsWith("A") ? terminals.get(0) : terminals.get(1);
+		Terminal cathodeLeg = terminals.get(0).getIdentifier().endsWith("C") ? terminals.get(0) : terminals.get(1);
 		if (protoboardOrientation == ComponentOrientation.UP || protoboardOrientation == ComponentOrientation.LEFT) {
 			cathodeLeg.setProX(startOnProtoboard.getX());
 			cathodeLeg.setProY(startOnProtoboard.getY());
@@ -151,8 +151,8 @@ public class Diode extends Component implements DrawableOnStripboard, DrawableOn
 
 	public void setEndOnStripboard(Coordinate endOnStripboard) {
 		this.endOnStripboard = endOnStripboard;
-		Terminal anodeLeg = terminals.get(0);
-		Terminal cathodeLeg = terminals.get(1);
+		Terminal anodeLeg = terminals.get(0).getIdentifier().endsWith("A") ? terminals.get(0) : terminals.get(1);
+		Terminal cathodeLeg = terminals.get(0).getIdentifier().endsWith("C") ? terminals.get(0) : terminals.get(1);
 		if (protoboardOrientation == ComponentOrientation.UP || protoboardOrientation == ComponentOrientation.LEFT) {
 			cathodeLeg.setStrX(startOnStripboard.getX());
 			cathodeLeg.setStrY(startOnStripboard.getY());
@@ -169,8 +169,8 @@ public class Diode extends Component implements DrawableOnStripboard, DrawableOn
 	@Override
 	public void setSchY(int y) {
 		super.setSchY(y);
-		Terminal anodeLeg = terminals.get(0);
-		Terminal cathodeLeg = terminals.get(1);
+		Terminal anodeLeg = terminals.get(0).getIdentifier().endsWith("A") ? terminals.get(0) : terminals.get(1);
+		Terminal cathodeLeg = terminals.get(0).getIdentifier().endsWith("C") ? terminals.get(0) : terminals.get(1);
 		if (schematicsOrientation == ComponentOrientation.UP) {
 			cathodeLeg.setSchY(y);
 			anodeLeg.setSchY(y+24);

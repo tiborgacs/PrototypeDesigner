@@ -5,9 +5,7 @@ module prototypedesigner.PrototypeDesigner {
     requires com.fasterxml.jackson.annotation;
     requires com.fasterxml.jackson.dataformat.xml;
     requires com.fasterxml.jackson.core;
-    requires com.google.common;
     requires javafx.swing;
-    requires org.checkerframework.checker.qual;
 
     opens prototypedesigner.PrototypeDesigner to javafx.fxml;
     exports prototypedesigner.PrototypeDesigner;
