@@ -4,6 +4,9 @@ import lombok.Getter;
 import prototypedesigner.PrototypeDesigner.components.Coordinate;
 import prototypedesigner.PrototypeDesigner.components.Wire;
 
+/**
+ * Tree item to list wires and their coordinates in the same table.
+ */
 @Getter
 public class SchematicsWiringItem {
 

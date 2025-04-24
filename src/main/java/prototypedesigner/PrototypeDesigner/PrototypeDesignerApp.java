@@ -8,10 +8,17 @@ import prototypedesigner.PrototypeDesigner.controller.MainController;
 
 import java.io.IOException;
 
+/**
+ * Main class. Due to Maven build issues, this is not the entry point for the application, just for the FX thread.
+ */
 public class PrototypeDesignerApp extends Application {
 
     private static MainController mainController;
 
+    /**
+     * Returns the main controller of the application
+     * @return main controller
+     */
     public static MainController getMainController() {
         return mainController;
     }
@@ -27,6 +34,10 @@ public class PrototypeDesignerApp extends Application {
         stage.show();
     }
 
+    /**
+     * Launches the JavaFX application
+     * @param args optional command line arguments coming from the Main class
+     */
     public static void main(String[] args) {
         launch(args);
     }

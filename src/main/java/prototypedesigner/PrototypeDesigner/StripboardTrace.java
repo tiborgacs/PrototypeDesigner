@@ -10,6 +10,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import prototypedesigner.PrototypeDesigner.components.DrawableOnStripboard;
 
+/**
+ * Models a copper strip trace
+ */
 @Getter
 @Setter
 @NoArgsConstructor
@@ -29,7 +32,13 @@ public class StripboardTrace implements DrawableOnStripboard {
 		this.w = length;
 		identifier = "str#" + x + ":" + y;
 	}
-	
+
+	/**
+	 * Cuts the strip if the coordinates fall on it
+	 * @param x
+	 * @param y
+	 * @return the remainder strip to the left if its width is at least 1 dot
+	 */
 	public StripboardTrace cutAt(int x, int y) {
 		if (y != this.y) return null;
 		if (x >= this.x && x < this.x + this.w) {

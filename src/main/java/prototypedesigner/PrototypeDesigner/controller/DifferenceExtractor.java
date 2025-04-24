@@ -13,6 +13,13 @@ import java.util.stream.Collectors;
 
 public class DifferenceExtractor {
 
+    /**
+     * Prepares a list of differences between two lists representing wiring.
+     * An empty result means there shouldn't be a difference between the parameters.
+     * @param schNetwork wiring as sets of component terminals that are connected on the schematics
+     * @param traversedTerminals sets of component terminals that are connected in a prototype
+     * @return list of sets that are mismatching between the input
+     */
     public static List<Pair<Set<Terminal>, Set<Terminal>>> extractDifferences(List<Set<Terminal>> schNetwork, List<Set<Terminal>> traversedTerminals) {
         List<Pair<Integer, Integer>> equalOnSchAndBoardIdx = new ArrayList<>();
         for (int i = 0; i < schNetwork.size(); i++) {

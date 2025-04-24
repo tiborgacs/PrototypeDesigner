@@ -3,6 +3,9 @@ package prototypedesigner.PrototypeDesigner.components;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
+/**
+ * Models a capacitor (film, ceramic, non-polarized)
+ */
 public class NonPolarizedCapacitor extends Capacitor {
 
 	{

@@ -2,6 +2,9 @@ package prototypedesigner.PrototypeDesigner;
 
 import lombok.Getter;
 
+/**
+ * Tree item to list wiring traces and the dots they cover in the same table.
+ */
 @Getter
 public class ProtoLinkingItem {
 

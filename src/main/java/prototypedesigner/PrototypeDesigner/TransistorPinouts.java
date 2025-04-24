@@ -3,6 +3,9 @@ package prototypedesigner.PrototypeDesigner;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Collections of common transistor pinouts.
+ */
 public class TransistorPinouts {
 
     private static List<String> bjt = new ArrayList<>();
@@ -21,10 +24,18 @@ public class TransistorPinouts {
         fet.add("G_S_D"); // BF247
     }
 
+    /**
+     * List of most common pinouts for bipolar junction transistors
+     * @return list of pinouts
+     */
     public static List<String> getBjtPinouts() {
         return bjt;
     }
 
+    /**
+     * List of most common pinouts for field effect tansistors
+     * @return list of pinouts
+     */
     public static List<String> getFetPinouts() {
         return fet;
     }

@@ -3,6 +3,9 @@ package prototypedesigner.PrototypeDesigner.components;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
+/**
+ * Models a polarized capacitor (electrolytic, tantalum)
+ */
 public class PolarizedCapacitor extends Capacitor {
 
 	private Terminal anodeLeg;

@@ -4,6 +4,9 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.ArcType;
 
+/**
+ * Models two operational amplifiers in a single DIP-8 package
+ */
 public class DualOpAmp extends IntegratedCircuit implements DrawableOnStripboard, DrawableOnProtoboard {
 	
 	// TL072, RC4558, NE5532, LM358

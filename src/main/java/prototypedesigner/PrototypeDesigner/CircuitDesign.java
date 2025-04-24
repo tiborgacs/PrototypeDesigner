@@ -7,6 +7,10 @@ import lombok.Setter;
 import prototypedesigner.PrototypeDesigner.components.Component;
 import prototypedesigner.PrototypeDesigner.components.Wire;
 
+/**
+ * Represents a design by aggregating the components and wiring of schematics
+ * and the corresponding prototype equivalents.
+ */
 @Getter
 @Setter
 public class CircuitDesign {

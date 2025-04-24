@@ -25,6 +25,10 @@ public class ProtoboardTrace implements DrawableOnProtoboard {
         identifier = "trace#" + ++counter;
     }
 
+    /**
+     * Sets the counter with a starting value for generating identifiers.
+     * @param counter starting value (exclusive)
+     */
     public static void setCounter(int counter) {
         ProtoboardTrace.counter = counter;
     }

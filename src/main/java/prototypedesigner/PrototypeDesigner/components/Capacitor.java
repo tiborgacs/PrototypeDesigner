@@ -19,6 +19,10 @@ public abstract class Capacitor extends Component implements DrawableOnStripboar
         identifier = "C" + ++idCounter;
     }
 
+    /**
+     * Sets the counter with a starting value for generating identifiers.
+     * @param i starting value (exclusive)
+     */
     public static void setCounter(int i) {
         idCounter = i;
     }

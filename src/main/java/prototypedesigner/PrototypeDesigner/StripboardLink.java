@@ -9,6 +9,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import prototypedesigner.PrototypeDesigner.components.DrawableOnStripboard;
 
+/**
+ * Models a vertical wire link between horizontal strips.
+ */
 @Getter
 @Setter
 @NoArgsConstructor

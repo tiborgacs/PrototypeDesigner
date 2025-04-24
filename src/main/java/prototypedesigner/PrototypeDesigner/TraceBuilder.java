@@ -7,6 +7,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Builder class for protoboard traces
+ */
 public class TraceBuilder {
 
     @Getter
@@ -16,6 +19,14 @@ public class TraceBuilder {
         trace = new ProtoboardTrace(start);
     }
 
+    /**
+     * Adds a protoboard dot to the trace being build,
+     * by also adding all the dots between the latest and current dot vertically or horizontally,
+     * based on the coordinates of the latest and current dots.
+     * @param dot currently selected dot to add
+     * @param between dots to add between the current and last added
+     * @return the trace that is being built
+     */
     public ProtoboardTrace addDot(ProtoboardDot dot, Collection<ProtoboardDot> between) {
         if (!trace.getDots().contains(dot)) {
             ProtoboardDot last = trace.getDots().getLast();

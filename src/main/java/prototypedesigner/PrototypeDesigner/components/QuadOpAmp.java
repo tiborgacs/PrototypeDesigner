@@ -4,6 +4,9 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.ArcType;
 
+/**
+ * Models 4 operational amplifiers in a single DIP-14 package
+ */
 public class QuadOpAmp extends IntegratedCircuit implements DrawableOnStripboard, DrawableOnProtoboard {
 
 	private Terminal output1;

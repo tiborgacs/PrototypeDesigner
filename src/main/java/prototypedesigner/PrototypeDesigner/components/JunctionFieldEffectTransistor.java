@@ -4,6 +4,9 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.ArcType;
 
+/**
+ * Models a JFET
+ */
 public class JunctionFieldEffectTransistor extends Transistor {
 
 	private Terminal drainLeg;

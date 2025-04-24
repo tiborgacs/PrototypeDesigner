@@ -5,6 +5,9 @@ import javafx.scene.paint.Color;
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ * Models a diode.
+ */
 @Getter
 @Setter
 public class Diode extends Component implements DrawableOnStripboard, DrawableOnProtoboard, Spanning {
@@ -27,6 +30,10 @@ public class Diode extends Component implements DrawableOnStripboard, DrawableOn
 	private Coordinate endOnStripboard;
 	private Coordinate endOnProtoboard;
 
+	/**
+	 * Sets the counter with a starting value for generating identifiers.
+	 * @param i starting value (exclusive)
+	 */
     public static void setCounter(int i) {
 		idCounter = i;
     }

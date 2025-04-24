@@ -11,6 +11,9 @@ import lombok.Setter;
 import prototypedesigner.PrototypeDesigner.components.Coordinate;
 import prototypedesigner.PrototypeDesigner.components.DrawableOnProtoboard;
 
+/**
+ * Models horizontal or vertical wire links between traces on the prototype board.
+ */
 @Getter
 @Setter
 @NoArgsConstructor
@@ -24,6 +27,10 @@ public class ProtoboardVia implements DrawableOnProtoboard {
     private static int counter = 0;
     private String identifier;
 
+    /**
+     * Sets the counter with a starting value for generating identifiers.
+     * @param counter starting value (exclusive)
+     */
     public static void setCounter(int counter) {
         ProtoboardVia.counter = counter;
     }

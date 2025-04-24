@@ -5,6 +5,9 @@ import javafx.scene.paint.Color;
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ * Models a resistor
+ */
 @Getter
 @Setter
 public class Resistor extends Component implements DrawableOnStripboard, DrawableOnProtoboard, Spanning {
@@ -27,6 +30,10 @@ public class Resistor extends Component implements DrawableOnStripboard, Drawabl
 		leg2.setIdentifier(identifier + "_2");
 	}
 
+	/**
+	 * Sets the counter with a starting value for generating identifiers.
+	 * @param i starting value (exclusive)
+	 */
     public static void setCounter(int i) {
 		idCounter = i;
     }

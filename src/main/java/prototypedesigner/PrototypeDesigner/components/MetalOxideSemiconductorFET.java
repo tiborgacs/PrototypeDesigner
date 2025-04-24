@@ -4,6 +4,9 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.ArcType;
 
+/**
+ * Models a MOSFET
+ */
 public class MetalOxideSemiconductorFET extends Transistor {
 
 	private Terminal drainLeg;

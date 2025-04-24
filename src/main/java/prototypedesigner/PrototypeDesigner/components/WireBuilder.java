@@ -8,6 +8,9 @@ import java.util.List;
 
 import static prototypedesigner.PrototypeDesigner.Utility.tail;
 
+/**
+ * Builder class for wires on schematics
+ */
 public class WireBuilder {
 
     @Getter
@@ -23,6 +26,12 @@ public class WireBuilder {
         wire.setHighlighted(true);
     }
 
+    /**
+     * Adds a coordinate to the wire being drawn. It is only added if it differs from the last added coordinate.
+     * @param x
+     * @param y
+     * @return the wire being drawn
+     */
     public Wire addCoordinates(int x, int y) {
         Coordinate last = tail(wire.getSchPoints());
         if (last.getX() != x || last.getY() != y)
@@ -30,6 +39,12 @@ public class WireBuilder {
         return wire;
     }
 
+    /**
+     * Prepares a container of intersection coordinates and connected component terminals.
+     * @param wires to look for intersections
+     * @param components to match terminal coordinates with the coordinates the wire consists of
+     * @return aggregation of intersections and connected components
+     */
     public ConnectionContainer checkForConnections(List<Wire> wires, List<Component> components) {
         ConnectionContainer container = null;
         for (Wire wire : wires) {
@@ -62,6 +77,9 @@ public class WireBuilder {
         return container;
     }
 
+    /**
+     * Aggregation of components connected with a wire and intersection coordinates with other wires.
+     */
     @Getter
     public class ConnectionContainer {
         private Wire wire;
@@ -74,6 +92,7 @@ public class WireBuilder {
             componentTerminals = new ArrayList<>();
         }
 
+        /** Returns if the wire is not intersecting other wires and doesn't connect any component terminals */
         public boolean isEmpty() {
             return intersectionCandidates.isEmpty() && componentTerminals.isEmpty();
         }

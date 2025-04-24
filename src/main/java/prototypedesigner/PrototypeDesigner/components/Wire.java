@@ -14,6 +14,9 @@ import javafx.scene.shape.ArcType;
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ * Models a wire on the schematic
+ */
 @JsonInclude
 @JsonIdentityInfo(property = "identifier", generator = ObjectIdGenerators.PropertyGenerator.class)
 public class Wire implements DrawableOnSchematics {
@@ -30,6 +33,10 @@ public class Wire implements DrawableOnSchematics {
 	@Getter @Setter private List<Coordinate> intersections = new ArrayList<>();
 	@JsonIgnore @Setter @Getter private boolean highlighted;
 
+	/**
+	 * Sets the counter with a starting value for generating identifiers.
+	 * @param i starting value (exclusive)
+	 */
     public static void setCounter(int i) {
 		counter = i;
     }
@@ -60,6 +67,11 @@ public class Wire implements DrawableOnSchematics {
 		}
 	}
 
+	/**
+	 * Adds coordinates to the wire by picking the maximum of the horizontal and vertical span
+	 * @param x
+	 * @param y
+	 */
 	public void drawSch(int x, int y) {
 		if (schPoints.isEmpty()) schPoints.add(new Coordinate(x, y));
 		else {
@@ -88,6 +100,14 @@ public class Wire implements DrawableOnSchematics {
 		}
 	}
 
+	/**
+	 * Checks for an intersection between two pairs of coordinates
+	 * @param a
+	 * @param b
+	 * @param c
+	 * @param d
+	 * @return possible intersection
+	 */
 	public static Coordinate intersects(Coordinate a, Coordinate b, Coordinate c, Coordinate d) {
 		double a1 = b.getY() - a.getY();
 		double b1 = a.getX() - b.getX();

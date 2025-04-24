@@ -4,6 +4,9 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.ArcType;
 
+/**
+ * Models a single operational amplifier in a DIP-8 package
+ */
 public class SingleOpAmp extends IntegratedCircuit implements DrawableOnStripboard, DrawableOnProtoboard {
 
 	private Terminal offset1;

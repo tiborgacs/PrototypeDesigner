@@ -16,6 +16,10 @@ public abstract class Transistor extends Component implements DrawableOnStripboa
 		identifier = "Q" + ++idCounter;
 	}
 
+	/**
+	 * Sets the counter with a starting value for generating identifiers.
+	 * @param i starting value (exclusive)
+	 */
 	public static void setCounter(int i) {
 		idCounter = i;
 	}

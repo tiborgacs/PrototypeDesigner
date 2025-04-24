@@ -10,6 +10,9 @@ import lombok.Setter;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Models a component leg or pin
+ */
 @JsonInclude
 @Getter
 @Setter
